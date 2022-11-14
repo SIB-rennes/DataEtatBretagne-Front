@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "projects": {},
+  "cli": {
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
+  }
+}
