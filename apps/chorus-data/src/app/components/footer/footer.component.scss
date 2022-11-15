@@ -1,0 +1,26 @@
+footer {
+
+  .footer-list {
+    align-items: center;
+    display: flex;
+    flex-flow: row wrap;
+    padding: 8px;
+
+    .footer-version {
+      display: flex;
+      flex: 1;
+      justify-content: flex-end;
+      flex-direction: column;
+      min-width: 225px;
+    }
+
+    .footer-logo-fr {
+      flex: 1;
+
+      img {
+        width: 320px;
+      }
+    }
+  }
+
+}

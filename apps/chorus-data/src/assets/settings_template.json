@@ -1,0 +1,9 @@
+{
+  "keycloak": {
+    "url": "<URL KC>",
+    "realm": "realm",
+    "clientId": "client"
+  },
+  "api": "<url api>"
+}
+

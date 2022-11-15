@@ -29,7 +29,8 @@
             "styles": [
               "apps/chorus-data/src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": ["js-sha256","base64-js"]
           },
           "configurations": {
             "production": {
