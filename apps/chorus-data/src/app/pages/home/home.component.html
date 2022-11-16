@@ -1,13 +1,7 @@
-<mat-toolbar color="primary">
-  <span>Chorus Data</span>
-  <span class="example-spacer"></span>
-  <button
-    *ngIf="isLogIn()"
-    mat-icon-button
-    (click)="logout()"
-    class="example-icon"
-    aria-label="Example icon-button with share icon"
-  >
-    <mat-icon>Logout</mat-icon>
-  </button>
-</mat-toolbar>
+<mat-card>
+  <mat-card-title> Rechercher des données Chorus</mat-card-title>
+
+  <mat-card-content>
+    <chorus-search-data></chorus-search-data>
+  </mat-card-content>
+</mat-card>

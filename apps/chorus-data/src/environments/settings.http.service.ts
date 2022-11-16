@@ -25,15 +25,6 @@ export class SettingsHttpService {
         });
     }).then(async () => {
       try {
-        // this.keycloak.keycloakEvents$
-        //   .pipe(
-        //     // tap(evt => console.debug(`[Keycloak events] Received keycloak event ${KeycloakEventType[evt.type]}`)),
-        //     filter((evt) => evt.type == KeycloakEventType.OnAuthSuccess)
-        //   )
-        //   .subscribe((_) => {
-        //     console.debug('[Keycloak events] Dispatch login');
-        //   });
-
         await this.keycloak.init({
           config: {
             url: this.settingsService.settings.keycloak.url,

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { KeycloakService } from 'keycloak-angular';
-import { LoginService } from './services/login.service';
+import { KeycloakProfile } from 'keycloak-js';
 
 @Component({
   selector: 'chorus-root',
@@ -9,6 +9,7 @@ import { LoginService } from './services/login.service';
 })
 export class AppComponent implements OnInit {
   public isLoggedIn = false;
+  public user: KeycloakProfile | null = null;
 
   constructor(private keycloak: KeycloakService) {}
 
@@ -18,8 +19,14 @@ export class AppComponent implements OnInit {
     if (!this.isLoggedIn) {
       this.keycloak.login();
     } else {
-      console.log(await this.keycloak.getToken());
-      console.log(await this.keycloak.loadUserProfile());
+      this.user = await this.keycloak.loadUserProfile();
     }
+  }
+
+  public logout() {
+    this.keycloak.logout().then(() => {
+      this.keycloak.clearToken();
+    });
+    this.isLoggedIn = false;
   }
 }

@@ -1,14 +1,30 @@
-<mat-sidenav-container color="primary" *ngIf="isLoggedIn">
+<mat-sidenav-container color="primary">
   <mat-sidenav-content>
     <div class="container">
+      <mat-toolbar color="primary">
+        <span>Chorus Data</span>
+        <span class="spacer"></span>
+
+        <div *ngIf="isLoggedIn && user">
+          <button mat-icon-button [matMenuTriggerFor]="infoUser" matTooltip="{{user.username}}">
+            <mat-icon aria-hidden="false" aria-label="Information de l'utilisateur" fontIcon="person_outline">
+            </mat-icon>
+          </button>
+
+          <mat-menu #infoUser="matMenu">
+            <button mat-menu-item>{{user.firstName}} {{user.lastName}}</button>
+            <button mat-menu-item>{{user.email}}</button>
+          </mat-menu>
+
+          <button mat-icon-button (click)="logout()" matTooltip="Se déconnecter">
+            <mat-icon aria-hidden="false" aria-label="Se déconnecter" fontIcon="logout"></mat-icon>
+          </button>
+        </div>
+
+      </mat-toolbar>
+
       <chorus-home></chorus-home>
     </div>
-
     <chorus-footer></chorus-footer>
   </mat-sidenav-content>
 </mat-sidenav-container>
-
-<h1>Keycloak Angular Example</h1>
-<!--
-<button *ngIf="isLoggedIn" type="button" (click)="logout()">Log out</button>
-<button *ngIf="!isLoggedIn" type="button" (click)="login()">Log in</button> -->

@@ -4,6 +4,9 @@
     "realm": "realm",
     "clientId": "client"
   },
-  "api": "<url api>"
+  "apis": {
+    "chorus": "<url api chorus>",
+    "geo": "url api geo"
+  }
 }
 

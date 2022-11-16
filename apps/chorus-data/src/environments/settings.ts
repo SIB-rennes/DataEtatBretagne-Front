@@ -1,5 +1,6 @@
 export class Api {
-  url = '';
+  chorus = '';
+  geo = '';
 }
 export class Keycloak {
   url = '';
@@ -9,6 +10,6 @@ export class Keycloak {
 
 export class Settings {
   production = false;
-  api: Api = new Api();
+  apis: Api = new Api();
   keycloak: Keycloak = new Keycloak();
 }
