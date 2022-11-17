@@ -22,7 +22,11 @@
     "lib": [
       "es2020",
       "dom"
-    ]
+    ],
+     "paths": {
+        "@models/*": ["apps/chorus-data/src/app/models/*"],
+        "@services/*": ["apps/chorus-data/src/app/services/*"]
+     }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

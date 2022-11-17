@@ -7,7 +7,15 @@ export class SettingsService {
 
   constructor() {
     this.settings = new Settings();
-    this.settings.api = new Api();
+    this.settings.apis = new Api();
     this.settings.keycloak = new Keycloak();
+  }
+
+  public get apiGeo(): string {
+    return this.settings.apis.geo;
+  }
+
+  public get apiChorus(): string {
+    return this.settings.apis.chorus;
   }
 }

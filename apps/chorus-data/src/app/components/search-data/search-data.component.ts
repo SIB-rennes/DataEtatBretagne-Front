@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { switchMap, map, of, startWith, Observable } from 'rxjs';
+import { GeoDepartementModel } from '../../models/geo.models';
 import { GeoHttpService } from '../../services/geo-http.service';
 
 @Component({
@@ -15,7 +16,10 @@ export class SearchDataComponent implements OnInit {
     { code: 157, libelle: 'lib 128' },
   ];
 
-  public filterDepartement: Observable<Object[]> | null | undefined = null;
+  public filterDepartement:
+    | Observable<GeoDepartementModel[]>
+    | null
+    | undefined = null;
 
   constructor(private geoService: GeoHttpService) {}
 
@@ -31,20 +35,22 @@ export class SearchDataComponent implements OnInit {
       departement: new FormControl(''),
     });
 
-    // this.searchForm.controls['departement'].valueChanges.subscribe((value) => {
-    //   console.log('form value changed');
-    //   console.log(value);
-
-    // });
     this.filterDepartement = this.searchForm.controls[
       'departement'
     ].valueChanges.pipe(
       switchMap((value) => {
-        if (value && value.length > 3) {
+        if (value && value.length > 1) {
           return this.geoService.filterDepartement(value);
         }
         return of([]);
       })
     );
+  }
+
+  public displayDepartement(departement: GeoDepartementModel): string {
+    if (departement) {
+      return departement.nom;
+    }
+    return '';
   }
 }

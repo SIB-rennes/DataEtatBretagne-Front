@@ -5,18 +5,19 @@
       <mat-label>Année</mat-label>
       <input matInput formControlName="year" placeholder="">
       <mat-icon matSuffix>calendar_month</mat-icon>
-      <mat-hint></mat-hint>
+      <mat-hint>Renseigner l'année d'enregistrement de la ligne chous</mat-hint>
     </mat-form-field>
 
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>Département</mat-label>
       <input type="text" matInput formControlName="departement" [matAutocomplete]="dpt">
       <mat-icon matSuffix>map</mat-icon>
-      <mat-autocomplete #dpt="matAutocomplete">
-        <mat-option *ngFor="let option of filterDepartement | async" [value]="option">
-          {{option}}
+      <mat-autocomplete #dpt="matAutocomplete" [displayWith]="displayDepartement">
+        <mat-option *ngFor="let departement of filterDepartement | async" [value]="departement">
+          {{departement.code}} - {{departement.nom}}
         </mat-option>
       </mat-autocomplete>
+      <mat-hint>Commencer à renseigner le nom ou le numéro de département</mat-hint>
     </mat-form-field>
 
     <mat-form-field class="example-full-width" appearance="fill">

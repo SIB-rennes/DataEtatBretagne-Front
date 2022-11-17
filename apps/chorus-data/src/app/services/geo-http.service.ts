@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { SettingsService } from '../../environments/settings.service';
+import { GeoDepartementModel } from '@models/geo.models';
 
 /**
  * Service to manage authentication
@@ -10,12 +12,18 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class GeoHttpService {
-  private apiGeo = 'https://geo.api.gouv.fr/departements';
+  constructor(private http: HttpClient, private settings: SettingsService) {}
 
-  constructor(private http: HttpClient) {}
+  public filterDepartement(search: string): Observable<GeoDepartementModel[]> {
+    const apiGeo = this.settings.apiGeo;
 
-  public filterDepartement(query: string): Observable<Object[]> {
-    console.log('icic');
-    return this.http.get<Object[]>(`${this.apiGeo}?nom=${query}`);
+    let params = 'limit=5';
+    if (search.length <= 2 && !isNaN(Number(search.substring(0, 1)))) {
+      params += `&code=${search}`;
+    } else {
+      params += `&nom=${search}`;
+    }
+
+    return this.http.get<GeoDepartementModel[]>(`${apiGeo}?${params}`);
   }
 }
