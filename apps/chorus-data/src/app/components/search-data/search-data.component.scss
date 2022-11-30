@@ -1,5 +1,5 @@
 
-.box .mat-form-field + .mat-form-field {
+.box .mat-mdc-form-field + .mat-mdc-form-field {
   margin-left: 8px;
 }
 
@@ -12,6 +12,22 @@ form .mat-fab {
   justify-content: flex-start;
   flex-direction: row;
 }
+.field-50-width {
+  width: 50%;
+}
+
+.field-10-width {
+  width: 10%;
+}
+
+.field-100-width {
+  width: 100%;
+}
+
+.field-30-width {
+  width: 30%;
+}
+
 
 @media (max-width: 800px) {
   .box {

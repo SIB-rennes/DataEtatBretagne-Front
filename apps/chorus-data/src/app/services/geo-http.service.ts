@@ -5,9 +5,6 @@ import { Observable } from 'rxjs';
 import { SettingsService } from '../../environments/settings.service';
 import { GeoDepartementModel } from '@models/geo.models';
 
-/**
- * Service to manage authentication
- */
 @Injectable({
   providedIn: 'root',
 })
