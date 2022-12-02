@@ -5,6 +5,7 @@ import { BopModel } from '@models/bop.models';
 import { map, Observable, of } from 'rxjs';
 import { ChorusResponse } from '@models/chorus_response.models';
 import { SettingsService } from '../../environments/settings.service';
+import { RefTheme } from '../models/theme.models';
 
 @Injectable({
   providedIn: 'root',
@@ -12,19 +13,27 @@ import { SettingsService } from '../../environments/settings.service';
 export class ChorusHttpService {
   constructor(private http: HttpClient, private settings: SettingsService) {}
 
-  public filterBop(search: string): Observable<BopModel[]> {
+  public getBop(): Observable<BopModel[]> {
     const apiChorus = this.settings.apiChorus;
 
-    let params = 'limit=5&fields=Id,Label,Code';
-    if (search.length <= 3 && !isNaN(Number(search))) {
-      params += `&where=(Code,like,${search})`;
-    } else {
-      params += `&where=(Label,like,${search})`;
-    }
-
+    const params = 'limit=500&fields=Id,Label,Code,RefTheme';
     return this.http
       .get<ChorusResponse<BopModel>>(
         `${apiChorus}/RefCodeProgramme/RefCodeProgramme?${params}`
+      )
+      .pipe(map((response) => response.list));
+  }
+
+  /**
+   * Récupère les themes de Chorus
+   * @returns les the
+   */
+  public getTheme(): Observable<RefTheme[]> {
+    const apiChorus = this.settings.apiChorus;
+
+    return this.http
+      .get<ChorusResponse<RefTheme>>(
+        `${apiChorus}/RefTheme/RefTheme?fields=Id,Label&sort=Label`
       )
       .pipe(map((response) => response.list));
   }

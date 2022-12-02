@@ -1,18 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import {
-  switchMap,
-  of,
-  startWith,
-  Observable,
-  debounceTime,
-  Subject,
-  tap,
-  finalize,
-} from 'rxjs';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { ActivatedRoute } from '@angular/router';
+import { switchMap, of, startWith, Observable, map } from 'rxjs';
 import { BopModel } from '../../models/bop.models';
+import { ChorusResolverModel } from '../../models/chorus-resolvers.models';
 import { GeoDepartementModel } from '../../models/geo.models';
-import { ChorusHttpService } from '../../services/chorus-http.service';
+import { RefTheme } from '../../models/theme.models';
 import { GeoHttpService } from '../../services/geo-http.service';
 
 @Component({
@@ -20,7 +14,7 @@ import { GeoHttpService } from '../../services/geo-http.service';
   templateUrl: './search-data.component.html',
   styleUrls: ['./search-data.component.scss'],
 })
-export class SearchDataComponent implements OnInit {
+export class SearchDataComponent implements OnInit, AfterViewInit {
   public searchForm!: FormGroup;
 
   public filterDepartement:
@@ -28,57 +22,55 @@ export class SearchDataComponent implements OnInit {
     | null
     | undefined = null;
 
-  public filterBop: BopModel[] = [];
+  public bop: BopModel[] = [];
+  public themes: RefTheme[] = [];
 
-  public isLoading: boolean | undefined;
+  public filteredTheme: Observable<RefTheme[]> | null | undefined = null;
+  public filteredBop: Observable<BopModel[]> | null | undefined = null;
+
+  @ViewChild('autoCompleteThemeInput', {
+    static: false,
+    read: MatAutocompleteTrigger,
+  })
+  public triggerTheme: MatAutocompleteTrigger | undefined;
+
+  @ViewChild('autoCompleteBopInput', {
+    static: false,
+    read: MatAutocompleteTrigger,
+  })
+  public triggerBop: MatAutocompleteTrigger | undefined;
 
   constructor(
     private geoService: GeoHttpService,
-    private chorusService: ChorusHttpService
+    private route: ActivatedRoute
   ) {}
 
+  ngAfterViewInit() {
+    if (this.triggerTheme) {
+      this.triggerTheme.panelClosingActions.subscribe((e) => {
+        this.searchForm.controls['theme'].setValue(null);
+      });
+    }
+
+    if (this.triggerBop) {
+      this.triggerBop.panelClosingActions.subscribe((e) => {
+        this.searchForm.controls['bop'].setValue(null);
+      });
+    }
+  }
+
   ngOnInit(): void {
-    this.isLoading = false;
-    this.searchForm = new FormGroup({
-      year: new FormControl('', {
-        validators: [
-          Validators.min(2011),
-          Validators.max(new Date().getFullYear()),
-        ],
-      }),
-      bop: new FormControl(''),
-      departement: new FormControl(''),
-    });
-
-    this.searchForm.controls['bop'].valueChanges
-      .pipe(
-        debounceTime(300),
-        tap(() => {
-          this.isLoading = true;
-        }),
-        switchMap((value) => {
-          if (value && value.length > 2) {
-            return this.chorusService
-              .filterBop(value)
-              .pipe(finalize(() => (this.isLoading = false)));
-          } else {
-            return of([]).pipe(finalize(() => (this.isLoading = false)));
-          }
-        })
-      )
-      .subscribe((bops) => (this.filterBop = bops));
-
-    this.filterDepartement = this.searchForm.controls[
-      'departement'
-    ].valueChanges.pipe(
-      startWith(''),
-      switchMap((value) => {
-        if (value && value.length > 1) {
-          return this.geoService.filterDepartement(value);
-        }
-        return of([]);
-      })
+    // récupération des themes dans le resolver
+    this.route.data.subscribe(
+      (response: { chorus: ChorusResolverModel } | any) => {
+        this.themes = response.chorus.themes;
+        this.bop = response.chorus.bop;
+        this.filteredTheme = of(this.themes);
+        this.filteredBop = of(this.bop);
+      }
     );
+
+    this._onFilter();
   }
 
   public displayDepartement(departement: GeoDepartementModel): string {
@@ -93,5 +85,109 @@ export class SearchDataComponent implements OnInit {
       return bop.Label;
     }
     return '';
+  }
+
+  /**
+   * Set la valeur au bon formControl pour les mat autocomplete
+   * @param value
+   * @param controls
+   */
+  public onSelectTheme(value: RefTheme): void {
+    this.searchForm.controls['theme'].setValue(value);
+    this.filteredBop = of(
+      this.bop.filter((option) => {
+        if (option.RefTheme) {
+          return option.RefTheme.Id === value.Id;
+        }
+        return false;
+      })
+    );
+  }
+
+  public onSelectBop(value: BopModel): void {
+    this.searchForm.controls['bop'].setValue(value);
+  }
+
+  public displayTheme(theme: RefTheme): string {
+    if (theme) {
+      return theme.Label;
+    }
+    return '';
+  }
+
+  /**
+   * filtrage des données des formulaires pour les autocomplete
+   */
+  private _onFilter(): void {
+    // formulaire
+    this.searchForm = new FormGroup({
+      year: new FormControl('', {
+        validators: [
+          Validators.min(2011),
+          Validators.max(new Date().getFullYear()),
+        ],
+      }),
+      bop: new FormControl(null),
+      theme: new FormControl(null),
+      departement: new FormControl(''),
+    });
+
+    // Filtre sur le theme
+    this.filteredTheme = this.searchForm.controls['theme'].valueChanges.pipe(
+      startWith(''),
+      map((value) => {
+        if (typeof value === 'string') {
+          return this._filterTheme(value ? value : '');
+        } else {
+          return this._filterTheme(value ? value?.Label : '');
+        }
+      })
+    );
+    // Filtre sur les bop
+    this.filteredBop = this.searchForm.controls['bop'].valueChanges.pipe(
+      startWith(''),
+      map((value) => {
+        console.log('filter bop', value);
+        if (typeof value === 'string') {
+          return this._filterBop(value ? value : '');
+        } else {
+          return this._filterBop(value ? value?.Label : '');
+        }
+      })
+    );
+
+    // filtre departement
+    this.filterDepartement = this.searchForm.controls[
+      'departement'
+    ].valueChanges.pipe(
+      startWith(''),
+      switchMap((value) => {
+        if (value && value.length > 1) {
+          return this.geoService.filterDepartement(value);
+        }
+        return of([]);
+      })
+    );
+  }
+
+  private _filterTheme(value: string): RefTheme[] {
+    const filterValue = value.toLowerCase();
+    return this.themes.filter((option) =>
+      option.Label.toLowerCase().includes(filterValue)
+    );
+  }
+
+  private _filterBop(value: string): BopModel[] {
+    const filterValue = value.toLowerCase();
+    const theme = this.searchForm.controls['theme'].value as RefTheme;
+    return this.bop.filter((option) => {
+      if (theme && option.RefTheme) {
+        return (
+          option.RefTheme.Id === theme.Id &&
+          option.Label?.toLowerCase().includes(filterValue)
+        );
+      }
+      return option.Label?.toLowerCase().includes(filterValue);
+    });
   }
 }
