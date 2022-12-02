@@ -7,6 +7,7 @@ import { BopModel } from '../../models/bop.models';
 import { ChorusResolverModel } from '../../models/chorus-resolvers.models';
 import { GeoDepartementModel } from '../../models/geo.models';
 import { RefTheme } from '../../models/theme.models';
+import { ChorusHttpService } from '../../services/chorus-http.service';
 import { GeoHttpService } from '../../services/geo-http.service';
 
 @Component({
@@ -42,7 +43,8 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
 
   constructor(
     private geoService: GeoHttpService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private service: ChorusHttpService
   ) {}
 
   ngAfterViewInit() {
@@ -116,6 +118,19 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * lance la recherche des lignes chorus
+   */
+  public searchChorus(): void {
+    const formValue = this.searchForm.value;
+
+    this.service
+      .filterChorus(formValue.bop, null, null, null)
+      .subscribe((response) => {
+        console.log(response);
+      });
+  }
+
+  /**
    * filtrage des données des formulaires pour les autocomplete
    */
   private _onFilter(): void {
@@ -147,7 +162,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     this.filteredBop = this.searchForm.controls['bop'].valueChanges.pipe(
       startWith(''),
       map((value) => {
-        console.log('filter bop', value);
         if (typeof value === 'string') {
           return this._filterBop(value ? value : '');
         } else {
