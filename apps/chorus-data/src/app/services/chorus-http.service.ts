@@ -56,8 +56,9 @@ export class ChorusHttpService {
   ): Observable<ChorusModel[]> {
     if (bop == null && theme == null && year == null && departement == null)
       return of();
+
     const apiChorus = this.settings.apiChorus;
-    let params = 'where=(Montant,gt,0)';
+    let params = 'sort=Theme,code_programme&limit=2000&where=(Montant,gt,0)';
     if (bop) {
       params += `~and(code_programme,eq,${bop.Code})`;
     } else if (theme) {
@@ -70,7 +71,7 @@ export class ChorusHttpService {
 
     return this.http
       .get<ChorusResponse<ChorusModel>>(
-        `${apiChorus}/DataChorus/DataChorus?${params}`
+        `${apiChorus}/DataChorus/Chorus-front?${params}`
       )
       .pipe(map((response) => response.list));
   }

@@ -1,6 +1,14 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+  NgForm,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { ErrorStateMatcher } from '@angular/material/core';
 import { ActivatedRoute } from '@angular/router';
 import { switchMap, of, startWith, Observable, map } from 'rxjs';
 import { BopModel } from '../../models/bop.models';
@@ -9,6 +17,17 @@ import { GeoDepartementModel } from '../../models/geo.models';
 import { RefTheme } from '../../models/theme.models';
 import { ChorusHttpService } from '../../services/chorus-http.service';
 import { GeoHttpService } from '../../services/geo-http.service';
+import { chorusFormValidators } from '../../validators/chorus-form.validators';
+
+/** Error when the parent is invalid */
+class CrossFieldErrorMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective): boolean {
+    if (control == null || form.invalid == null || form.errors == null)
+      return false;
+
+    return control.touched && form.errors['bopRequired'];
+  }
+}
 
 @Component({
   selector: 'chorus-search-data',
@@ -17,6 +36,8 @@ import { GeoHttpService } from '../../services/geo-http.service';
 })
 export class SearchDataComponent implements OnInit, AfterViewInit {
   public searchForm!: FormGroup;
+
+  public errorMatcher = new CrossFieldErrorMatcher();
 
   public filterDepartement:
     | Observable<GeoDepartementModel[]>
@@ -117,17 +138,39 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     return '';
   }
 
+  public get departementControls(): FormControl | null {
+    return this.searchForm.get('departement') as FormControl;
+  }
+
+  public get errorsBop(): ValidationErrors | null {
+    return this.searchForm.errors != null
+      ? this.searchForm.errors['bopRequired']
+      : null;
+  }
+
   /**
    * lance la recherche des lignes chorus
    */
   public searchChorus(): void {
-    const formValue = this.searchForm.value;
-
-    this.service
-      .filterChorus(formValue.bop, null, null, null)
-      .subscribe((response) => {
-        console.log(response);
-      });
+    if (this.searchForm.valid) {
+      const formValue = this.searchForm.value;
+      this.service
+        .filterChorus(
+          formValue.bop,
+          formValue.theme,
+          formValue.year,
+          formValue.departement
+        )
+        .subscribe((response) => {
+          console.log(response);
+        });
+    } else {
+      console.log(
+        this.searchForm.errors != null
+          ? this.searchForm.errors['bopRequired']
+          : 'oups'
+      );
+    }
   }
 
   /**
@@ -135,17 +178,20 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
    */
   private _onFilter(): void {
     // formulaire
-    this.searchForm = new FormGroup({
-      year: new FormControl('', {
-        validators: [
-          Validators.min(2011),
-          Validators.max(new Date().getFullYear()),
-        ],
-      }),
-      bop: new FormControl(null),
-      theme: new FormControl(null),
-      departement: new FormControl(''),
-    });
+    this.searchForm = new FormGroup(
+      {
+        year: new FormControl('', {
+          validators: [
+            Validators.min(2011),
+            Validators.max(new Date().getFullYear()),
+          ],
+        }),
+        bop: new FormControl(null),
+        theme: new FormControl(null),
+        departement: new FormControl(null, [Validators.required]),
+      },
+      chorusFormValidators()
+    );
 
     // Filtre sur le theme
     this.filteredTheme = this.searchForm.controls['theme'].valueChanges.pipe(
