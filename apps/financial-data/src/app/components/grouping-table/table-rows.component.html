@@ -6,6 +6,6 @@
     *ngFor="let col of context.displayedColumns; index as i; first as isFirst"
     class="cell {{isFirst ? 'group-cell' : ('col-' + i)}}"
   >
-    {{row[col.name]}}
+    {{col.renderFn ? col.renderFn(row, col) : row[col.name]}}
   </div>
 </div>

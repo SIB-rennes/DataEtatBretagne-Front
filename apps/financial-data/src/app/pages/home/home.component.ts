@@ -14,7 +14,7 @@ export class HomeComponent {
     {name: 'nom_programme', label: 'Programme'},
     {name: 'label ref programmation', label: 'Réf. programmation'},
     //{name: 'code_programme', label: 'code_programme'},
-    {name: 'Commune', label: 'Commune'},
+    {name: 'Commune', label: 'Commune', renderFn: (row, col) => row[col.name]?.['LabelCrte'] },
     //{name: 'code_commune', label: 'code_commune'},
     {name: 'nom_beneficiaire', label: 'Bénéficiaire'},
     {name: 'code_siret', label: 'Siret'},

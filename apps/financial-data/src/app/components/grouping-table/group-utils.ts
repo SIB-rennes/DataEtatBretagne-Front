@@ -7,6 +7,15 @@ export type ColumnMetaDataDef = {
 
   /** Libellé de la colonne, affiché dans le tableau. */
   label: string;
+
+  /**
+   * Fonction de rendu permettant d'adapter la valeur de la cellule avant affichage.
+   * Peut permettre d'afficher une valeur différente de celle de la cellule, ou de gérer les sous-objets.
+   * @param row ligne de données
+   * @param col colonne de la cellule
+   */
+  renderFn?: (row: RowData, col: ColumnMetaDataDef) => string | undefined;
+
   // taille de colonne ?
   // alignement (gauche, droite) ?
 };
@@ -121,7 +130,7 @@ export const groupByColumns = (table: TableData, groupings: GroupingColumn[], co
     // tant qu'on n'a pas trouvé le niveau le plus profond où ranger la ligne, on descend
     for (const grouping of groupings) {
       const column = columnsMetaData.getByColumnName(grouping.columnName);
-      const groupKey = row[column.name];
+      const groupKey = column.renderFn ? column.renderFn(row, column) : row[column.name];
       currentGroup = currentGroup.getOrCreateGroup(column, groupKey);
     }
     currentGroup.pushValue(row);
