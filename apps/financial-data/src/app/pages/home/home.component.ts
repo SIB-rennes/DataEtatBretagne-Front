@@ -1,11 +1,6 @@
 import { Component } from '@angular/core';
 import tableData from './example_chorus.json';
-import {
-  ColumnMetaDataDef,
-  ColumnsMetaData,
-  GroupingColumn,
-  TableData
-} from "../../components/grouping-table/group-utils";
+import { ColumnsMetaData, GroupingColumn, TableData } from "../../components/grouping-table/group-utils";
 
 @Component({
   selector: 'financial-home',
@@ -14,19 +9,29 @@ import {
 })
 export class HomeComponent {
 
-  columnsMetaData = this.colDefFromData(tableData);
-
-  private colDefFromData(data: TableData): ColumnsMetaData {
-    const keys = Object.keys(data[0]);
-    const columnDefinitions: ColumnMetaDataDef[] = keys.map(key => ({name: key, label: key}));
-    return new ColumnsMetaData(columnDefinitions);
-  }
+  columnsMetaData = new ColumnsMetaData([
+    {name: 'Theme', label: 'Thème'},
+    {name: 'nom_programme', label: 'Programme'},
+    {name: 'label ref programmation', label: 'Réf. programmation'},
+    //{name: 'code_programme', label: 'code_programme'},
+    {name: 'Commune', label: 'Commune'},
+    //{name: 'code_commune', label: 'code_commune'},
+    {name: 'nom_beneficiaire', label: 'Bénéficiaire'},
+    {name: 'code_siret', label: 'Siret'},
+    {name: 'type_etablissement', label: `Type d'établissement`},
+    {name: 'NEj', label: 'NEj'},
+    {name: 'NPosteEj', label: 'NPosteEj'},
+    {name: 'DateModificationEj', label: 'DateModificationEj'},
+    {name: 'CompteBudgetaire', label: 'Compte budgetaire'},
+    {name: 'ContratEtatRegion', label: 'Contrat État-Région'},
+    {name: 'Montant', label: 'Montant'},
+  ]);
 
   tableData: TableData = tableData;
 
-  groupingColumns: GroupingColumn[] = [{
-    columnName: 'Theme'
-  }, {
-    columnName: 'nom_programme'
-  }];
+  groupingColumns: GroupingColumn[] = [
+    {columnName: 'Theme'},
+    {columnName: 'nom_programme'},
+    {columnName: 'label ref programmation'},
+  ];
 }
