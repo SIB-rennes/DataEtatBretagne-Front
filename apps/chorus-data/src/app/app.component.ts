@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { KeycloakService } from 'keycloak-angular';
 import { KeycloakProfile } from 'keycloak-js';
+import { SessionService } from './services/session.service';
 
 @Component({
   selector: 'chorus-root',
@@ -12,16 +12,18 @@ export class AppComponent implements OnInit {
   public isLoggedIn = false;
   public user: KeycloakProfile | null = null;
 
-  constructor(private keycloak: KeycloakService) {}
+  constructor(
+    private session: SessionService,
+    private keycloak: KeycloakService
+  ) {}
 
-  public async ngOnInit() {
-    this.isLoggedIn = await this.keycloak.isLoggedIn();
-
-    if (!this.isLoggedIn) {
-      this.keycloak.login();
-    } else {
-      this.user = await this.keycloak.loadUserProfile();
-    }
+  public ngOnInit() {
+    this.session.getUser().subscribe((user) => {
+      if (user != null) {
+        this.isLoggedIn = true;
+        this.user = user;
+      }
+    });
   }
 
   public logout() {

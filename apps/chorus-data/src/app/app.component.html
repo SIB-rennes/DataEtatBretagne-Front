@@ -5,7 +5,7 @@
         <span>Chorus Data</span>
         <span class="spacer"></span>
 
-        <div *ngIf="isLoggedIn && user">
+        <div *ngIf="isLoggedIn && user !== null">
           <button mat-icon-button [matMenuTriggerFor]="infoUser" matTooltip="{{user.username}}">
             <mat-icon aria-hidden="false" aria-label="Information de l'utilisateur" fontIcon="person_outline">
             </mat-icon>
