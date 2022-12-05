@@ -20,7 +20,7 @@
       <input type="text" matInput formControlName="bop" [matAutocomplete]="bop"
         #autoCompleteBopInput="matAutocompleteTrigger" [errorStateMatcher]="errorMatcher">
       <mat-autocomplete #bop="matAutocomplete" [displayWith]="displayBop"
-        (optionSelected)="onSelectBop($event.option.value)">
+        (optionSelected)="onSelectBop($event.option.value)" (opened)="searchForm.controls['bop'].setValue('')">
         <mat-option *ngFor="let bop of filteredBop | async" [value]="bop">
           {{bop.Code}} - {{bop.Label}}
         </mat-option>

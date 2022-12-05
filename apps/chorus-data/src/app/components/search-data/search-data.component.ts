@@ -117,14 +117,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
    */
   public onSelectTheme(value: RefTheme): void {
     this.searchForm.controls['theme'].setValue(value);
-    this.filteredBop = of(
-      this.bop.filter((option) => {
-        if (option.RefTheme) {
-          return option.RefTheme.Id === value.Id;
-        }
-        return false;
-      })
-    );
+    this.searchForm.controls['bop'].setValue('');
   }
 
   public onSelectBop(value: BopModel): void {
