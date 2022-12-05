@@ -14,7 +14,7 @@ export class TableGroupComponent implements OnInit {
   folded = false;
 
   @HostBinding('class') get cssClasses() {
-    const containsGroup = this.group?.rows?.length ?? 0 === 0;
+    const containsGroup = this.group?.groups?.length ?? 0 > 0;
     return `table level-${this.groupLevel} ${containsGroup ? 'group' : ''} ${this.folded ? 'folded' : ''}`;
   }
 
