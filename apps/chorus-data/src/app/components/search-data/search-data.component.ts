@@ -3,7 +3,6 @@ import {
   FormControl,
   FormGroup,
   FormGroupDirective,
-  NgForm,
   ValidationErrors,
   Validators,
 } from '@angular/forms';
@@ -61,6 +60,11 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     read: MatAutocompleteTrigger,
   })
   public triggerBop: MatAutocompleteTrigger | undefined;
+
+  /**
+   * Indique si la recherche est en cours
+   */
+  public searchInProgess = false;
 
   constructor(
     private geoService: GeoHttpService,
@@ -145,8 +149,9 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
    * lance la recherche des lignes chorus
    */
   public searchChorus(): void {
-    if (this.searchForm.valid) {
+    if (this.searchForm.valid && !this.searchInProgess) {
       const formValue = this.searchForm.value;
+      this.searchInProgess = true;
       this.service
         .filterChorus(
           formValue.bop,
@@ -156,6 +161,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         )
         .subscribe((response) => {
           console.log(response);
+          this.searchInProgess = false;
         });
     } else {
       console.log(
