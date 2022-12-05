@@ -35,6 +35,21 @@ $group-width: 20rem;
   .table {
     // toutes les tables
     width: fit-content;
+    position: relative;
+
+    // ombre portée des tables
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: var(--scroll-length);
+      box-shadow: 0 .5rem .5rem 0 rgba(0, 0, 0, 0.05);
+      z-index: 2;
+      pointer-events: none;
+      border-radius: inherit;
+    }
 
     .cell {
       // Toutes les cellules (y compris header du container)
