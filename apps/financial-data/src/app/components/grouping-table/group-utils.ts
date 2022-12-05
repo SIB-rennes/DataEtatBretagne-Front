@@ -1,10 +1,19 @@
+/**
+ * Méta-données d'une colonne. Contient les informations pour l'affichage de la colonne.
+ */
 export type ColumnMetaDataDef = {
+  /** Nom technique de la colonne. */
   name: string;
+
+  /** Libellé de la colonne, affiché dans le tableau. */
   label: string;
   // taille de colonne ?
   // alignement (gauche, droite) ?
 };
 
+/**
+ * Méta-données pour l'ensemble des colonnes.
+ */
 export class ColumnsMetaData {
   private metaDataMap = new Map<string, ColumnMetaDataDef>();
 
@@ -25,17 +34,30 @@ export class ColumnsMetaData {
 
 export type ColumnSizes = number[];
 
+/**
+ * Ligne de donées.
+ */
 export type RowData = Record<string, any>;
 
+/**
+ * Données du tableau (ensemble de lignes).
+ */
 export type TableData = RowData[];
 
 export type GroupFnReducerContext = {
-  row: any[];
-  data: RowData[];
+  row: RowData;
+  data: TableData;
 }
 
 export type GroupingColumn = {
   columnName: string;
+
+  /**
+   * Fonction d'aggrégation permettant de calculer la valeur à afficher en en-tête de colonne d'un groupe.
+   * @param currentValue
+   * @param context
+   * @param accumulator
+   */
   aggregateReducer?: <T>(currentValue: any, context: GroupFnReducerContext, accumulator?: T) => T;
 }
 
@@ -76,12 +98,22 @@ export class Group {
   }
 }
 
+/**
+ * Groupe racine.
+ */
 export class RootGroup extends Group {
   constructor() {
     super();
   }
 }
 
+/**
+ * Fonction de regroupement des données.
+ *
+ * @param table
+ * @param groupings
+ * @param columnsMetaData
+ */
 export const groupByColumns = (table: TableData, groupings: GroupingColumn[], columnsMetaData: ColumnsMetaData): RootGroup => {
   const root = new RootGroup();
   for (const row of table) {
