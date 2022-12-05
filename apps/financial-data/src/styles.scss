@@ -12,4 +12,13 @@
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 
 
-html, body { margin: 0 }
+html, body {
+  margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content-outlet + * {
+  flex: 1;
+}

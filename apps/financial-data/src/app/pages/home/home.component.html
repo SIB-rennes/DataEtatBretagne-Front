@@ -1,7 +1,15 @@
-<mat-card>
-  <mat-card-title> Rechercher des données financières</mat-card-title>
+<mat-card class="mat-card">
+  <mat-card-header>
+    <mat-card-title> Rechercher des données financières</mat-card-title>
+  </mat-card-header>
 
-  <mat-card-content>
+  <mat-card-content class="content-column">
     <financial-search-data></financial-search-data>
+    <financial-grouping-table
+      class="main-content"
+      [tableData]="tableData"
+      [columnsMetaData]="columnsMetaData"
+      [groupingColumns]="groupingColumns"
+    ></financial-grouping-table>
   </mat-card-content>
 </mat-card>
