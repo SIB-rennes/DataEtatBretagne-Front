@@ -1,0 +1,9 @@
+<div class="table group level-{{groupLevel}}">
+  <financial-grouping-table-header></financial-grouping-table-header>
+
+  <financial-table-body
+    *ngIf="rootGroup"
+    [group]="rootGroup"
+    [groupLevel]="groupLevel"
+  ></financial-table-body>
+</div>

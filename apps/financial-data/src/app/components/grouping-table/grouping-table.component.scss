@@ -1,0 +1,296 @@
+$group-width: 20rem;
+
+.clickable {
+  cursor: pointer;
+}
+
+.arrow-down {
+  width: 1em;
+  height: 1em;
+  background: currentColor;
+  clip-path: polygon(12.5% 12.5%, 50% 87.5%, 87.55% 12.5%);
+}
+
+.arrow-right {
+  width: 1em;
+  height: 1em;
+  background: currentColor;
+  clip-path: polygon(12.5% 12.5%, 12.5% 87.5%, 87.5% 50%);
+}
+
+.cell {
+  width: 15rem;
+}
+
+.container {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: auto;
+  --level-padding: 0rem;
+  --scroll-length: 0rem;
+  position: relative;
+  border: 1px solid gray;
+
+  .table {
+    // toutes les tables
+    width: fit-content;
+
+    .cell {
+      // Toutes les cellules (y compris header du container)
+      flex: 1;
+      word-wrap: break-word;
+      padding: .25rem .5rem;
+      min-width: 0;
+
+      // centrage vertical
+      display: grid;
+      align-items: center;
+
+      &:last-child {
+        // dernière cellule de header.
+        border-right: none !important;
+      }
+
+      &.group-cell {
+        min-width: calc($group-width + 1rem + var(--level-padding) + var(--level-borders) - 2px);
+        display: flex;
+        gap: .5rem;
+        flex-grow: 0;
+        position: relative;
+        left: var(--scroll-length);
+        z-index: 1;
+      }
+    }
+
+    >.header {
+      display: flex;
+
+      >.cell {
+        background-color: deepskyblue;
+        border: 1px solid transparent;
+        border-top-color: gray;
+        border-bottom-color: gray;
+
+        &:not(:first-child) {
+          border-left-color: transparent;
+        }
+
+        &:first-child {
+          // 1ère cellule de header.
+          border-top-left-radius: .25rem;
+          border-left-color: gray;
+        }
+
+        &:not(:last-child):not(:first-child) {
+          border-right-color: lightblue;
+        }
+      }
+    }
+
+    &.group>.header {
+      // Header de groupe de tables
+
+      >.cell {
+        background-color: dodgerblue;
+
+        &:not(:last-child):not(:first-child) {
+          border-right: 1px solid darkblue;
+        }
+      }
+    }
+
+    &.folded {
+      >.header>.cell:first-child {
+        border-bottom-left-radius: .25rem;
+      }
+
+      >.body {
+        display: none;
+      }
+    }
+
+    &+.table {
+      // espacement entre 2 tables qui se suivent
+      margin-top: 1rem;
+    }
+
+    >.body {
+      border-bottom-left-radius: 0.25rem;
+      border-right: none;
+      display: flex;
+      flex-direction: column;
+
+      > * >.row {
+        display: flex;
+
+        >.cell {
+          background-color: lightblue;
+          border: 1px solid transparent;
+
+          &:first-child {
+            // 1ère cellule de toutes les lignes
+            border-left: 1px solid gray;
+          }
+
+          &:not(:last-child):not(:first-child) {
+            border-right: 1px solid white;
+          }
+        }
+
+        &:last-child>.cell {
+          // cellules de la 1ère ligne
+          border-bottom: 1px solid gray;
+
+          &:first-child {
+            // 1ère cellule de la 1ère ligne
+            border-bottom-left-radius: 0.25rem;
+          }
+        }
+
+        &:not(:last-child)>.cell {
+          // cellules de toutes les lignes sauf de la dernière ligne
+          border-bottom: 1px solid white;
+        }
+      }
+
+      &.groups {
+        position: relative;
+        border: 1px solid gray;
+        border-right: none;
+        border-top: none;
+        padding: 1rem 0 1rem 1rem;
+
+        &::before {
+          // Element pour cacher les lignes en arrière-plan lors du scroll horizontal.
+          content: "";
+          position: absolute;
+          top: 0;
+          left: calc(var(--scroll-length) - 1px);
+          height: 100%;
+          width: 2rem;
+          background-color: inherit;
+          border: inherit;
+          border-bottom-left-radius: inherit;
+          z-index: 1;
+        }
+      }
+    }
+
+  }
+
+  >.table.group {
+    // premier niveau de table
+    height: fit-content;
+    min-height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    >.body::before {
+      border: none;
+    }
+
+    >.header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+
+      >.cell {
+        background-color: #ccc;
+        border-top: none;
+
+        &:not(:first-child) {
+          position: sticky;
+          top: 0;
+        }
+
+        &:first-child {
+          // 1ère cellule de header.
+          border-top-left-radius: 0;
+          border-left-color: transparent;
+          border-right: none;
+        }
+      }
+    }
+
+    >.body {
+      flex-grow: 1;
+      border: none;
+      border-radius: 0;
+    }
+
+    &::after {
+      // Barre de séparation entre les groupes et les données.
+      content: "";
+      position: absolute;
+      left: calc(var(--scroll-length) + $group-width + var(--level-padding) + 2rem + 1px);
+      top: 0;
+      height: 100%;
+      width: 2px;
+      background-color: black;
+      z-index: 2;
+    }
+  }
+
+}
+
+/*
+  Les "niveaux" (classes level-<n>) sont attribués selon le niveau de regroupement,
+  le groupe le plus profond étant au niveau 0, son parent au niveau 1, son
+  grand-parent au niveau 2, etc.
+
+  La numérotation est inversée, on n'a pas level-0 à la racine de la page.
+  Le niveau à la racine de la page dépendra du nombre de colonnes utilisées pour
+  les groupes.
+  Si l'on groupe selon 3 colonnes, on aura la hierarchie suivante:
+   - level-2
+     - level-1
+       - level-0
+*/
+.container .table {
+  &.level-4 {
+    --level-padding: 4rem;
+    --level-borders: 4px;
+
+    >.body.groups {
+      background-color: #bbb;
+    }
+  }
+
+  &.level-3 {
+    --level-padding: 3rem;
+    --level-borders: 3px;
+
+    >.body.groups {
+      background-color: #cbcbcb;
+    }
+  }
+
+  &.level-2 {
+    --level-padding: 2rem;
+    --level-borders: 2px;
+
+    >.body.groups {
+      background-color: #ccc;
+    }
+  }
+
+  &.level-1 {
+    --level-padding: 1rem;
+    --level-borders: 1px;
+
+    >.body.groups {
+      background-color: gainsboro;
+    }
+  }
+
+  &.level-0 {
+    --level-padding: 0rem;
+    --level-borders: 0px;
+
+    >.body.groups {
+      background-color: #eee;
+    }
+  }
+}
