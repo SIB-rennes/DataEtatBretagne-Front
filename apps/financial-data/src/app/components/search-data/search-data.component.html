@@ -1,0 +1,63 @@
+<form [formGroup]="searchForm" autocomplete="off">
+  <div class="box">
+    <mat-form-field class="field-30-width" appearance="fill">
+      <mat-label>Theme</mat-label>
+      <input type="text" matInput formControlName="theme" [matAutocomplete]="theme"
+        #autoCompleteThemeInput="matAutocompleteTrigger" [errorStateMatcher]="errorMatcher">
+      <mat-autocomplete #theme="matAutocomplete" [displayWith]="displayThemeBop"
+        (optionSelected)="onSelectTheme($event.option.value)">
+        <mat-option *ngFor="let theme of filteredTheme | async" [value]="theme">
+          {{theme.Label}}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-hint>Commencer à renseigner un theme</mat-hint>
+      <mat-error *ngIf="errorsBop">Renseigner un Thème ou un Programme</mat-error>
+
+    </mat-form-field>
+
+    <mat-form-field class="field-50-width" appearance="fill">
+      <mat-label>Programme</mat-label>
+      <input type="text" matInput formControlName="bop" [matAutocomplete]="bop"
+        #autoCompleteBopInput="matAutocompleteTrigger" [errorStateMatcher]="errorMatcher">
+      <mat-autocomplete #bop="matAutocomplete" [displayWith]="displayThemeBop"
+        (optionSelected)="onSelectBop($event.option.value)" (opened)="searchForm.controls['bop'].setValue('')">
+        <mat-option *ngFor="let bop of filteredBop | async" [value]="bop">
+          {{bop.Code}} - {{bop.Label}}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-hint>Commencer à renseigner le code programme ou le nom</mat-hint>
+      <mat-error *ngIf="errorsBop">Renseigner un Thème ou un Programme</mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="box">
+    <mat-form-field class="field-10-width" appearance="fill">
+      <mat-label>Année</mat-label>
+      <!-- <input matInput formControlName="year" placeholder=""> -->
+      <mat-select formControlName="year">
+        <mat-option *ngFor="let year of generateArrayOfYears()" [value]="year">
+          {{year}}
+        </mat-option>
+      </mat-select>
+      <mat-icon matSuffix>calendar_month</mat-icon>
+      <mat-hint>Sélectionner l'année de l'engagement</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field class="field-30-width" appearance="fill">
+      <mat-label>Département</mat-label>
+      <input type="text" matInput formControlName="departement" [matAutocomplete]="dpt" required>
+      <mat-icon matSuffix>map</mat-icon>
+      <mat-autocomplete #dpt="matAutocomplete" [displayWith]="displayDepartement">
+        <mat-option *ngFor="let departement of filterDepartement | async" [value]="departement">
+          {{departement.code}} - {{departement.nom}}
+        </mat-option>
+      </mat-autocomplete>
+      <mat-hint>Commencer à renseigner le nom ou le numéro de département</mat-hint>
+      <mat-error *ngIf="departementControls?.invalid">Le département est obligatoire</mat-error>
+    </mat-form-field>
+
+    <button mat-fab color="primary" (click)="doSearch()">
+      <mat-icon fontIcon="search"></mat-icon>
+    </button>
+  </div>
+</form>

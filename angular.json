@@ -2,36 +2,39 @@
   "newProjectRoot": "apps",
   "version": 1,
   "projects": {
-    "chorus-data": {
+    "financial-data": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "apps/chorus-data",
-      "sourceRoot": "apps/chorus-data/src",
+      "root": "apps/financial-data",
+      "sourceRoot": "apps/financial-data/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/chorus-data",
-            "index": "apps/chorus-data/src/index.html",
-            "main": "apps/chorus-data/src/main.ts",
-            "polyfills": "apps/chorus-data/src/polyfills.ts",
-            "tsConfig": "apps/chorus-data/tsconfig.app.json",
+            "outputPath": "dist/financial-data",
+            "index": "apps/financial-data/src/index.html",
+            "main": "apps/financial-data/src/main.ts",
+            "polyfills": "apps/financial-data/src/polyfills.ts",
+            "tsConfig": "apps/financial-data/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "apps/chorus-data/src/favicon.ico",
-              "apps/chorus-data/src/assets"
+              "apps/financial-data/src/favicon.ico",
+              "apps/financial-data/src/assets"
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "apps/chorus-data/src/styles.scss"
+              "apps/financial-data/src/styles.scss"
             ],
             "scripts": [],
-            "allowedCommonJsDependencies": ["js-sha256","base64-js"]
+            "allowedCommonJsDependencies": [
+              "js-sha256",
+              "base64-js"
+            ]
           },
           "configurations": {
             "production": {
@@ -49,8 +52,8 @@
               ],
               "fileReplacements": [
                 {
-                  "replace": "apps/chorus-data/src/environments/environment.ts",
-                  "with": "apps/chorus-data/src/environments/environment.prod.ts"
+                  "replace": "apps/financial-data/src/environments/environment.ts",
+                  "with": "apps/financial-data/src/environments/environment.prod.ts"
                 }
               ],
               "outputHashing": "all"
@@ -70,10 +73,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "chorus-data:build:production"
+              "browserTarget": "financial-data:build:production"
             },
             "development": {
-              "browserTarget": "chorus-data:build:development"
+              "browserTarget": "financial-data:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -81,24 +84,24 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "chorus-data:build"
+            "browserTarget": "financial-data:build"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "apps/chorus-data/src/test.ts",
-            "polyfills": "apps/chorus-data/src/polyfills.ts",
-            "tsConfig": "apps/chorus-data/tsconfig.spec.json",
-            "karmaConfig": "apps/chorus-data/karma.conf.js",
+            "main": "apps/financial-data/src/test.ts",
+            "polyfills": "apps/financial-data/src/polyfills.ts",
+            "tsConfig": "apps/financial-data/tsconfig.spec.json",
+            "karmaConfig": "apps/financial-data/karma.conf.js",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "apps/chorus-data/src/favicon.ico",
-              "apps/chorus-data/src/assets"
+              "apps/financial-data/src/favicon.ico",
+              "apps/financial-data/src/assets"
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "apps/chorus-data/src/styles.scss"
+              "apps/financial-data/src/styles.scss"
             ],
             "scripts": []
           }
@@ -107,8 +110,8 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "apps/chorus-data/**/*.ts",
-              "apps/chorus-data/**/*.html"
+              "apps/financial-data/**/*.ts",
+              "apps/financial-data/**/*.html"
             ]
           }
         }
