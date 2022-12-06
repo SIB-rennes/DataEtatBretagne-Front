@@ -1,0 +1,60 @@
+stages:
+  - lint
+  - build-angular
+  - 🔨 docker-build
+  - 🐣 deploy
+
+.build-docker:
+  image: docker:stable-dind
+  stage: 🔨 docker-build
+  variables:
+    IMAGE: ""
+    DOCKERFILE: ""
+  script:
+    - if [[ $VERSION_IMAGE == ""]]; then  echo "VERSION NOT SET"; VERSION_IMAGE=${CI_COMMIT_REF_NAME}-snapshot; fi
+    - echo ${VERSION_IMAGE}
+    - echo $IMAGE
+    - docker build -f ${DOCKERFILE} -t ${IMAGE} .
+    - echo ${REGISTRY_DOCKER_PWD} | docker login ${REGISTRY_DOCKER} -u ${REGISTRY_DOCKER_USER} --password-stdin
+    - docker tag ${IMAGE} ${IMAGE}:${VERSION_IMAGE}
+    - echo "push ${IMAGE}:${VERSION_IMAGE}" && docker push ${IMAGE}:${VERSION_IMAGE}
+
+build angular app:
+  image: node:16
+  stage: build-angular
+  script:
+    - npm ci --cache ${CI_PROJECT_DIR}/.npm --prefer-offline --quiet --force
+    - npm run lint
+    - npm run build
+  cache:
+    key: ${CI_PROJECT_ID}-npm
+    paths:
+      - ${CI_PROJECT_DIR}/.npm/
+  artifacts:
+    expire_in: 15 mins
+    paths:
+      - dist/
+
+docker-image-snapshot:
+  extends: .build-docker
+  only:
+    - develop
+    - /^feature.*$/
+    - /^hotfix.*$/
+  variables:
+    IMAGE: "${REGISTRY_DOCKER}financial-data"
+    DOCKERFILE: "apps/financial-data/DockerFile"
+  before_script:
+    - BRANCH_NAME=$(echo $CI_COMMIT_REF_NAME | sed "s/\//\-/g")
+    - export VERSION_IMAGE="${BRANCH_NAME}-${CI_COMMIT_SHA:0:8}-snapshot"
+
+deploy-integ:
+  stage: 🐣 deploy
+  only:
+    - /^develop.*$/
+  when: manual
+  before_script:
+    - export BRANCH_NAME=$(echo $CI_COMMIT_REF_NAME | sed "s/\//\-/g")
+  script:
+    - ssh ${USER_INTEG}@${SERVER_INTEG} "docker network create -d overlay --attachable app_network || true"
+    - ssh ${USER_INTEG}@${SERVER_INTEG} "export BRANCH=${BRANCH_NAME};export CI_COMMIT=${CI_COMMIT_SHA:0:8};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file ~/stack-nocode/compose/integ/financial-data.yml '"${STACK_NAME}"
