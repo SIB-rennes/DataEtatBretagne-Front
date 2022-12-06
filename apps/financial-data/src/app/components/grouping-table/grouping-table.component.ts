@@ -15,7 +15,6 @@ import { GroupingTableContextService } from "./grouping-table-context.service";
 @Component({
   selector: 'financial-grouping-table',
   templateUrl: './grouping-table.component.html',
-  styleUrls: ['./grouping-table.component.scss'],
   encapsulation: ViewEncapsulation.None,
   providers: [GroupingTableContextService],
   host: {
