@@ -10,10 +10,13 @@
         <div><strong>{{group.column?.label}}</strong></div>
         <div><em>{{group.columnValue}}</em></div>
       </div>
+      <div class="group-size">
+        {{group | financialGroupAggregate: group.column}}
+      </div>
     </div>
 
     <div *ngSwitchDefault class="cell col-{{i}}">
-      ---
+      {{group | financialGroupAggregate: col}}
     </div>
   </ng-container>
 </ng-container>

@@ -6,6 +6,7 @@ import { TableGroupComponent } from "./table-group.component";
 import { TableGroupHeaderComponent } from "./table-group-header.component";
 import { TableBodyComponent } from "./table-body.component";
 import { TableRowsComponent } from "./table-rows.component";
+import { FinancialGroupAggregatePipe } from "./group-aggregate.pipe";
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import { TableRowsComponent } from "./table-rows.component";
     TableBodyComponent,
     TableGroupComponent,
     TableGroupHeaderComponent,
-    TableRowsComponent
+    TableRowsComponent,
+    FinancialGroupAggregatePipe
   ],
   exports: [
     GroupingTableComponent

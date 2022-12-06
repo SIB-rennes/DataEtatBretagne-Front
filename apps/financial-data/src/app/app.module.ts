@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { HttpClientModule } from '@angular/common/http';
@@ -13,6 +13,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './shared/material.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GroupingTableModule } from "./components/grouping-table/grouping-table.module";
+import { DatePipe, registerLocaleData } from "@angular/common";
+import localeFr from '@angular/common/locales/fr';
+
+registerLocaleData(localeFr);
 
 @NgModule({
   declarations: [
@@ -38,10 +42,17 @@ import { GroupingTableModule } from "./components/grouping-table/grouping-table.
       multi: true,
       deps: [SettingsHttpService, KeycloakService],
     },
+    DatePipe,
+    {
+      provide: LOCALE_ID,
+      useValue: 'fr-FR'
+    },
+
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+}
 
 export function app_Init(
   settingsHttpService: SettingsHttpService

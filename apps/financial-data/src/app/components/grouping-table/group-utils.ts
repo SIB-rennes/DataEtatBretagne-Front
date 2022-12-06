@@ -1,3 +1,10 @@
+export type AggregateReducerContext = {
+  row: RowData;
+  group: Group;
+}
+
+type AggregateReducer<T> = (currentValue: any, context: AggregateReducerContext, accumulator?: T) => T;
+
 /**
  * Méta-données d'une colonne. Contient les informations pour l'affichage de la colonne.
  */
@@ -16,9 +23,46 @@ export type ColumnMetaDataDef = {
    */
   renderFn?: (row: RowData, col: ColumnMetaDataDef) => string | undefined;
 
+  /**
+   * Fonction d'aggrégation permettant de calculer la valeur à afficher en en-tête de colonne d'un groupe.
+   * @param currentValue
+   * @param context
+   * @param accumulator
+   */
+  aggregateReducer?: AggregateReducer<any>;
+
+  /**
+   * Fonction de rendu permettant d'adapter la valeur calculée sur le header de groupe avant affichage.
+   * @param aggregateValue valeur agrégée
+   * @param row ligne de données
+   * @param col colonne
+   */
+  aggregateRenderFn?: (aggregateValue: any, group: Group, col: ColumnMetaDataDef) => string | undefined;
+
   // taille de colonne ?
   // alignement (gauche, droite) ?
 };
+
+export class AggregatorFns {
+  static sum(currentValue: any, context: AggregateReducerContext, accumulator?: number): number | undefined {
+    if (!currentValue) {
+      return accumulator;
+    }
+    return (accumulator || 0) + currentValue;
+  }
+
+  static average(currentValue: number | undefined, context: AggregateReducerContext, accumulator?: number): number {
+    let nbRows = context.group.rows?.length || 0;
+    if (nbRows <= 1) {
+      return currentValue || 0;
+    }
+    return ((accumulator || 0) * (nbRows - 1) + (currentValue || 0)) / nbRows;
+  }
+
+  static count(currentValue: any, context: AggregateReducerContext, accumulator?: number): number {
+    return (accumulator || 0) + 1;
+  }
+}
 
 /**
  * Méta-données pour l'ensemble des colonnes.
@@ -53,21 +97,8 @@ export type RowData = Record<string, any>;
  */
 export type TableData = RowData[];
 
-export type GroupFnReducerContext = {
-  row: RowData;
-  data: TableData;
-}
-
 export type GroupingColumn = {
   columnName: string;
-
-  /**
-   * Fonction d'aggrégation permettant de calculer la valeur à afficher en en-tête de colonne d'un groupe.
-   * @param currentValue
-   * @param context
-   * @param accumulator
-   */
-  aggregateReducer?: <T>(currentValue: any, context: GroupFnReducerContext, accumulator?: T) => T;
 }
 
 /**
@@ -75,16 +106,22 @@ export type GroupingColumn = {
  */
 export class Group {
   private groupsMap?: Map<any, Group>;
-  rows?: any[];
+  aggregates?: Record<string, any>;
+  rows?: RowData[];
 
   get groups() {
     if (!this.groupsMap) {
       return [];
     }
-    return [...this.groupsMap.values()]
+    return [...this.groupsMap.values()];
   }
 
-  constructor(public readonly column?: ColumnMetaDataDef, public readonly columnValue?: any) {
+  constructor(
+    public readonly column?: ColumnMetaDataDef,
+    public readonly columnValue?: any,
+    public readonly parent?: Group,
+    private columnsAggregateFns?: Record<string, AggregateReducer<any>>,
+  ) {
   }
 
   getOrCreateGroup(column: ColumnMetaDataDef, groupColumnValue: any): Group {
@@ -93,17 +130,33 @@ export class Group {
     }
     let group = this.groupsMap.get(groupColumnValue);
     if (!group) {
-      group = new Group(column, groupColumnValue);
+      group = new Group(column, groupColumnValue, this, this.columnsAggregateFns);
       this.groupsMap.set(groupColumnValue, group);
     }
     return group;
   }
 
-  pushValue(row: RowData) {
+  addRow(row: RowData) {
     if (!this.rows) {
       this.rows = [];
     }
     this.rows.push(row);
+    if (this.columnsAggregateFns) {
+      this.aggregateColumnValues(row);
+    }
+  }
+
+  aggregateColumnValues(row: RowData) {
+    if (!this.aggregates) {
+      this.aggregates = {};
+    }
+    // On met à jour les aggrégats pour chacune des colonnes.
+    for (const columnName in this.columnsAggregateFns) {
+      const aggregateFn = this.columnsAggregateFns[columnName];
+      this.aggregates[columnName] = aggregateFn(row[columnName], {row, group: this}, this.aggregates[columnName]);
+    }
+    // On les met à jour pour les groupes parents également.
+    this.parent?.aggregateColumnValues(row);
   }
 }
 
@@ -111,8 +164,8 @@ export class Group {
  * Groupe racine.
  */
 export class RootGroup extends Group {
-  constructor() {
-    super();
+  constructor(aggregateReducers: Record<string, AggregateReducer<any>>) {
+    super(undefined, undefined, undefined, aggregateReducers);
   }
 }
 
@@ -124,7 +177,20 @@ export class RootGroup extends Group {
  * @param columnsMetaData
  */
 export const groupByColumns = (table: TableData, groupings: GroupingColumn[], columnsMetaData: ColumnsMetaData): RootGroup => {
-  const root = new RootGroup();
+  // On construit l'ensemble des fonctions d'aggrégation.
+  const aggregateFns: Record<string, AggregateReducer<any>> = {};
+  // ... Cet ensemble reprend les fonctions d'aggrégation définies sur chacune des colonnes
+  for (const colMetaData of columnsMetaData.data) {
+    if (colMetaData.aggregateReducer) {
+      aggregateFns[colMetaData.name] = colMetaData.aggregateReducer;
+    }
+  }
+  // ... et pour les colonnes de groupe, on effectue un décompte des entrées.
+  for (const grouping of groupings) {
+    aggregateFns[grouping.columnName] = AggregatorFns.count;
+  }
+
+  const root = new RootGroup(aggregateFns);
   for (const row of table) {
     let currentGroup = root;
     // tant qu'on n'a pas trouvé le niveau le plus profond où ranger la ligne, on descend
@@ -133,7 +199,7 @@ export const groupByColumns = (table: TableData, groupings: GroupingColumn[], co
       const groupKey = column.renderFn ? column.renderFn(row, column) : row[column.name];
       currentGroup = currentGroup.getOrCreateGroup(column, groupKey);
     }
-    currentGroup.pushValue(row);
+    currentGroup.addRow(row);
   }
   return root;
 };
