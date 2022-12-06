@@ -1,0 +1,28 @@
+<mat-sidenav-container color="primary">
+  <mat-sidenav-content>
+    <div class="container">
+      <mat-toolbar color="primary">
+        <span>Données financières de l'état en Bretagne</span>
+        <span class="spacer"></span>
+
+        <div *ngIf="isLoggedIn && user !== null">
+          <button mat-icon-button [matMenuTriggerFor]="infoUser" matTooltip="{{user.username}}">
+            <mat-icon aria-hidden="false" aria-label="Information de l'utilisateur" fontIcon="person_outline">
+            </mat-icon>
+          </button>
+
+          <mat-menu #infoUser="matMenu">
+            <button mat-menu-item>{{user.firstName}} {{user.lastName}}</button>
+            <button mat-menu-item>{{user.email}}</button>
+          </mat-menu>
+
+          <button mat-icon-button (click)="logout()" matTooltip="Se déconnecter">
+            <mat-icon aria-hidden="false" aria-label="Se déconnecter" fontIcon="logout"></mat-icon>
+          </button>
+        </div>
+      </mat-toolbar>
+      <router-outlet></router-outlet>
+    </div>
+    <financial-footer></financial-footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

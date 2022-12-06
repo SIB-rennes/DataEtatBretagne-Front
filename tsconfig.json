@@ -24,8 +24,8 @@
       "dom"
     ],
     "paths": {
-      "@models/*": ["apps/chorus-data/src/app/models/*"],
-      "@services/*": ["apps/chorus-data/src/app/services/*"]
+      "@models/*": ["apps/financial-data/src/app/models/*"],
+      "@services/*": ["apps/financial-data/src/app/services/*"]
      }
   },
   "angularCompilerOptions": {

@@ -19,4 +19,4 @@
 
 # Liste des fronts
 
-* [Chorus data](./apps/chorus-data/README.md)
+* [Financial data](./apps/financial-data/README.md)

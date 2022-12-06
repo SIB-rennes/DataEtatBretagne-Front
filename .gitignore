@@ -40,4 +40,4 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-/apps/chorus-data/src/assets/settings.json
+/apps/financial-data/src/assets/settings.json

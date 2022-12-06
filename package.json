@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start:chorus": "ng serve --project=chorus-data",
+    "start:financial": "ng serve --project=financial-data",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
