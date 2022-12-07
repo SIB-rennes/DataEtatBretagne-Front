@@ -1,7 +1,26 @@
-<mat-card>
-  <mat-card-title> Rechercher des données financières</mat-card-title>
+<mat-card class="mat-card">
+  <mat-card-header>
+    <mat-card-title> Rechercher des données financières</mat-card-title>
+  </mat-card-header>
 
-  <mat-card-content>
-    <financial-search-data></financial-search-data>
+  <mat-card-content class="content-column">
+    <financial-search-data
+      (searchResults)="tableData = $event"
+      (searchInProgressChange)="searchInProgress = $event"
+    ></financial-search-data>
+
+    <div class="main-content overlay-container">
+      <div *ngIf="searchInProgress" class="overlay-panel centered-container">
+        <div class="dot-flashing centered-item"></div>
+      </div>
+
+      <financial-grouping-table
+        *ngIf="tableData"
+        class="h-100"
+        [tableData]="tableData"
+        [columnsMetaData]="columnsMetaData"
+        [groupingColumns]="groupingColumns"
+      ></financial-grouping-table>
+    </div>
   </mat-card-content>
 </mat-card>
