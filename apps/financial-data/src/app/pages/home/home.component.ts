@@ -1,5 +1,4 @@
 import { Component, inject } from '@angular/core';
-import tableData from './example_chorus.json';
 import { AggregatorFns, ColumnsMetaData, GroupingColumn, TableData } from "../../components/grouping-table/group-utils";
 import { DatePipe } from "@angular/common";
 
@@ -14,13 +13,15 @@ export class HomeComponent {
 
   columnsMetaData: ColumnsMetaData;
 
-  tableData: TableData = tableData;
+  tableData?: TableData;
 
   groupingColumns: GroupingColumn[] = [
     {columnName: 'Theme'},
     {columnName: 'nom_programme'},
     {columnName: 'label ref programmation'},
   ];
+
+  searchInProgress = false;
 
   constructor() {
     const moneyFormat = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' });

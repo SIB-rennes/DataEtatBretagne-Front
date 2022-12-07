@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { ActivatedRoute } from '@angular/router';
-import { switchMap, of, startWith, Observable, map } from 'rxjs';
+import { switchMap, of, startWith, Observable, map, finalize, BehaviorSubject } from 'rxjs';
 import { BopModel } from '@models//bop.models';
 import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
 import { GeoDepartementModel } from '@models//geo.models';
@@ -18,6 +18,7 @@ import {
   CrossFieldErrorMatcher,
   financialDataFormValidators,
 } from '../../validators/financial-data-form.validators';
+import { FinancialDataModel } from "@models/financial-data.models";
 
 @Component({
   selector: 'financial-search-data',
@@ -55,13 +56,24 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   /**
    * Indique si la recherche est en cours
    */
-  public searchInProgess = false;
+  private searchInProgress = new BehaviorSubject(false);
+
+  /**
+   * Resultats de la recherche.
+   */
+  @Output() searchResults = new EventEmitter<FinancialDataModel[]>();
+
+  @Output() searchInProgressChange = new EventEmitter<boolean>();
 
   constructor(
     private geoService: GeoHttpService,
     private route: ActivatedRoute,
     private service: FinancialDataHttpService
-  ) {}
+  ) {
+    this.searchInProgress.subscribe(value => {
+      this.searchInProgressChange.next(value);
+    })
+  }
 
   ngAfterViewInit() {
     if (this.triggerTheme) {
@@ -153,9 +165,9 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
    * lance la recherche des lignes d'engagement financière
    */
   public doSearch(): void {
-    if (this.searchForm.valid && !this.searchInProgess) {
+    if (this.searchForm.valid && !this.searchInProgress.value) {
       const formValue = this.searchForm.value;
-      this.searchInProgess = true;
+      this.searchInProgress.next(true);
       this.service
         .search(
           formValue.bop,
@@ -163,9 +175,13 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
           formValue.year,
           formValue.departement
         )
+        .pipe(
+          finalize(() => {
+            this.searchInProgress.next(false);
+          })
+        )
         .subscribe((response) => {
-          console.log(response);
-          this.searchInProgess = false;
+          this.searchResults.next(response);
         });
     } else {
       console.log(
