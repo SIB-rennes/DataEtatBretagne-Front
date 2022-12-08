@@ -42,11 +42,10 @@ docker-image-snapshot:
     - /^feature.*$/
     - /^hotfix.*$/
   variables:
-    IMAGE: "${REGISTRY_DOCKER}nocode/financial-data"
+    IMAGE: "${REGISTRY_DOCKER}nocode/financial-data/${CI_COMMIT_REF_NAME}"
     DOCKERFILE: "apps/financial-data/DockerFile"
   before_script:
-    - BRANCH_NAME=$(echo $CI_COMMIT_REF_NAME | sed "s/\//\-/g")
-    - export VERSION_IMAGE="${BRANCH_NAME}-${CI_COMMIT_SHA:0:8}-snapshot"
+    - export VERSION_IMAGE="${CI_COMMIT_SHA:0:8}-snapshot"
 
 deploy-integ:
   stage: 🐣 deploy
