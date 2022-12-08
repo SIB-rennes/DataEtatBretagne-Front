@@ -57,4 +57,4 @@ deploy-integ:
     - export BRANCH_NAME=$(echo $CI_COMMIT_REF_NAME | sed "s/\//\-/g")
   script:
     - ssh ${USER_INTEG}@${SERVER_INTEG} "docker network create -d overlay --attachable app_network || true"
-    - ssh ${USER_INTEG}@${SERVER_INTEG} "export BRANCH=${BRANCH_NAME};export CI_COMMIT=${CI_COMMIT_SHA:0:8};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file ~/stack-nocode/compose/integ/financial-data.yml '"${STACK_NAME}"
+    - ssh ${USER_INTEG}@${SERVER_INTEG} "export BRANCH=${BRANCH_NAME};export CI_COMMIT=${CI_COMMIT_SHA:0:8};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file ~/stack-nocode/compose/integ/front.yml '"${STACK_NAME}"
