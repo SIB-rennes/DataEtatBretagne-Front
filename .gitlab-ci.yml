@@ -42,7 +42,7 @@ docker-image-snapshot:
     - /^feature.*$/
     - /^hotfix.*$/
   variables:
-    IMAGE: "${REGISTRY_DOCKER}financial-data"
+    IMAGE: "${REGISTRY_DOCKER}nocode/financial-data"
     DOCKERFILE: "apps/financial-data/DockerFile"
   before_script:
     - BRANCH_NAME=$(echo $CI_COMMIT_REF_NAME | sed "s/\//\-/g")

@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start:financial": "ng serve --project=financial-data",
+    "start:financial-dev": "ng serve --project=financial-data --proxy-config proxy.conf.json",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

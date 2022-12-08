@@ -13,7 +13,7 @@ export class FinancialDataResolver
   resolve(): Observable<FinancialDataResolverModel> {
     return forkJoin({
       themes: this.service.getTheme(),
-      bop: this.service.getBop()
+      bop: this.service.getBop(),
     });
   }
 }
