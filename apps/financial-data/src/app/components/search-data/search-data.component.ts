@@ -1,4 +1,11 @@
-import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -7,7 +14,15 @@ import {
 } from '@angular/forms';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { ActivatedRoute } from '@angular/router';
-import { switchMap, of, startWith, Observable, map, finalize, BehaviorSubject } from 'rxjs';
+import {
+  switchMap,
+  of,
+  startWith,
+  Observable,
+  map,
+  finalize,
+  BehaviorSubject,
+} from 'rxjs';
 import { BopModel } from '@models//bop.models';
 import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
 import { GeoDepartementModel } from '@models//geo.models';
@@ -18,7 +33,7 @@ import {
   CrossFieldErrorMatcher,
   financialDataFormValidators,
 } from '../../validators/financial-data-form.validators';
-import { FinancialDataModel } from "@models/financial-data.models";
+import { FinancialDataModel } from '@models/financial-data.models';
 
 @Component({
   selector: 'financial-search-data',
@@ -70,9 +85,9 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private service: FinancialDataHttpService
   ) {
-    this.searchInProgress.subscribe(value => {
+    this.searchInProgress.subscribe((value) => {
       this.searchInProgressChange.next(value);
-    })
+    });
   }
 
   ngAfterViewInit() {
@@ -122,7 +137,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
    */
   public onSelectTheme(value: RefTheme): void {
     this.searchForm.controls['theme'].setValue(value);
-    this.searchForm.controls['bop'].setValue('');
+    this.searchForm.controls['bop'].setValue(null);
   }
 
   /**
@@ -183,12 +198,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         .subscribe((response) => {
           this.searchResults.next(response);
         });
-    } else {
-      console.log(
-        this.searchForm.errors != null
-          ? this.searchForm.errors['bopRequired']
-          : 'oups'
-      );
     }
   }
 

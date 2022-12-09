@@ -58,7 +58,8 @@ export class FinancialDataHttpService {
       return of();
 
     const apiFinancial = this.settings.apiFinancial;
-    let params = 'sort=Theme,code_programme&limit=2000&where=(Montant,gt,0)';
+    let params =
+      'sort=Montant,DateModificationEj&limit=2000&where=(Montant,gt,0)';
     if (bop) {
       params += `~and(code_programme,eq,${bop.Code})`;
     } else if (theme) {
@@ -66,7 +67,11 @@ export class FinancialDataHttpService {
     }
 
     if (departement) {
-      params += `~and(code_commune,like,${departement.code}%)`;
+      params += `~and(code_departement,eq,${departement.code})`;
+    }
+
+    if (year) {
+      params += `~and(DateModificationEj,like,${year})`;
     }
 
     return this.http
