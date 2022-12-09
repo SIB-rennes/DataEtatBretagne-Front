@@ -4,23 +4,25 @@
   </mat-card-header>
 
   <mat-card-content class="content-column">
-    <financial-search-data
-      (searchResults)="tableData = $event"
-      (searchInProgressChange)="searchInProgress = $event"
-    ></financial-search-data>
+    <financial-search-data (searchResults)="tableData = $event" (searchInProgressChange)="searchInProgress = $event">
+    </financial-search-data>
 
     <div class="main-content overlay-container">
       <div *ngIf="searchInProgress" class="overlay-panel centered-container">
         <div class="dot-flashing centered-item"></div>
       </div>
 
-      <financial-grouping-table
-        *ngIf="tableData"
-        class="h-100"
-        [tableData]="tableData"
-        [columnsMetaData]="columnsMetaData"
-        [groupingColumns]="groupingColumns"
-      ></financial-grouping-table>
+      <ng-container *ngIf="tableData && tableData.length === 0 else groupingTable">
+        <div class="no-content">Aucune donnée</div>
+      </ng-container>
+
+
     </div>
   </mat-card-content>
 </mat-card>
+
+
+<ng-template #groupingTable>
+  <financial-grouping-table *ngIf="tableData" class="h-100" [tableData]="tableData" [columnsMetaData]="columnsMetaData"
+    [groupingColumns]="groupingColumns"></financial-grouping-table>
+</ng-template>
