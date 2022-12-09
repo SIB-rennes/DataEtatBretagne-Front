@@ -24,7 +24,12 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "apps/financial-data/src/favicon.ico",
-              "apps/financial-data/src/assets"
+              "apps/financial-data/src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@gouvfr/dsfr/dist",
+                "output": "/@gouvfr"
+              }
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
