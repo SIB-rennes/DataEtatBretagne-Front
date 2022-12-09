@@ -36,6 +36,7 @@ export class HomeComponent {
       dateStr ? this.datePipe.transform(dateStr, 'shortDate') : '';
 
     this.columnsMetaData = new ColumnsMetaData([
+      { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
       { name: 'Theme', label: 'Thème' },
       { name: 'nom_programme', label: 'Programme' },
       {
@@ -43,7 +44,6 @@ export class HomeComponent {
         label: 'Commune',
         renderFn: (row, _col) => row['commune']?.['LabelCommune'],
       },
-      { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
       { name: 'code_siret', label: 'Siret' },
       {
         name: 'type_etablissement',
@@ -53,7 +53,7 @@ export class HomeComponent {
       },
       {
         name: 'DateModificationEj',
-        label: 'Date modification EJ',
+        label: "Date d'actualisation",
         renderFn: (row, col) =>
           row[col.name] ? dateFormat(row[col.name]) : row[col.name],
       },
