@@ -15,7 +15,7 @@
 
     </mat-form-field>
 
-    <mat-form-field class="field-50-width" appearance="fill">
+    <mat-form-field class="field-30-width" appearance="fill">
       <mat-label>Programme</mat-label>
       <input type="text" matInput formControlName="bop" [matAutocomplete]="bop"
         #autoCompleteBopInput="matAutocompleteTrigger" [errorStateMatcher]="errorMatcher">
@@ -28,12 +28,9 @@
       <mat-hint>Commencer à renseigner le code programme ou le nom</mat-hint>
       <mat-error *ngIf="errorsBop">Renseigner un Thème ou un Programme</mat-error>
     </mat-form-field>
-  </div>
 
-  <div class="box">
     <mat-form-field class="field-10-width" appearance="fill">
       <mat-label>Année</mat-label>
-      <!-- <input matInput formControlName="year" placeholder=""> -->
       <mat-select formControlName="year">
         <mat-option *ngFor="let year of generateArrayOfYears()" [value]="year">
           {{year}}
@@ -43,7 +40,7 @@
       <mat-hint>Sélectionner l'année de l'engagement</mat-hint>
     </mat-form-field>
 
-    <mat-form-field class="field-30-width" appearance="fill">
+    <mat-form-field class="field-15-width" appearance="fill">
       <mat-label>Département</mat-label>
       <input type="text" matInput formControlName="departement" [matAutocomplete]="dpt" required>
       <mat-icon matSuffix>map</mat-icon>
