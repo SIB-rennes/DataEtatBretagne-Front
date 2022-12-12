@@ -26,6 +26,10 @@ html, body {
   height: 100%;
 }
 
+*, :after, :before {
+  box-sizing: content-box;
+}
+
 /**
  * Overlay : container (à placer sur le parent) et panel (élément englobant le contenu à placer en overlay).
  */

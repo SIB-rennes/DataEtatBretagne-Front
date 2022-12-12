@@ -1,18 +1,12 @@
-footer {
+a[href]:active, a[href]:hover {
+  text-decoration: none;
+  background-image: none;
+}
+.fr-footer {
+  box-shadow: none;
 
-  .footer-list {
-    align-items: center;
-    display: flex;
-    flex-flow: row wrap;
-    padding: 8px;
-    .footer-logo-fr {
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
 
-      img {
-        width: 300px;
-      }
-    }
+  .fr-footer__logo {
+    height: 4.5rem;
   }
 }

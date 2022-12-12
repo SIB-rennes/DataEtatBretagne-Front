@@ -12,9 +12,10 @@ import { FooterComponent } from './components/footer/footer.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './shared/material.module';
 import { ReactiveFormsModule } from '@angular/forms';
-import { GroupingTableModule } from "./components/grouping-table/grouping-table.module";
-import { DatePipe, registerLocaleData } from "@angular/common";
+import { GroupingTableModule } from './components/grouping-table/grouping-table.module';
+import { DatePipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
+import { HeaderComponent } from './components/header/header.component';
 
 registerLocaleData(localeFr);
 
@@ -24,6 +25,7 @@ registerLocaleData(localeFr);
     HomeComponent,
     SearchDataComponent,
     FooterComponent,
+    HeaderComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,14 +47,12 @@ registerLocaleData(localeFr);
     DatePipe,
     {
       provide: LOCALE_ID,
-      useValue: 'fr-FR'
+      useValue: 'fr-FR',
     },
-
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}
 
 export function app_Init(
   settingsHttpService: SettingsHttpService
