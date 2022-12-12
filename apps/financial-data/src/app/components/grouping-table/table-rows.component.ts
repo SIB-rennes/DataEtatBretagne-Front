@@ -1,5 +1,5 @@
 import { Component, inject, Input } from "@angular/core";
-import { Group } from "./group-utils";
+import { RowData } from "./group-utils";
 import { GroupingTableContextService } from "./grouping-table-context.service";
 
 @Component({
@@ -7,6 +7,6 @@ import { GroupingTableContextService } from "./grouping-table-context.service";
   templateUrl: './table-rows.component.html',
 })
 export class TableRowsComponent {
-  @Input() group!: Group;
+  @Input() rows!: RowData[];
   context = inject(GroupingTableContextService);
 }

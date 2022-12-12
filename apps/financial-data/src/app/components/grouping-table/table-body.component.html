@@ -9,7 +9,7 @@
 
   <ng-container *ngSwitchDefault>
     <financial-table-rows
-      [group]="group"
+      [rows]="group.rows || []"
     ></financial-table-rows>
   </ng-container>
 

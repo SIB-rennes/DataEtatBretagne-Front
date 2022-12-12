@@ -6,7 +6,7 @@ import { GroupingTableContextService } from "./grouping-table-context.service";
   selector: 'financial-table-body',
   templateUrl: './table-body.component.html',
   host: {
-    class: 'body'
+    class: 'table-body'
   },
 })
 export class TableBodyComponent {

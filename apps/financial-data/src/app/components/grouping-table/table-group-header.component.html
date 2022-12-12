@@ -2,20 +2,20 @@
   *ngFor="let col of context.displayedColumns; index as i; first as isFirst"
 >
   <ng-container [ngSwitch]="isFirst">
-    <div *ngSwitchCase="true" class="cell group-cell">
+    <div *ngSwitchCase="true" class="grouping-table-cell">
       <div>
         <div class="{{folded ? 'arrow-right' : 'arrow-down'}}"></div>
       </div>
       <div>
-        <div><strong>{{group.column?.label}}</strong></div>
-        <div><em>{{group.columnValue}}</em></div>
+        <div>{{group.column?.label}}</div>
+        <div><strong>{{group.columnValue}}</strong></div>
       </div>
       <div class="group-size">
         {{group | financialGroupAggregate: group.column}}
       </div>
     </div>
 
-    <div *ngSwitchDefault class="cell col-{{i}}">
+    <div *ngSwitchDefault class="grouping-table-cell col-{{i}}">
       {{group | financialGroupAggregate: col}}
     </div>
   </ng-container>
