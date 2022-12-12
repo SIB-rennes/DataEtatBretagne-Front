@@ -10,9 +10,7 @@
           {{theme.Label}}
         </mat-option>
       </mat-autocomplete>
-      <mat-hint>Commencer à renseigner un theme</mat-hint>
       <mat-error *ngIf="errorsBop">Renseigner un Thème ou un Programme</mat-error>
-
     </mat-form-field>
 
     <mat-form-field class="field-30-width" appearance="fill">
@@ -25,19 +23,7 @@
           {{bop.Code}} - {{bop.Label}}
         </mat-option>
       </mat-autocomplete>
-      <mat-hint>Commencer à renseigner le code programme ou le nom</mat-hint>
       <mat-error *ngIf="errorsBop">Renseigner un Thème ou un Programme</mat-error>
-    </mat-form-field>
-
-    <mat-form-field class="field-10-width" appearance="fill">
-      <mat-label>Année</mat-label>
-      <mat-select formControlName="year">
-        <mat-option *ngFor="let year of generateArrayOfYears()" [value]="year">
-          {{year}}
-        </mat-option>
-      </mat-select>
-      <mat-icon matSuffix>calendar_month</mat-icon>
-      <mat-hint>Sélectionner l'année de l'engagement</mat-hint>
     </mat-form-field>
 
     <mat-form-field class="field-15-width" appearance="fill">
@@ -49,8 +35,17 @@
           {{departement.code}} - {{departement.nom}}
         </mat-option>
       </mat-autocomplete>
-      <mat-hint>Commencer à renseigner le nom ou le numéro de département</mat-hint>
       <mat-error *ngIf="departementControls?.invalid">Le département est obligatoire</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="field-15-width" appearance="fill">
+      <mat-label>Année</mat-label>
+      <mat-select formControlName="year">
+        <mat-option *ngFor="let year of generateArrayOfYears()" [value]="year">
+          {{year}}
+        </mat-option>
+      </mat-select>
+      <mat-icon matSuffix>calendar_month</mat-icon>
     </mat-form-field>
 
     <button mat-fab color="primary" (click)="doSearch()">

@@ -10,4 +10,8 @@ a[href]:active, a[href]:hover {
   .fr-footer__logo {
     height: 3rem;
   }
+
+  .fr-footer__content {
+    flex-basis: 21%;
+  }
 }
