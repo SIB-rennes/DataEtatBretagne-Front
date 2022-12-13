@@ -30,6 +30,11 @@ html, body {
   box-sizing: content-box;
 }
 
+.fr-container {
+  max-width: 90%;
+}
+
+
 /**
  * Overlay : container (à placer sur le parent) et panel (élément englobant le contenu à placer en overlay).
  */
