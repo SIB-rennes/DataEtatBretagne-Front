@@ -58,6 +58,38 @@ export class FinancialDataHttpService {
       return of();
 
     const apiFinancial = this.settings.apiFinancial;
+
+    const params = this._buildparams(bop, theme, year, departement);
+    return this.http
+      .get<NocoDbResponse<FinancialDataModel>>(
+        `${apiFinancial}/DataChorus/Chorus-front?${params}`
+      )
+      .pipe(map((response) => response.list));
+  }
+
+  public getCsv(
+    bop: BopModel | null,
+    theme: RefTheme | null,
+    year: number | null,
+    departement: GeoDepartementModel | null
+  ): Observable<Blob> {
+    if (bop == null && theme == null && year == null && departement == null)
+      return of();
+
+    const apiFinancial = this.settings.apiFinancial;
+    const params = this._buildparams(bop, theme, year, departement);
+    return this.http.get(
+      `${apiFinancial}/DataChorus/Chorus-front/csv?${params}`,
+      { responseType: 'blob' }
+    );
+  }
+
+  private _buildparams(
+    bop: BopModel | null,
+    theme: RefTheme | null,
+    year: number | null,
+    departement: GeoDepartementModel | null
+  ): string {
     let params =
       'sort=Montant,DateModificationEj&limit=2000&where=(Montant,gt,0)';
     if (bop) {
@@ -73,11 +105,6 @@ export class FinancialDataHttpService {
     if (year) {
       params += `~and(DateModificationEj,like,${year})`;
     }
-
-    return this.http
-      .get<NocoDbResponse<FinancialDataModel>>(
-        `${apiFinancial}/DataChorus/Chorus-front?${params}`
-      )
-      .pipe(map((response) => response.list));
+    return params;
   }
 }

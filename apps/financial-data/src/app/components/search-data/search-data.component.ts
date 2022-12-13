@@ -34,6 +34,7 @@ import {
   financialDataFormValidators,
 } from '../../validators/financial-data-form.validators';
 import { FinancialDataModel } from '@models/financial-data.models';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'financial-search-data',
@@ -83,6 +84,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   constructor(
     private geoService: GeoHttpService,
     private route: ActivatedRoute,
+    private datePipe: DatePipe,
     private service: FinancialDataHttpService
   ) {
     this.searchInProgress.subscribe((value) => {
@@ -199,6 +201,49 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
           this.searchResults.next(response);
         });
     }
+  }
+
+  public downloadCsv(): void {
+    if (this.searchForm.valid && !this.searchInProgress.value) {
+      const formValue = this.searchForm.value;
+      this.searchInProgress.next(true);
+      this.service
+        .getCsv(
+          formValue.bop,
+          formValue.theme,
+          formValue.year,
+          formValue.departement
+        )
+        .subscribe((response: Blob) => {
+          console.log(response);
+          var url = URL.createObjectURL(response);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = this._filenameCsv();
+          document.body.appendChild(a);
+          a.click();
+        });
+    }
+  }
+
+  private _filenameCsv(): string {
+    const formValue = this.searchForm.value;
+    let filename = `${this.datePipe.transform(new Date(), 'yyyyMMdd')}_export_${
+      formValue.departement.nom
+    }`;
+
+    if (formValue.theme !== null) {
+      filename += '_' + formValue.theme.Label;
+    }
+    if (formValue.bop !== null) {
+      filename += '_' + formValue.bop.Label;
+    }
+
+    if (formValue.year) {
+      filename += '_' + formValue.year;
+    }
+
+    return filename + '.csv';
   }
 
   /**
