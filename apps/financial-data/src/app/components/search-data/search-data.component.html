@@ -51,5 +51,14 @@
     <button mat-fab color="primary" (click)="doSearch()">
       <mat-icon fontIcon="search"></mat-icon>
     </button>
+
+    <button mat-fab color="secondary" matTooltip="Télécharger les données" (click)="downloadCsv()"
+      *ngIf="searchFinish === true" (disabled)="searchInProgress.value === true">
+      <mat-icon fontIcon="download"></mat-icon>
+    </button>
+
+    <button mat-fab color="warn" matTooltip="Reset le formulaire" (click)="reset()" *ngIf="searchFinish === true">
+      <mat-icon fontIcon="disabled_by_default"></mat-icon>
+    </button>
   </div>
 </form>

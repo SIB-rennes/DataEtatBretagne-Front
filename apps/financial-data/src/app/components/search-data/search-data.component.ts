@@ -70,9 +70,14 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   public triggerBop: MatAutocompleteTrigger | undefined;
 
   /**
+   * Indique si la recherche a été effectué
+   */
+  public searchFinish = false;
+
+  /**
    * Indique si la recherche est en cours
    */
-  private searchInProgress = new BehaviorSubject(false);
+  public searchInProgress = new BehaviorSubject(false);
 
   /**
    * Resultats de la recherche.
@@ -197,7 +202,8 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
             this.searchInProgress.next(false);
           })
         )
-        .subscribe((response) => {
+        .subscribe((response: FinancialDataModel[]) => {
+          this.searchFinish = true;
           this.searchResults.next(response);
         });
     }
@@ -214,8 +220,12 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
           formValue.year,
           formValue.departement
         )
+        .pipe(
+          finalize(() => {
+            this.searchInProgress.next(false);
+          })
+        )
         .subscribe((response: Blob) => {
-          console.log(response);
           var url = URL.createObjectURL(response);
           var a = document.createElement('a');
           a.href = url;
@@ -224,6 +234,11 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
           a.click();
         });
     }
+  }
+
+  public reset(): void {
+    this.searchFinish = false;
+    this.searchForm.reset();
   }
 
   private _filenameCsv(): string {
