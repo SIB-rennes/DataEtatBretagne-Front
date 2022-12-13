@@ -1,10 +1,10 @@
 <div
-  class="row"
-  *ngFor="let row of group.rows"
+  class="grouping-table-row"
+  *ngFor="let row of rows"
 >
   <div
     *ngFor="let col of context.displayedColumns; index as i; first as isFirst"
-    class="cell {{isFirst ? 'group-cell' : ('col-' + i)}}"
+    class="grouping-table-cell {{isFirst ? '' : ('col-' + i)}}"
   >
     {{col.renderFn ? col.renderFn(row, col) : row[col.name]}}
   </div>

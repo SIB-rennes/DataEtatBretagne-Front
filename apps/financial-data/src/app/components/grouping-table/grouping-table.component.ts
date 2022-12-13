@@ -18,7 +18,7 @@ import { GroupingTableContextService } from "./grouping-table-context.service";
   encapsulation: ViewEncapsulation.None,
   providers: [GroupingTableContextService],
   host: {
-    class: 'container'
+    class: 'grouping-table-container'
   },
   changeDetection: ChangeDetectionStrategy.OnPush
 })

@@ -1,4 +1,4 @@
-<div class="table group level-{{groupLevel}}">
+<div class="grouping-table level-{{groupLevel}}" [class.group]="rootGroup && rootGroup.groups.length > 0">
   <financial-grouping-table-header></financial-grouping-table-header>
 
   <financial-table-body
