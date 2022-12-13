@@ -6,6 +6,10 @@ import {
   TableData,
 } from '../../components/grouping-table/group-utils';
 import { DatePipe } from '@angular/common';
+import {
+  GroupingConfigDialogComponent
+} from "../../components/grouping-config-dialog/grouping-config-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @Component({
   selector: 'financial-home',
@@ -14,6 +18,7 @@ import { DatePipe } from '@angular/common';
 })
 export class HomeComponent {
   private datePipe = inject(DatePipe);
+  private dialog = inject(MatDialog);
 
   columnsMetaData: ColumnsMetaData;
 
@@ -67,5 +72,22 @@ export class HomeComponent {
           aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
       },
     ]);
+  }
+
+  openGroupConfigDialog() {
+    let dialogRef = this.dialog.open(GroupingConfigDialogComponent, {
+      data: {
+        columns: this.columnsMetaData.data,
+        groupingColumns: this.groupingColumns
+      },
+      width: '40rem',
+      autoFocus: 'input',
+    });
+    dialogRef.afterClosed().subscribe((updatedGroupingColumns: GroupingColumn[]) => {
+      if (updatedGroupingColumns) {
+        this.groupingColumns = updatedGroupingColumns;
+      }
+    });
+
   }
 }

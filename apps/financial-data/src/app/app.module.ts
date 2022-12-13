@@ -16,6 +16,8 @@ import { GroupingTableModule } from './components/grouping-table/grouping-table.
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { HeaderComponent } from './components/header/header.component';
+import { MatDialogModule } from "@angular/material/dialog";
+import { MatButtonModule } from "@angular/material/button";
 
 registerLocaleData(localeFr);
 
@@ -36,6 +38,8 @@ registerLocaleData(localeFr);
     ReactiveFormsModule,
     MaterialModule,
     GroupingTableModule,
+    MatDialogModule,
+    MatButtonModule,
   ],
   providers: [
     {
