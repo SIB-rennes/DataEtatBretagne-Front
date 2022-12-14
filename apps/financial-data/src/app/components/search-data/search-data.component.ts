@@ -34,6 +34,7 @@ import {
   financialDataFormValidators,
 } from '../../validators/financial-data-form.validators';
 import { FinancialDataModel } from '@models/financial-data.models';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'financial-search-data',
@@ -69,9 +70,14 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   public triggerBop: MatAutocompleteTrigger | undefined;
 
   /**
+   * Indique si la recherche a été effectué
+   */
+  public searchFinish = false;
+
+  /**
    * Indique si la recherche est en cours
    */
-  private searchInProgress = new BehaviorSubject(false);
+  public searchInProgress = new BehaviorSubject(false);
 
   /**
    * Resultats de la recherche.
@@ -83,6 +89,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   constructor(
     private geoService: GeoHttpService,
     private route: ActivatedRoute,
+    private datePipe: DatePipe,
     private service: FinancialDataHttpService
   ) {
     this.searchInProgress.subscribe((value) => {
@@ -195,10 +202,63 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
             this.searchInProgress.next(false);
           })
         )
-        .subscribe((response) => {
+        .subscribe((response: FinancialDataModel[]) => {
+          this.searchFinish = true;
           this.searchResults.next(response);
         });
     }
+  }
+
+  public downloadCsv(): void {
+    if (this.searchForm.valid && !this.searchInProgress.value) {
+      const formValue = this.searchForm.value;
+      this.searchInProgress.next(true);
+      this.service
+        .getCsv(
+          formValue.bop,
+          formValue.theme,
+          formValue.year,
+          formValue.departement
+        )
+        .pipe(
+          finalize(() => {
+            this.searchInProgress.next(false);
+          })
+        )
+        .subscribe((response: Blob) => {
+          var url = URL.createObjectURL(response);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = this._filenameCsv();
+          document.body.appendChild(a);
+          a.click();
+        });
+    }
+  }
+
+  public reset(): void {
+    this.searchFinish = false;
+    this.searchForm.reset();
+  }
+
+  private _filenameCsv(): string {
+    const formValue = this.searchForm.value;
+    let filename = `${this.datePipe.transform(new Date(), 'yyyyMMdd')}_export_${
+      formValue.departement.nom
+    }`;
+
+    if (formValue.theme !== null) {
+      filename += '_' + formValue.theme.Label;
+    }
+    if (formValue.bop !== null) {
+      filename += '_' + formValue.bop.Label;
+    }
+
+    if (formValue.year) {
+      filename += '_' + formValue.year;
+    }
+
+    return filename + '.csv';
   }
 
   /**
