@@ -161,7 +161,7 @@ $table-cell-min-width-default: 15rem;
 
   .grouping-table-cell:first-child {
     // première cellule d'une ligne (celle qui affiche les groupes).
-    min-width: calc($group-width + 1rem + var(--level-padding) + var(--level-borders) - 2 * $table-border-width);
+    min-width: calc($group-width + 1rem + var(--level-padding) + var(--level-borders));
     display: flex;
     gap: .5rem;
     flex-grow: 0;
@@ -183,7 +183,7 @@ $table-cell-min-width-default: 15rem;
     // Barre de séparation entre les groupes et les données.
     content: "";
     position: absolute;
-    left: calc(var(--scroll-length) + $group-width + var(--level-padding) + 2rem + $table-border-width);
+    left: calc(var(--scroll-length) + $group-width + var(--level-padding) + var(--level-borders) + 2rem);
     top: 0;
     height: 100%;
     background-color: $group-separator-color;
@@ -268,14 +268,13 @@ $table-cell-min-width-default: 15rem;
 
   // Element pour cacher les lignes de données en arrière-plan lors du scroll horizontal
   // (car elles passent derrière le contenu de la colonne de groupe).
-  //
   .table-body.groups::before {
     content: "";
     position: absolute;
     top: 0;
     left: calc(var(--scroll-length) - $table-border-width);
     height: 100%;
-    width: calc($group-width + 1rem + var(--level-padding) + var(--level-borders) - 2 * $table-border-width);
+    width: calc($group-width + 1rem + var(--level-padding) + var(--level-borders));
     background-color: inherit;
     border: inherit;
     border-bottom-left-radius: inherit;

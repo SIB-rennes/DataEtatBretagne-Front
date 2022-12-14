@@ -30,7 +30,7 @@ export class GroupingTableComponent implements OnChanges {
   rootGroup?: RootGroup;
   context = inject(GroupingTableContextService);
   groupLevel = 0;
-  private element = inject(ElementRef);
+  private scrollLeft?: number;
 
   ngOnChanges(changes: SimpleChanges) {
     if (
@@ -46,8 +46,13 @@ export class GroupingTableComponent implements OnChanges {
     }
   }
 
-  @HostListener('scroll') onScroll() {
-    const nativeElement = this.element.nativeElement;
-    nativeElement.style.setProperty("--scroll-length", `${nativeElement.scrollLeft}px`);
+  @HostListener('scroll', ['$event.target']) onScroll(target: HTMLElement) {
+    const scrollLeft = target.scrollLeft;
+    // On évite de mettre à jour la propriété CSS si la position de défilement horizontal n'a pas changé.
+    // Pour ce faire on garde la position sur un attribut de la classe.
+    if (this.scrollLeft !== scrollLeft) {
+      this.scrollLeft = scrollLeft;
+      target.style.setProperty("--scroll-length", `${scrollLeft}px`);
+    }
   }
 }
