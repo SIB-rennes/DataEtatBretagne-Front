@@ -19,8 +19,10 @@
   </mat-card-content>
 </mat-card>
 
-
 <ng-template #groupingTable>
-  <financial-grouping-table *ngIf="tableData" class="h-100" [tableData]="tableData" [columnsMetaData]="columnsMetaData"
+  <ng-container *ngIf="tableData">
+  <button mat-button (click)="openGroupConfigDialog()">Choisir les groupes</button>
+  <financial-grouping-table class="h-100" [tableData]="tableData" [columnsMetaData]="columnsMetaData"
     [groupingColumns]="groupingColumns"></financial-grouping-table>
+  </ng-container>
 </ng-template>

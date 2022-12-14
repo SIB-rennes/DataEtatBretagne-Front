@@ -1,0 +1,66 @@
+<div mat-dialog-title>
+  <div class="dialog-title">
+    <h2>Choisir les groupes</h2>
+    <button
+      type="button"
+      mat-icon-button
+      mat-dialog-close
+      aria-label="Fermer"
+      matTooltip="Fermer"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+
+<mat-dialog-content class="dialog-content">
+
+  <ng-container [ngSwitch]="groupingColumns.length">
+    <ng-container *ngSwitchCase="0">
+      <p>Groupement désactivé, sélectionner des colonnes ci-dessous pour l'activer.</p>
+    </ng-container>
+
+    <div *ngSwitchDefault>
+      <p>Cliquer-déposer les colonnes pour réordonner les groupes :</p>
+      <div>
+        <div cdkDropList class="column-list" (cdkDropListDropped)="moveGroup($event)">
+          <div
+            *ngFor="let col of groupingColumns; let i = index"
+            class="column-box"
+            cdkDrag
+          >
+            <mat-icon aria-hidden="true" fontIcon="drag_handle"></mat-icon>
+            <div>{{col.label}}</div>
+            <div>
+              <button
+                type="button"
+                mat-icon-button
+                aria-label="Supprimer le groupe"
+                matTooltip="Supprimer le groupe"
+                (click)="removeGroup(i)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div *ngIf="groupingColumns.length < 4 && (groupingColumns.length + 1) < allColumns.length">
+    <p>Ajouter une colonne de groupement supplémentaire :</p>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Colonne</mat-label>
+      <mat-select (selectionChange)="addGroup($event)">
+        <mat-option *ngFor="let column of remainingColumns" [value]="column">{{column.label}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button color="primary" type="button" (click)="validate()">Appliquer</button>
+  <button mat-button mat-dialog-close type="button">Annuler</button>
+</mat-dialog-actions>
