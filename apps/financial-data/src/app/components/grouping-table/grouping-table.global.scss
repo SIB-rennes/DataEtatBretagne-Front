@@ -79,17 +79,6 @@ $table-cell-min-width-default: 15rem;
   display: grid;
   align-items: center;
 
-  &:first-child {
-    // première cellule d'une ligne (celle qui affiche les groupes).
-    min-width: calc($group-width + 1rem + var(--level-padding) + var(--level-borders) - 2 * $table-border-width);
-    display: flex;
-    gap: .5rem;
-    flex-grow: 0;
-    position: relative;
-    left: var(--scroll-length);
-    z-index: 1;
-  }
-
   &:last-child {
     // dernière cellule d'une ligne.
     border-right: none !important;
@@ -104,12 +93,7 @@ $table-cell-min-width-default: 15rem;
     background-color: $rows-bg-color;
     transition: background-color 300ms cubic-bezier(.19, 1, .22, 1);
 
-    &:first-child {
-      // 1ère cellule de toutes les lignes
-      border-left: $table-border-width $table-border-style $table-outer-border-color;
-    }
-
-    &:not(:last-child):not(:first-child) {
+    &:not(:last-child) {
       border-right: $table-border-width $table-border-style $table-inner-border-color;
     }
   }
@@ -125,11 +109,6 @@ $table-cell-min-width-default: 15rem;
   &:last-child > .grouping-table-cell {
     // cellules de la 1ère ligne
     border-bottom: $table-border-width $table-border-style $table-outer-border-color;
-
-    &:first-child {
-      // 1ère cellule de la 1ère ligne
-      border-bottom-left-radius: 0.25rem;
-    }
   }
 
   &:not(:last-child) > .grouping-table-cell {
@@ -159,18 +138,6 @@ $table-cell-min-width-default: 15rem;
       background-color: $main-header-bg-color;
       border-bottom: $main-header-bottom-border;
       border-right: $table-border-width $table-border-style $table-outer-border-color;
-
-      &:not(:first-child) {
-        position: sticky;
-        top: 0;
-      }
-
-      &:first-child {
-        // 1ère cellule de header.
-        border-top-left-radius: 0;
-        border-left-color: transparent;
-        border-right-color: transparent;
-      }
     }
   }
 
@@ -186,8 +153,33 @@ $table-cell-min-width-default: 15rem;
       background-color: var(--group-bg-color);
     }
   }
+}
 
-  &.group::after {
+// Tableau en mode groupé (ne s'applique pas si les groupement sont désactivés - auquel cas on affiche un tableau simple).
+// Contient les règles pour garder la première colonne fixe et afficher une barre de séparation.
+.grouping-table.has-group {
+
+  .grouping-table-cell:first-child {
+    // première cellule d'une ligne (celle qui affiche les groupes).
+    min-width: calc($group-width + 1rem + var(--level-padding) + var(--level-borders) - 2 * $table-border-width);
+    display: flex;
+    gap: .5rem;
+    flex-grow: 0;
+    position: relative;
+    left: var(--scroll-length);
+    z-index: 1;
+  }
+
+  > .header {
+    > .grouping-table-cell:first-child {
+      // 1ère cellule de header.
+      border-top-left-radius: 0;
+      border-left-color: transparent;
+      border-right-color: transparent;
+    }
+  }
+
+  &::after {
     // Barre de séparation entre les groupes et les données.
     content: "";
     position: absolute;
@@ -198,79 +190,97 @@ $table-cell-min-width-default: 15rem;
     width: $group-separator-width;
     z-index: 2;
   }
-}
 
-.table {
-  // toutes les tables
-  position: relative;
-
-  > .header {
-    display: flex;
+  .grouping-table-row {
 
     > .grouping-table-cell {
-      background-color: $group-header-bg-color;
-      border: $table-border-width $table-border-style $table-outer-border-color;
-
-      &:not(:first-child) {
-        border-left-color: transparent;
-      }
 
       &:first-child {
-        // 1ère cellule de header.
-        border-top-left-radius: .25rem;
+        // 1ère cellule de toutes les lignes
+        border-left: $table-border-width $table-border-style $table-outer-border-color;
+      }
+    }
+
+    &:last-child > .grouping-table-cell {
+      &:first-child {
+        // 1ère cellule de la 1ère ligne
+        border-bottom-left-radius: 0.25rem;
       }
     }
   }
 
-  &.folded {
-    > .header > .grouping-table-cell {
+  .table {
+    // toutes les tables
+    position: relative;
 
-      &:first-child {
-        border-bottom-left-radius: .25rem;
+    > .header {
+      display: flex;
+
+      > .grouping-table-cell {
+        background-color: $group-header-bg-color;
+        border: $table-border-width $table-border-style $table-outer-border-color;
+
+        &:not(:first-child) {
+          border-left-color: transparent;
+        }
+
+        &:first-child {
+          // 1ère cellule de header.
+          border-top-left-radius: .25rem;
+        }
       }
+    }
+
+    &.folded {
+      > .header > .grouping-table-cell {
+
+        &:first-child {
+          border-bottom-left-radius: .25rem;
+        }
+      }
+
+      > .table-body {
+        display: none;
+      }
+    }
+
+    & + .table {
+      // espacement entre 2 tables qui se suivent
+      margin-top: 1rem;
     }
 
     > .table-body {
-      display: none;
-    }
-  }
-
-  & + .table {
-    // espacement entre 2 tables qui se suivent
-    margin-top: 1rem;
-  }
-
-  > .table-body {
-    border-bottom-left-radius: 0.25rem;
-    border-right: none;
-    display: flex;
-    flex-direction: column;
-
-    &.groups {
-      position: relative;
-      border: $table-border-width $table-border-style $table-outer-border-color;
+      border-bottom-left-radius: 0.25rem;
       border-right: none;
-      border-top: none;
-      padding: 1rem 0 1rem 1rem;
-      background-color: var(--group-bg-color);
+      display: flex;
+      flex-direction: column;
+
+      &.groups {
+        position: relative;
+        border: $table-border-width $table-border-style $table-outer-border-color;
+        border-right: none;
+        border-top: none;
+        padding: 1rem 0 1rem 1rem;
+        background-color: var(--group-bg-color);
+      }
     }
   }
-}
 
-// Element pour cacher les lignes de données en arrière-plan lors du scroll horizontal
-// (car elles passent derrière le contenu de la colonne de groupe).
-//
-.table-body.groups::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: calc(var(--scroll-length) - $table-border-width);
-  height: 100%;
-  width: calc($group-width + 1rem + var(--level-padding) + var(--level-borders) - 2 * $table-border-width);
-  background-color: inherit;
-  border: inherit;
-  border-bottom-left-radius: inherit;
-  z-index: 1;
+  // Element pour cacher les lignes de données en arrière-plan lors du scroll horizontal
+  // (car elles passent derrière le contenu de la colonne de groupe).
+  //
+  .table-body.groups::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: calc(var(--scroll-length) - $table-border-width);
+    height: 100%;
+    width: calc($group-width + 1rem + var(--level-padding) + var(--level-borders) - 2 * $table-border-width);
+    background-color: inherit;
+    border: inherit;
+    border-bottom-left-radius: inherit;
+    z-index: 1;
+  }
 }
 
 /*

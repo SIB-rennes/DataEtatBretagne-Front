@@ -15,7 +15,7 @@ export class TableGroupComponent implements OnInit {
 
   @HostBinding('class') get cssClasses() {
     const containsGroup = this.group?.groups?.length ?? 0 > 0;
-    return `table level-${this.groupLevel} ${containsGroup ? 'group' : ''} ${this.folded ? 'folded' : ''}`;
+    return `table level-${this.groupLevel} ${containsGroup ? 'has-group' : ''} ${this.folded ? 'folded' : ''}`;
   }
 
   ngOnInit() {

@@ -5,7 +5,7 @@ import { GroupingTableContextService } from "./grouping-table-context.service";
   selector: 'financial-grouping-table-header',
   templateUrl: './grouping-table-header.component.html',
   host: {
-    class: 'header group'
+    class: 'header'
   },
 })
 export class GroupingTableHeaderComponent {
