@@ -39,8 +39,14 @@ export type ColumnMetaDataDef = {
    */
   aggregateRenderFn?: (aggregateValue: any, group: Group, col: ColumnMetaDataDef) => string | undefined;
 
-  // taille de colonne ?
-  // alignement (gauche, droite) ?
+  /**
+   * Styles css à appliquer sur les cellules de la colonne.
+   * Permet par exemple de spécifier des contraintes de dimensionnement (`min-width`, `max-width`) ou d'alignement.
+   *
+   * Attention : la largeur ne doit en aucun cas dépendre du contenu des cellules. C'est important pour que chaque ligne
+   * d'une même colonne ait la même largeur.
+   */
+  columnStyle?: Record<string, string>;
 };
 
 export class AggregatorFns {
@@ -105,9 +111,15 @@ export type GroupingColumn = {
  * Un groupe, qui peut contenir soit des groupes enfants, soit des lignes de données.
  */
 export class Group {
+  private _count = 0;
   private groupsMap?: Map<any, Group>;
   aggregates?: Record<string, any>;
   rows?: RowData[];
+
+  /** Nombre total d'éléments (= nombre d'éléments + nombre d'éléments dans les sous-groupes). */
+  get count() {
+    return this._count;
+  }
 
   get groups() {
     if (!this.groupsMap) {
@@ -150,6 +162,8 @@ export class Group {
     if (!this.aggregates) {
       this.aggregates = {};
     }
+    // On incrémente le nombre d'éléments
+    this._count += 1;
     // On met à jour les aggrégats pour chacune des colonnes.
     for (const columnName in this.columnsAggregateFns) {
       const aggregateFn = this.columnsAggregateFns[columnName];
@@ -184,10 +198,6 @@ export const groupByColumns = (table: TableData, groupings: GroupingColumn[], co
     if (colMetaData.aggregateReducer) {
       aggregateFns[colMetaData.name] = colMetaData.aggregateReducer;
     }
-  }
-  // ... et pour les colonnes de groupe, on effectue un décompte des entrées.
-  for (const grouping of groupings) {
-    aggregateFns[grouping.columnName] = AggregatorFns.count;
   }
 
   const root = new RootGroup(aggregateFns);

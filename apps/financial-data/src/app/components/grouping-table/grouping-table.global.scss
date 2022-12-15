@@ -136,8 +136,9 @@ $table-cell-min-width-default: 15rem;
 
     > .grouping-table-cell {
       background-color: $main-header-bg-color;
-      border-bottom: $main-header-bottom-border;
       border-right: $table-border-width $table-border-style $table-outer-border-color;
+      border-bottom: $main-header-bottom-border;
+      border-left: $table-border-width $table-border-style transparent;
     }
   }
 

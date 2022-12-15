@@ -49,7 +49,14 @@ export class HomeComponent {
         label: 'Commune',
         renderFn: (row, _col) => row['commune']?.['LabelCommune'],
       },
-      { name: 'code_siret', label: 'Siret' },
+      {
+        name: 'code_siret',
+        label: 'Siret',
+        columnStyle: {
+          'min-width': '16ex',
+          'flex-grow': '0',
+        }
+      },
       {
         name: 'type_etablissement',
         label: `Type d'établissement`,
@@ -61,6 +68,10 @@ export class HomeComponent {
         label: "Date d'actualisation",
         renderFn: (row, col) =>
           row[col.name] ? dateFormat(row[col.name]) : row[col.name],
+        columnStyle: {
+          'min-width': '18ex',
+          'flex-grow': '0',
+        },
       },
       {
         name: 'Montant',
@@ -70,6 +81,11 @@ export class HomeComponent {
         aggregateReducer: AggregatorFns.sum,
         aggregateRenderFn: (aggregateValue) =>
           aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
+        columnStyle: {
+          'text-align': 'right',
+          'min-width': '16ex',
+          'flex-grow': '0',
+        },
       },
     ]);
   }
