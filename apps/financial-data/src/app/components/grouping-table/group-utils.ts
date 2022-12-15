@@ -39,8 +39,14 @@ export type ColumnMetaDataDef = {
    */
   aggregateRenderFn?: (aggregateValue: any, group: Group, col: ColumnMetaDataDef) => string | undefined;
 
-  // taille de colonne ?
-  // alignement (gauche, droite) ?
+  /**
+   * Styles css à appliquer sur les cellules de la colonne.
+   * Permet par exemple de spécifier des contraintes de dimensionnement (`min-width`, `max-width`) ou d'alignement.
+   *
+   * Attention : la largeur ne doit en aucun cas dépendre du contenu des cellules. C'est important pour que chaque ligne
+   * d'une même colonne ait la même largeur.
+   */
+  columnStyle?: Record<string, string>;
 };
 
 export class AggregatorFns {

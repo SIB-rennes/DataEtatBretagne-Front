@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import {
   ColumnMetaDataDef,
   ColumnsMetaData,
@@ -8,15 +8,19 @@ import {
   RootGroup,
   TableData
 } from "./group-utils";
+import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
 
 @Injectable()
 export class GroupingTableContextService {
+  private domSanitizer = inject(DomSanitizer);
+
   data!: TableData;
   columnsMetaData!: ColumnsMetaData;
   groupingColumns!: GroupingColumn[];
   rootGroup!: RootGroup;
   displayedColumns!: ColumnMetaDataDef[];
   foldedGroups = new Set<Group>();
+  columnCssStyle: SafeHtml | null = null;
 
   setContext(
     data: TableData,
@@ -29,6 +33,7 @@ export class GroupingTableContextService {
 
     this.rootGroup = this.calculateGroups();
     this.displayedColumns = this.calculateDisplayedColumns();
+    this.columnCssStyle = this.calculateColumnStyle();
   }
 
   private calculateGroups(): RootGroup {
@@ -41,6 +46,26 @@ export class GroupingTableContextService {
       .filter((col) =>
         !this.groupingColumns.some(gc => gc.columnName === col.name)
       );
+  }
+
+  /**
+   * Retourne les définitions de règles CSS pour chacune des colonnes.
+   */
+  private calculateColumnStyle(): SafeHtml | null {
+    const colStyles: any[] = [];
+    this.displayedColumns.forEach((col, i) => {
+      if (!col.columnStyle) {
+        return;
+      }
+      colStyles.push('.col-', i, ' {\n');
+      for (const [k,v] of Object.entries(col.columnStyle)) {
+        colStyles.push(k, ':', v, ';\n');
+      }
+      colStyles.push('}\n');
+    });
+    return colStyles.length
+      ? this.domSanitizer.bypassSecurityTrustHtml(`<style>${colStyles.join('')}</style>`)
+      : null;
   }
 
   isFolded(group: Group): boolean {
