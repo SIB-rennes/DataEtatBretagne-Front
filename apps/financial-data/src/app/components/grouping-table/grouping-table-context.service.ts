@@ -21,15 +21,22 @@ export class GroupingTableContextService {
   displayedColumns!: ColumnMetaDataDef[];
   foldedGroups = new Set<Group>();
   columnCssStyle: SafeHtml | null = null;
+  hideGroupingColumns!: boolean;
 
-  setContext(
+  /**
+   * Initialisation du contexte.
+   * Déclenche la mise à jour des données calculées pour la grid (dont le calcul des groupes).
+   */
+  initContext(
     data: TableData,
     columnsMetaData: ColumnsMetaData,
-    groupingColumns: GroupingColumn[]
+    groupingColumns: GroupingColumn[],
+    hideGroupingColumns = false
   ) {
     this.data = data;
     this.columnsMetaData = columnsMetaData;
     this.groupingColumns = groupingColumns;
+    this.hideGroupingColumns = hideGroupingColumns;
 
     this.rootGroup = this.calculateGroups();
     this.displayedColumns = this.calculateDisplayedColumns();
@@ -42,10 +49,14 @@ export class GroupingTableContextService {
 
   private calculateDisplayedColumns(): ColumnMetaDataDef[] {
     // Les colonnes affichées
-    return this.columnsMetaData.data
-      .filter((col) =>
-        !this.groupingColumns.some(gc => gc.columnName === col.name)
-      );
+    return this.hideGroupingColumns
+      // si on masque les colonnes de grouping, on filtre
+      ? this.columnsMetaData.data
+        .filter((col) =>
+          !this.groupingColumns.some(gc => gc.columnName === col.name)
+        )
+      // sinon on retourne la liste complète
+      : this.columnsMetaData.data;
   }
 
   /**
@@ -58,7 +69,7 @@ export class GroupingTableContextService {
         return;
       }
       colStyles.push('.col-', i, ' {\n');
-      for (const [k,v] of Object.entries(col.columnStyle)) {
+      for (const [k, v] of Object.entries(col.columnStyle)) {
         colStyles.push(k, ':', v, ';\n');
       }
       colStyles.push('}\n');

@@ -40,7 +40,7 @@ export class GroupingTableComponent implements OnChanges {
     ) {
       // Si les paramètres en entrée changent, on les propage.
       // (on passe également ici au chargement du composant).
-      this.context.setContext(this.tableData, this.columnsMetaData, this.groupingColumns);
+      this.context.initContext(this.tableData, this.columnsMetaData, this.groupingColumns);
       this.rootGroup = this.context.rootGroup;
       this.groupLevel = this.groupingColumns.length;
     }
