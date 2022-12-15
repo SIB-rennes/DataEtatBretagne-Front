@@ -81,7 +81,7 @@ $table-cell-min-width-default: 15rem;
 
   &:last-child {
     // dernière cellule d'une ligne.
-    border-right: none !important;
+    border-right: none;
   }
 }
 
@@ -172,11 +172,20 @@ $table-cell-min-width-default: 15rem;
   }
 
   > .header {
-    > .grouping-table-cell:first-child {
-      // 1ère cellule de header.
-      border-top-left-radius: 0;
-      border-left-color: transparent;
-      border-right-color: transparent;
+    // On ajoute une marge à droite pour permettre de défiler horizontalement plus loin que la fin du contenu.
+    padding-right: 1rem;
+
+    > .grouping-table-cell {
+      &:first-child {
+        // 1ère cellule de header.
+        border-top-left-radius: 0;
+        border-left-color: transparent;
+      }
+
+      &:last-child {
+        // dernière cellule de header.
+        border-right: $table-border-width $table-border-style $table-outer-border-color;
+      }
     }
   }
 
@@ -229,6 +238,11 @@ $table-cell-min-width-default: 15rem;
           // 1ère cellule de header.
           border-top-left-radius: .25rem;
         }
+
+        &:last-child {
+          // dernière cellule de header.
+          border-right-color: transparent;
+        }
       }
     }
 
@@ -264,6 +278,17 @@ $table-cell-min-width-default: 15rem;
         padding: 1rem 0 1rem 1rem;
         background-color: var(--group-bg-color);
       }
+    }
+  }
+
+  > .table-body {
+    // body du tableau racine
+
+    // On ajoute une marge à droite pour permettre de défiler horizontalement plus loin que la fin du contenu.
+    padding: 1rem;
+
+    > .table {
+      border-right: $table-border-width $table-border-style $table-outer-border-color;
     }
   }
 
