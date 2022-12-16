@@ -20,9 +20,9 @@ export function financialDataFormValidators(): ValidatorFn {
     }
 
     const theme = value.theme;
-    const bop = value.bop;
+    const bops = value.bops;
 
-    if (theme == null && bop == null) {
+    if (theme == null && bops == null) {
       return { bopRequired: true };
     }
 

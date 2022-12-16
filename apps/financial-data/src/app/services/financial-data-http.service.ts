@@ -18,7 +18,7 @@ export class FinancialDataHttpService {
   public getBop(): Observable<BopModel[]> {
     const apiFinancial = this.settings.apiFinancial;
 
-    const params = 'limit=500&fields=Id,Label,Code,RefTheme';
+    const params = 'limit=500&fields=Id,Label,Code,RefTheme&sort=Code';
     return this.http
       .get<NocoDbResponse<BopModel>>(
         `${apiFinancial}/RefCodeProgramme/RefCodeProgramme?${params}`
@@ -42,24 +42,24 @@ export class FinancialDataHttpService {
 
   /**
    *
-   * @param bop
+   * @param bops
    * @param theme
    * @param year
    * @param departement
    * @returns
    */
   public search(
-    bop: BopModel | null,
+    bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
     departement: GeoDepartementModel | null
   ): Observable<FinancialDataModel[]> {
-    if (bop == null && theme == null && year == null && departement == null)
+    if (bops == null && theme == null && year == null && departement == null)
       return of();
 
     const apiFinancial = this.settings.apiFinancial;
 
-    const params = this._buildparams(bop, theme, year, departement);
+    const params = this._buildparams(bops, theme, year, departement);
     return this.http
       .get<NocoDbResponse<FinancialDataModel>>(
         `${apiFinancial}/DataChorus/Chorus-front?${params}`
@@ -68,16 +68,16 @@ export class FinancialDataHttpService {
   }
 
   public getCsv(
-    bop: BopModel | null,
+    bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
     departement: GeoDepartementModel | null
   ): Observable<Blob> {
-    if (bop == null && theme == null && year == null && departement == null)
+    if (bops == null && theme == null && year == null && departement == null)
       return of();
 
     const apiFinancial = this.settings.apiFinancial;
-    const params = this._buildparams(bop, theme, year, departement);
+    const params = this._buildparams(bops, theme, year, departement);
     return this.http.get(
       `${apiFinancial}/DataChorus/Chorus-front/csv?${params}`,
       { responseType: 'blob' }
@@ -85,15 +85,18 @@ export class FinancialDataHttpService {
   }
 
   private _buildparams(
-    bop: BopModel | null,
+    bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
     departement: GeoDepartementModel | null
   ): string {
     let params =
       'sort=Montant,DateModificationEj&limit=4000&where=(Montant,gt,0)';
-    if (bop) {
-      params += `~and(code_programme,eq,${bop.Code})`;
+    if (bops) {
+      params += `~and(code_programme,in,${bops
+        .filter((bop) => bop.Code)
+        .map((bop) => bop.Code)
+        .join(',')})`;
     } else if (theme) {
       params += `~and(Theme,eq,${theme.Label})`;
     }
