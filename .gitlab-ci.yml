@@ -39,6 +39,7 @@ docker-image-snapshot:
   extends: .build-docker
   only:
     - develop
+    - main
     - /^feature.*$/
     - /^hotfix.*$/
   variables:
@@ -47,13 +48,36 @@ docker-image-snapshot:
   before_script:
     - export VERSION_IMAGE="${CI_COMMIT_SHA:0:8}-snapshot"
 
-deploy-integ:
-  stage: 🐣 deploy
+docker-build-tags:
+  extends: .build-docker
   only:
-    - /^develop.*$/
+    - tags
+  variables:
+    IMAGE: "${REGISTRY_DOCKER}nocode/financial-data"
+    DOCKERFILE: "Dockerfile"
+  before_script:
+    - export VERSION_IMAGE="${CI_COMMIT_REF_NAME}"
+
+.deploy-integ:
+  stage: 🐣 deploy
+  script:
+    - echo ${VERSION}
+    - ssh ${USER_INTEG}@${SERVER_INTEG} "docker network create -d overlay --attachable app_network || true"
+    - ssh ${USER_INTEG}@${SERVER_INTEG} "export VERSION=${VERSION};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file ~/stack-nocode/compose/integ/front.yml '"${STACK_NAME}"
+
+deploy-integ-tag:
+  extends: .deploy-integ
+  only:
+    - tags
+  before_script:
+    - export VERSION=":${CI_COMMIT_REF_NAME}"
+
+deploy-integ-snapshot:
+  extends: .deploy-integ
+  only:
+    - main
+    - develop
+    - /^feature.*$/
   when: manual
   before_script:
-    - export BRANCH_NAME=$(echo $CI_COMMIT_REF_NAME | sed "s/\//\-/g")
-  script:
-    - ssh ${USER_INTEG}@${SERVER_INTEG} "docker network create -d overlay --attachable app_network || true"
-    - ssh ${USER_INTEG}@${SERVER_INTEG} "export BRANCH=${BRANCH_NAME};export CI_COMMIT=${CI_COMMIT_SHA:0:8};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file ~/stack-nocode/compose/integ/front.yml '"${STACK_NAME}"
+    - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"
