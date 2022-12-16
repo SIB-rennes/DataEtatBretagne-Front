@@ -187,6 +187,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
    * lance la recherche des lignes d'engagement financière
    */
   public doSearch(): void {
+    this.searchForm.markAllAsTouched(); // pour notifier les erreurs sur le formulaire
     if (this.searchForm.valid && !this.searchInProgress.value) {
       const formValue = this.searchForm.value;
       this.searchInProgress.next(true);
