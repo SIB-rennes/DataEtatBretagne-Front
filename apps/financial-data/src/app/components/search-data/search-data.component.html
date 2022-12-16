@@ -4,7 +4,11 @@
       <mat-label>Theme</mat-label>
       <input type="text" matInput formControlName="theme" [matAutocomplete]="theme"
         #autoCompleteThemeInput="matAutocompleteTrigger" [errorStateMatcher]="errorMatcher">
-      <mat-autocomplete #theme="matAutocomplete" [displayWith]="displayThemeBop"
+      <button *ngIf="searchForm.controls['theme'].value !== null" matSuffix mat-icon-button
+        (click)="searchForm.controls['theme'].setValue(null)">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-autocomplete #theme="matAutocomplete" [displayWith]="displayTheme"
         (optionSelected)="onSelectTheme($event.option.value)">
         <mat-option *ngFor="let theme of filteredTheme | async" [value]="theme">
           {{theme.Label}}
@@ -15,14 +19,18 @@
 
     <mat-form-field class="field-30-width" appearance="fill">
       <mat-label>Programme</mat-label>
-      <input type="text" matInput formControlName="bop" [matAutocomplete]="bop"
-        #autoCompleteBopInput="matAutocompleteTrigger" [errorStateMatcher]="errorMatcher">
-      <mat-autocomplete #bop="matAutocomplete" [displayWith]="displayThemeBop"
-        (optionSelected)="onSelectBop($event.option.value)" (opened)="searchForm.controls['bop'].setValue('')">
-        <mat-option *ngFor="let bop of filteredBop | async" [value]="bop">
-          {{bop.Code}} - {{bop.Label}}
-        </mat-option>
-      </mat-autocomplete>
+      <mat-select formControlName="bops" multiple>
+        <mat-form-field class="field-100-width" appearance="fill">
+          <mat-label>Filtrer</mat-label>
+          <input type="text" class="fr-input" matInput formControlName="filterBop">
+        </mat-form-field>
+        <mat-option *ngFor="let bop of filteredBop" [value]="bop"> {{bop.Code}} - {{bop.Label}}</mat-option>
+      </mat-select>
+      <button *ngIf="searchForm.controls['bops'].value !== null" matSuffix mat-icon-button
+        (click)="searchForm.controls['bops'].setValue(null)">
+        <mat-icon>close</mat-icon>
+      </button>
+
       <mat-error *ngIf="errorsBop">Renseigner un Thème ou un Programme</mat-error>
     </mat-form-field>
 

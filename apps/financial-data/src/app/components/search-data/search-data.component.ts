@@ -20,6 +20,7 @@ import {
   startWith,
   Observable,
   map,
+  tap,
   finalize,
   BehaviorSubject,
 } from 'rxjs';
@@ -35,6 +36,9 @@ import {
 } from '../../validators/financial-data-form.validators';
 import { FinancialDataModel } from '@models/financial-data.models';
 import { DatePipe } from '@angular/common';
+import { BinaryOperator } from '@angular/compiler';
+
+type BopModelSelected = BopModel & { selected: boolean };
 
 @Component({
   selector: 'financial-search-data',
@@ -51,23 +55,17 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     | null
     | undefined = null;
 
-  public bop: BopModel[] = [];
+  public bop: BopModelSelected[] = [];
   public themes: RefTheme[] = [];
 
   public filteredTheme: Observable<RefTheme[]> | null | undefined = null;
-  public filteredBop: Observable<BopModel[]> | null | undefined = null;
+  public filteredBop: BopModelSelected[] | undefined = undefined;
 
   @ViewChild('autoCompleteThemeInput', {
     static: false,
     read: MatAutocompleteTrigger,
   })
   public triggerTheme: MatAutocompleteTrigger | undefined;
-
-  @ViewChild('autoCompleteBopInput', {
-    static: false,
-    read: MatAutocompleteTrigger,
-  })
-  public triggerBop: MatAutocompleteTrigger | undefined;
 
   /**
    * Indique si la recherche a été effectué
@@ -101,12 +99,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     if (this.triggerTheme) {
       this.triggerTheme.panelClosingActions.subscribe((e) => {
         this.searchForm.controls['theme'].setValue(null);
-      });
-    }
-
-    if (this.triggerBop) {
-      this.triggerBop.panelClosingActions.subscribe((e) => {
-        this.searchForm.controls['bop'].setValue(null);
+        this.searchForm.controls['filterBop'].setValue('');
       });
     }
   }
@@ -117,8 +110,12 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
       (response: { financial: FinancialDataResolverModel } | any) => {
         this.themes = response.financial.themes;
         this.bop = response.financial.bop;
+        this.bop.map((bop) => {
+          return { ...bop, selected: false };
+        });
+
         this.filteredTheme = of(this.themes);
-        this.filteredBop = of(this.bop);
+        this.filteredBop = this.bop;
       }
     );
 
@@ -142,17 +139,10 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
    * @param value
    * @param controls
    */
-  public onSelectTheme(value: RefTheme): void {
-    this.searchForm.controls['theme'].setValue(value);
-    this.searchForm.controls['bop'].setValue(null);
-  }
-
-  /**
-   * Set la valeur du formControls bop quand on sélectionne une valeur dans l'auto complete
-   * @param value
-   */
-  public onSelectBop(value: BopModel): void {
-    this.searchForm.controls['bop'].setValue(value);
+  public onSelectTheme(theme: RefTheme): void {
+    this.searchForm.controls['theme'].setValue(theme);
+    this.searchForm.controls['filterBop'].setValue('');
+    this.searchForm.controls['bops'].setValue(null);
   }
 
   /**
@@ -160,7 +150,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
    * @param theme
    * @returns
    */
-  public displayThemeBop(element: RefTheme | BopModel): string {
+  public displayTheme(element: RefTheme): string {
     if (element) {
       return element.Label;
     }
@@ -193,7 +183,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
       this.searchInProgress.next(true);
       this.service
         .search(
-          formValue.bop,
+          formValue.bops,
           formValue.theme,
           formValue.year,
           formValue.departement
@@ -216,7 +206,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
       this.searchInProgress.next(true);
       this.service
         .getCsv(
-          formValue.bop,
+          formValue.bops,
           formValue.theme,
           formValue.year,
           formValue.departement
@@ -275,8 +265,9 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
             Validators.max(new Date().getFullYear()),
           ],
         }),
-        bop: new FormControl(null),
+        bops: new FormControl(null),
         theme: new FormControl(null),
+        filterBop: new FormControl(null), // controls pour le filtre des bops
         departement: new FormControl(null, [Validators.required]),
       },
       financialDataFormValidators()
@@ -293,17 +284,14 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         }
       })
     );
-    // Filtre sur les bop
-    this.filteredBop = this.searchForm.controls['bop'].valueChanges.pipe(
-      startWith(''),
-      map((value) => {
-        if (typeof value === 'string') {
-          return this._filterBop(value ? value : '');
-        } else {
-          return this._filterBop(value ? value?.Label : '');
-        }
-      })
-    );
+
+    this.searchForm.controls['filterBop'].valueChanges.subscribe((value) => {
+      if (typeof value === 'string') {
+        this.filteredBop = this._filterBop(value ? value : '');
+      } else {
+        this.filteredBop = this._filterBop(value ? value?.Label : '');
+      }
+    });
 
     // filtre departement
     this.filterDepartement = this.searchForm.controls[
@@ -326,8 +314,8 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     );
   }
 
-  private _filterBop(value: string): BopModel[] {
-    const filterValue = value.toLowerCase();
+  private _filterBop(value: string): BopModelSelected[] {
+    const filterValue = value ? value.toLowerCase() : '';
     const theme = this.searchForm.controls['theme'].value as RefTheme;
     return this.bop.filter((option) => {
       if (theme && option.RefTheme) {
@@ -336,7 +324,10 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
           option.Label?.toLowerCase().includes(filterValue)
         );
       }
-      return option.Label?.toLowerCase().includes(filterValue);
+      return (
+        option.Label?.toLowerCase().includes(filterValue) ||
+        option.Code.startsWith(filterValue)
+      );
     });
   }
 

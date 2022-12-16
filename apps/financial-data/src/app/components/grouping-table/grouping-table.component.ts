@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   ElementRef,
@@ -7,10 +8,17 @@ import {
   Input,
   OnChanges,
   SimpleChanges,
-  ViewEncapsulation
-} from "@angular/core";
-import { ColumnsMetaData, GroupingColumn, RootGroup, TableData } from "./group-utils";
-import { GroupingTableContextService } from "./grouping-table-context.service";
+  ViewChild,
+  ViewEncapsulation,
+} from '@angular/core';
+import { SafeHtml } from '@angular/platform-browser';
+import {
+  ColumnsMetaData,
+  GroupingColumn,
+  RootGroup,
+  TableData,
+} from './group-utils';
+import { GroupingTableContextService } from './grouping-table-context.service';
 
 @Component({
   selector: 'financial-grouping-table',
@@ -18,11 +26,11 @@ import { GroupingTableContextService } from "./grouping-table-context.service";
   encapsulation: ViewEncapsulation.None,
   providers: [GroupingTableContextService],
   host: {
-    class: 'grouping-table-container'
+    class: 'grouping-table-container',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GroupingTableComponent implements OnChanges {
+export class GroupingTableComponent implements OnChanges, AfterViewInit {
   @Input() tableData!: TableData;
   @Input() columnsMetaData!: ColumnsMetaData;
   @Input() groupingColumns: GroupingColumn[] = [];
@@ -32,17 +40,35 @@ export class GroupingTableComponent implements OnChanges {
   groupLevel = 0;
   private scrollLeft?: number;
 
+  @ViewChild('outerHtmlElement')
+  public columnCssStyle: ElementRef | undefined;
+
   ngOnChanges(changes: SimpleChanges) {
     if (
-      'tableData' in changes
-      || 'columnsMetaData' in changes
-      || 'groupingColumns' in changes
+      'tableData' in changes ||
+      'columnsMetaData' in changes ||
+      'groupingColumns' in changes
     ) {
       // Si les paramètres en entrée changent, on les propage.
       // (on passe également ici au chargement du composant).
-      this.context.initContext(this.tableData, this.columnsMetaData, this.groupingColumns);
+      this.context.initContext(
+        this.tableData,
+        this.columnsMetaData,
+        this.groupingColumns
+      );
+
       this.rootGroup = this.context.rootGroup;
+      if (this.columnCssStyle) {
+        this.columnCssStyle.nativeElement.innerHTML =
+          this.context.columnCssStyle;
+      }
       this.groupLevel = this.groupingColumns.length;
+    }
+  }
+
+  ngAfterViewInit(): void {
+    if (this.columnCssStyle) {
+      this.columnCssStyle.nativeElement.innerHTML = this.context.columnCssStyle;
     }
   }
 
@@ -52,7 +78,7 @@ export class GroupingTableComponent implements OnChanges {
     // Pour ce faire on garde la position sur un attribut de la classe.
     if (this.scrollLeft !== scrollLeft) {
       this.scrollLeft = scrollLeft;
-      target.style.setProperty("--scroll-length", `${scrollLeft}px`);
+      target.style.setProperty('--scroll-length', `${scrollLeft}px`);
     }
   }
 }

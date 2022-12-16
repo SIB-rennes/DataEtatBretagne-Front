@@ -11,6 +11,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
 
 @NgModule({
   exports: [
@@ -26,6 +28,8 @@ import { MatSelectModule } from '@angular/material/select';
     MatAutocompleteModule,
     MatProgressSpinnerModule,
     MatSelectModule,
+    MatDividerModule,
+    MatCheckboxModule,
   ],
 })
 export class MaterialModule {}
