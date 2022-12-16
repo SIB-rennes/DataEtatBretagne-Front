@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
 import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
 import { FinancialDataHttpService } from '@services/financial-data-http.service';
-import { forkJoin, Observable } from 'rxjs';
+import { catchError, forkJoin, Observable, of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FinancialDataResolver
@@ -14,6 +14,11 @@ export class FinancialDataResolver
     return forkJoin({
       themes: this.service.getTheme(),
       bop: this.service.getBop(),
-    });
+    }).pipe(
+      catchError((error) => {
+        console.log(error);
+        return of({ themes: [], bop: [] });
+      })
+    );
   }
 }

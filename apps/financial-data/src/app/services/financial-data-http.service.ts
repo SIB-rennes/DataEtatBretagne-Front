@@ -18,7 +18,7 @@ export class FinancialDataHttpService {
   public getBop(): Observable<BopModel[]> {
     const apiFinancial = this.settings.apiFinancial;
 
-    const params = 'limit=500&fields=Id,Label,Code,RefTheme';
+    const params = 'limit=500&fields=Id,Label,Code,RefTheme&sort=Code';
     return this.http
       .get<NocoDbResponse<BopModel>>(
         `${apiFinancial}/RefCodeProgramme/RefCodeProgramme?${params}`
