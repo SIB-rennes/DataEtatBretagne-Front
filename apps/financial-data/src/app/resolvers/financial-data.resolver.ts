@@ -7,14 +7,14 @@ import { LoaderService } from '../services/loader.service';
 
 @Injectable({ providedIn: 'root' })
 export class FinancialDataResolver
-  implements Resolve<FinancialDataResolverModel>
+  implements Resolve<FinancialDataResolverModel | Error>
 {
   constructor(
     private service: FinancialDataHttpService,
     private loading: LoaderService
   ) {}
 
-  resolve(): Observable<FinancialDataResolverModel> {
+  resolve(): Observable<FinancialDataResolverModel | Error> {
     this.loading.startLoader();
     return forkJoin({
       themes: this.service.getTheme(),
@@ -22,7 +22,10 @@ export class FinancialDataResolver
     }).pipe(
       catchError((error) => {
         console.log(error);
-        return of({ themes: [], bop: [] });
+        return of({
+          name: 'Erreur',
+          message: 'Erreurs lors de la récupération des données.',
+        });
       }),
       finalize(() => this.loading.endLoader())
     );

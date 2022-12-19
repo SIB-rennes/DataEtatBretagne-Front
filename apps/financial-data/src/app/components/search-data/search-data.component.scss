@@ -11,6 +11,11 @@ form .mat-fab {
   margin-left: 8px;
 }
 
+.box:has(.fr-alert) {
+  display: flex;
+  justify-content: center;
+}
+
 .box {
   display: flex;
   justify-content: flex-start;

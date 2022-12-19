@@ -77,6 +77,12 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   public searchInProgress = new BehaviorSubject(false);
 
   /**
+   * Affiche une erreur
+   */
+  public displayError = false;
+  public error: Error | null = null;
+
+  /**
    * Resultats de la recherche.
    */
   @Output() searchResults = new EventEmitter<FinancialDataModel[]>();
@@ -101,15 +107,21 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     // récupération des themes dans le resolver
     this.route.data.subscribe(
-      (response: { financial: FinancialDataResolverModel } | any) => {
-        this.themes = response.financial.themes;
-        this.bop = response.financial.bop;
-        this.bop.map((bop) => {
-          return { ...bop, selected: false };
-        });
+      (response: { financial: FinancialDataResolverModel | Error } | any) => {
+        if ('themes' in response.financial) {
+          this.displayError = false;
+          this.themes = response.financial.themes;
+          this.bop = response.financial.bop;
+          this.bop.map((bop) => {
+            return { ...bop, selected: false };
+          });
 
-        this.filteredTheme = of(this.themes);
-        this.filteredBop = this.bop;
+          this.filteredTheme = of(this.themes);
+          this.filteredBop = this.bop;
+        } else {
+          this.displayError = true;
+          this.error = response.financial as Error;
+        }
       }
     );
 
