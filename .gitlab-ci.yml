@@ -1,0 +1,83 @@
+stages:
+  - lint
+  - build-angular
+  - 🔨 docker-build
+  - 🐣 deploy
+
+.build-docker:
+  image: docker:stable-dind
+  stage: 🔨 docker-build
+  variables:
+    IMAGE: ""
+    DOCKERFILE: ""
+  script:
+    - if [[ $VERSION_IMAGE == ""]]; then  echo "VERSION NOT SET"; VERSION_IMAGE=${CI_COMMIT_REF_NAME}-snapshot; fi
+    - echo ${VERSION_IMAGE}
+    - echo $IMAGE
+    - docker build -f ${DOCKERFILE} -t ${IMAGE} .
+    - echo ${REGISTRY_DOCKER_PWD} | docker login ${REGISTRY_DOCKER} -u ${REGISTRY_DOCKER_USER} --password-stdin
+    - docker tag ${IMAGE} ${IMAGE}:${VERSION_IMAGE}
+    - echo "push ${IMAGE}:${VERSION_IMAGE}" && docker push ${IMAGE}:${VERSION_IMAGE}
+
+build angular app:
+  image: node:16
+  stage: build-angular
+  script:
+    - npm ci --cache ${CI_PROJECT_DIR}/.npm --prefer-offline --quiet --force
+    - npm run lint
+    - npm run build
+  cache:
+    key: ${CI_PROJECT_ID}-npm
+    paths:
+      - ${CI_PROJECT_DIR}/.npm/
+  artifacts:
+    expire_in: 15 mins
+    paths:
+      - dist/
+
+docker-image-snapshot:
+  extends: .build-docker
+  only:
+    - develop
+    - main
+    - /^feature.*$/
+    - /^hotfix.*$/
+  variables:
+    IMAGE: "${REGISTRY_DOCKER}nocode/financial-data/${CI_COMMIT_REF_NAME}"
+    DOCKERFILE: "apps/financial-data/DockerFile"
+  before_script:
+    - export VERSION_IMAGE="${CI_COMMIT_SHA:0:8}-snapshot"
+
+docker-build-tags:
+  extends: .build-docker
+  only:
+    - tags
+  variables:
+    IMAGE: "${REGISTRY_DOCKER}nocode/financial-data"
+    DOCKERFILE: "Dockerfile"
+  before_script:
+    - export VERSION_IMAGE="${CI_COMMIT_REF_NAME}"
+
+.deploy-integ:
+  stage: 🐣 deploy
+  script:
+    - echo ${VERSION}
+    - ssh ${USER_INTEG}@${SERVER_INTEG} "docker network create -d overlay --attachable app_network || true"
+    - ssh ${USER_INTEG}@${SERVER_INTEG} "export VERSION=${VERSION};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file ~/stack-nocode/compose/integ/front.yml '"${STACK_NAME}"
+
+deploy-integ-tag:
+  extends: .deploy-integ
+  only:
+    - tags
+  before_script:
+    - export VERSION=":${CI_COMMIT_REF_NAME}"
+
+deploy-integ-snapshot:
+  extends: .deploy-integ
+  only:
+    - main
+    - develop
+    - /^feature.*$/
+  when: manual
+  before_script:
+    - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"

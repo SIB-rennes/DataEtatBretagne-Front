@@ -1,0 +1,347 @@
+// Largeur de la colonne fixe des groupes.
+$group-width: 20rem;
+
+// Couleur et taille du séparateur entre la colonne fixe des groupes et le reste.
+$group-separator-color: black;
+$group-separator-width: 1px;
+
+// Couleurs des headers (principal, de groupe et de données).
+$main-header-bg-color: var(--background-contrast-grey);
+$group-header-bg-color: var(--background-contrast-grey);
+$rows-header-bg-color: var(--background-contrast-grey);
+$main-header-bottom-border: 2px solid black;
+
+// Couleur de bordure externe (autour des groupes et des headers, et entre les cellules des headers).
+$table-outer-border-color: #ccc;
+$table-border-style: solid;
+// Couleur de bordure interne (entre les lignes de données).
+$table-inner-border-color: #dedede;
+$table-border-width: 1px;
+
+// Couleur de ligne de données.
+$rows-bg-color: #fff;
+// Couleur de ligne alternative.
+$rows-bg-color-even: #fff;
+// Couleur de ligne au survol de la souris.
+$rows-bg-color-hover: var(--background-contrast-grey-hover);
+
+// Couleur de fond pour un group de sous-tables.
+$group-bg-color-default: var(--background-alt-grey);
+
+// Largeur minimum (min-width) par défaut pour les cellules.
+// Peut être surchargé : ajouter des règles css sur les classes .col-1, .col-2, etc. pour ajouter des contraintes
+// par colonne (min-width, max-width, width).
+$table-cell-min-width-default: 15rem;
+
+.clickable {
+  cursor: pointer;
+}
+
+.arrow-down {
+  width: 1em;
+  height: 1em;
+  background: currentColor;
+  clip-path: polygon(12.5% 12.5%, 50% 87.5%, 87.55% 12.5%);
+}
+
+.arrow-right {
+  width: 1em;
+  height: 1em;
+  background: currentColor;
+  clip-path: polygon(12.5% 12.5%, 12.5% 87.5%, 87.5% 50%);
+}
+
+.group-size {
+  margin-left: auto;
+}
+
+.grouping-table-container {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: auto;
+  --level-padding: 0rem;
+  --level-borders: 0px;
+  --group-bg-color: #{$group-bg-color-default};
+  --scroll-length: 0rem;
+  position: relative;
+  border: $table-border-width $table-border-style $table-outer-border-color;
+}
+
+.grouping-table-cell {
+  // Toutes les cellules (y compris header du container)
+  flex: 1;
+  word-wrap: break-word;
+  padding: .25rem .5rem;
+  min-width: $table-cell-min-width-default;
+
+  // centrage vertical
+  display: grid;
+  align-items: center;
+
+  &:last-child {
+    // dernière cellule d'une ligne.
+    border-right: none;
+  }
+}
+
+.grouping-table-row {
+  display: flex;
+
+  > .grouping-table-cell {
+    border: $table-border-width $table-border-style transparent;
+    background-color: $rows-bg-color;
+    transition: background-color 300ms cubic-bezier(.19, 1, .22, 1);
+
+    &:not(:last-child) {
+      border-right: $table-border-width $table-border-style $table-inner-border-color;
+    }
+  }
+
+  &:nth-child(even) > .grouping-table-cell {
+    background-color: $rows-bg-color-even;
+  }
+
+  &:hover > .grouping-table-cell {
+    background-color: $rows-bg-color-hover;
+  }
+
+  &:last-child > .grouping-table-cell {
+    // cellules de la 1ère ligne
+    border-bottom: $table-border-width $table-border-style $table-outer-border-color;
+  }
+
+  &:not(:last-child) > .grouping-table-cell {
+    // cellules de toutes les lignes sauf de la dernière ligne
+    border-bottom: $table-border-width $table-border-style $table-inner-border-color;
+  }
+}
+
+.grouping-table {
+  // premier niveau de table
+  height: fit-content;
+  min-height: 100%;
+  width: fit-content;
+  min-width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--group-bg-color);
+
+  > .header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+
+    > .grouping-table-cell {
+      background-color: $main-header-bg-color;
+      border-right: $table-border-width $table-border-style $table-outer-border-color;
+      border-bottom: $main-header-bottom-border;
+      border-left: $table-border-width $table-border-style transparent;
+    }
+  }
+
+  > .table-body {
+    flex-grow: 1;
+    border: none;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+
+    &.groups {
+      padding: 1rem 0 1rem 1rem;
+      background-color: var(--group-bg-color);
+    }
+  }
+}
+
+// Tableau en mode groupé (ne s'applique pas si les groupement sont désactivés - auquel cas on affiche un tableau simple).
+// Contient les règles pour garder la première colonne fixe et afficher une barre de séparation.
+.grouping-table.has-group {
+
+  .grouping-table-cell:first-child {
+    // première cellule d'une ligne (celle qui affiche les groupes).
+    min-width: calc($group-width + 1rem + var(--level-padding) + var(--level-borders));
+    display: flex;
+    gap: .5rem;
+    flex-grow: 0;
+    position: relative;
+    left: var(--scroll-length);
+    z-index: 1;
+  }
+
+  > .header {
+    // On ajoute une marge à droite pour permettre de défiler horizontalement plus loin que la fin du contenu.
+    padding-right: 1rem;
+
+    > .grouping-table-cell {
+      &:first-child {
+        // 1ère cellule de header.
+        border-top-left-radius: 0;
+        border-left-color: transparent;
+      }
+
+      &:last-child {
+        // dernière cellule de header.
+        border-right: $table-border-width $table-border-style $table-outer-border-color;
+      }
+    }
+  }
+
+  &::after {
+    // Barre de séparation entre les groupes et les données.
+    content: "";
+    position: absolute;
+    left: calc(var(--scroll-length) + $group-width + var(--level-padding) + var(--level-borders) + 2rem);
+    top: 0;
+    height: 100%;
+    background-color: $group-separator-color;
+    width: $group-separator-width;
+    z-index: 2;
+  }
+
+  .grouping-table-row {
+
+    > .grouping-table-cell {
+
+      &:first-child {
+        // 1ère cellule de toutes les lignes
+        border-left: $table-border-width $table-border-style $table-outer-border-color;
+      }
+    }
+
+    &:last-child > .grouping-table-cell {
+      &:first-child {
+        // 1ère cellule de la 1ère ligne
+        border-bottom-left-radius: 0.25rem;
+      }
+    }
+  }
+
+  .table {
+    // toutes les tables
+    position: relative;
+
+    > .header {
+      display: flex;
+
+      > .grouping-table-cell {
+        background-color: $group-header-bg-color;
+        border: $table-border-width $table-border-style $table-outer-border-color;
+
+        &:not(:first-child) {
+          border-left-color: transparent;
+        }
+
+        &:first-child {
+          // 1ère cellule de header.
+          border-top-left-radius: .25rem;
+        }
+
+        &:last-child {
+          // dernière cellule de header.
+          border-right-color: transparent;
+        }
+      }
+    }
+
+    &.folded {
+      > .header > .grouping-table-cell {
+
+        &:first-child {
+          border-bottom-left-radius: .25rem;
+        }
+      }
+
+      > .table-body {
+        display: none;
+      }
+    }
+
+    & + .table {
+      // espacement entre 2 tables qui se suivent
+      margin-top: 1rem;
+    }
+
+    > .table-body {
+      border-bottom-left-radius: 0.25rem;
+      border-right: none;
+      display: flex;
+      flex-direction: column;
+
+      &.groups {
+        position: relative;
+        border: $table-border-width $table-border-style $table-outer-border-color;
+        border-right: none;
+        border-top: none;
+        padding: 1rem 0 1rem 1rem;
+        background-color: var(--group-bg-color);
+      }
+    }
+  }
+
+  > .table-body {
+    // body du tableau racine
+
+    // On ajoute une marge à droite pour permettre de défiler horizontalement plus loin que la fin du contenu.
+    padding: 1rem;
+
+    > .table {
+      border-right: $table-border-width $table-border-style $table-outer-border-color;
+    }
+  }
+
+  // Element pour cacher les lignes de données en arrière-plan lors du scroll horizontal
+  // (car elles passent derrière le contenu de la colonne de groupe).
+  .table-body.groups::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: calc(var(--scroll-length) - $table-border-width);
+    height: 100%;
+    width: calc($group-width + 1rem + var(--level-padding) + var(--level-borders));
+    background-color: inherit;
+    border: inherit;
+    border-bottom-left-radius: inherit;
+    z-index: 1;
+  }
+}
+
+/*
+  Les "niveaux" (classes level-<n>) sont attribués selon le niveau de regroupement,
+  le groupe le plus profond étant au niveau 0, son parent au niveau 1, son
+  grand-parent au niveau 2, etc.
+
+  La numérotation est inversée, on n'a pas level-0 à la racine de la page.
+  Le niveau à la racine de la page dépendra du nombre de colonnes utilisées pour
+  les groupes.
+  Si l'on groupe selon 3 colonnes, on aura la hierarchie suivante:
+   - level-2
+     - level-1
+       - level-0
+*/
+.level-4 {
+  --level-padding: 4rem;
+  --level-borders: #{calc(4 * $table-border-width)};
+}
+
+.level-3 {
+  --level-padding: 3rem;
+  --level-borders: #{calc(3 * $table-border-width)};
+}
+
+.level-2 {
+  --level-padding: 2rem;
+  --level-borders: #{calc(2 * $table-border-width)};
+}
+
+.level-1 {
+  --level-padding: 1rem;
+  --level-borders: #{$table-border-width};
+}
+
+.level-0 {
+  --level-padding: 0rem;
+  --level-borders: 0px;
+}

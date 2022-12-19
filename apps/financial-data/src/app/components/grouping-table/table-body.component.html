@@ -1,0 +1,16 @@
+<ng-container [ngSwitch]="groupLevel > 0">
+  <ng-container *ngSwitchCase="true">
+    <financial-table-group
+      *ngFor="let g of group.groups"
+      [group]="g"
+      [groupLevel]="groupLevel - 1"
+    ></financial-table-group>
+  </ng-container>
+
+  <ng-container *ngSwitchDefault>
+    <financial-table-rows
+      [rows]="group.rows || []"
+    ></financial-table-rows>
+  </ng-container>
+
+</ng-container>

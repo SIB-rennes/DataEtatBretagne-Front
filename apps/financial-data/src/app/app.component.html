@@ -1,0 +1,8 @@
+<financial-header></financial-header>
+<div *ngIf="progressBarVisible === true">
+  <mat-progress-bar mode="query"></mat-progress-bar>
+</div>
+
+<router-outlet class="page-content-outlet"></router-outlet>
+
+<financial-footer></financial-footer>

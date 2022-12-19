@@ -1,0 +1,120 @@
+/* You can add global styles to this file, and also import other style files */
+
+
+:root {
+  --base-color: #024059;
+  --base-foreground-color: white;
+  --background-color: white;
+  --color: black;
+}
+
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "app/components/grouping-table/grouping-table.global";
+
+html, body {
+  margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content-outlet + * {
+  flex: 1;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+*, :after, :before {
+  box-sizing: content-box;
+}
+
+.fr-container {
+  max-width: 90%;
+}
+
+
+/**
+ * Overlay : container (à placer sur le parent) et panel (élément englobant le contenu à placer en overlay).
+ */
+.overlay {
+  &-container {
+    position: relative;
+  }
+
+  &-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(225, 225, 225, 0.5);
+    z-index: 100;
+  }
+}
+
+/**
+ * Centered : container (à placer sur le parent) et item (à placer sur l'élément à centrer dans le parent).
+ */
+.centered {
+  &-container {
+    display: flex;
+  }
+
+  &-item {
+    margin: auto;
+  }
+}
+
+/**
+ * Animation de chargement "3 points".
+ */
+.dot-flashing {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dot-flashing 1s infinite linear alternate;
+  animation-delay: 0.5s;
+
+  &::before, &::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    top: 0;
+  }
+
+  &::before {
+    left: -15px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #9880ff;
+    color: #9880ff;
+    animation: dot-flashing 1s infinite alternate;
+    animation-delay: 0s;
+  }
+
+  &::after {
+    left: 15px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #9880ff;
+    color: #9880ff;
+    animation: dot-flashing 1s infinite alternate;
+    animation-delay: 1s;
+  }
+}
+
+@keyframes dot-flashing {
+  0% {
+    background-color: #9880ff;
+  }
+  50%, 100% {
+    background-color: rgba(152, 128, 255, 0.2);
+  }
+}

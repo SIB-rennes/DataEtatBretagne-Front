@@ -1,0 +1,6 @@
+<div
+  *ngFor="let col of context.displayedColumns; index as i; first as isFirst"
+  class="grouping-table-cell {{isFirst ? '' : ('col-' + i)}}"
+>
+  {{col.label}}
+</div>

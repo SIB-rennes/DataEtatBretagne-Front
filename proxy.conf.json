@@ -1,0 +1,20 @@
+{
+  "/api": {
+    "target": "http://localhost:5000",
+    "secure": false,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api": "/"
+    }
+  },
+
+  "/integ-api": {
+    "target": "https://api.nocode.csm.ovh/nocodb/CHORUS-DATA",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/integ-api": "/"
+    }
+  }
+}

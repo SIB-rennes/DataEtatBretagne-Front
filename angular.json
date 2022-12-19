@@ -1,0 +1,131 @@
+{
+  "newProjectRoot": "apps",
+  "version": 1,
+  "projects": {
+    "financial-data": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "apps/financial-data",
+      "sourceRoot": "apps/financial-data/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/financial-data",
+            "index": "apps/financial-data/src/index.html",
+            "main": "apps/financial-data/src/main.ts",
+            "polyfills": "apps/financial-data/src/polyfills.ts",
+            "tsConfig": "apps/financial-data/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "apps/financial-data/src/favicon.ico",
+              "apps/financial-data/src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@gouvfr/dsfr/dist",
+                "output": "/@gouvfr"
+              }
+            ],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "apps/financial-data/src/styles.scss"
+            ],
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "js-sha256",
+              "base64-js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "2mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "apps/financial-data/src/environments/environment.ts",
+                  "with": "apps/financial-data/src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "financial-data:build:production"
+            },
+            "development": {
+              "browserTarget": "financial-data:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "financial-data:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/financial-data/src/test.ts",
+            "polyfills": "apps/financial-data/src/polyfills.ts",
+            "tsConfig": "apps/financial-data/tsconfig.spec.json",
+            "karmaConfig": "apps/financial-data/karma.conf.js",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "apps/financial-data/src/favicon.ico",
+              "apps/financial-data/src/assets"
+            ],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "apps/financial-data/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/financial-data/**/*.ts",
+              "apps/financial-data/**/*.html"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
+  }
+}

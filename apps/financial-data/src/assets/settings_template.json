@@ -1,0 +1,11 @@
+{
+  "keycloak": {
+    "url": "<URL KC>",
+    "realm": "realm",
+    "clientId": "client"
+  },
+  "apis": {
+    "financial": "<url api financial>",
+    "geo": "url api geo"
+  }
+}
