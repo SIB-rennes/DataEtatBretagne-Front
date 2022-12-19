@@ -19,7 +19,7 @@
 
     <mat-form-field class="field-30-width" appearance="fill">
       <mat-label>Programme</mat-label>
-      <mat-select formControlName="bops" multiple>
+      <mat-select formControlName="bops" multiple [errorStateMatcher]="errorMatcher">
         <mat-form-field class="field-100-width" appearance="fill">
           <mat-label>Filtrer</mat-label>
           <input type="text" class="fr-input" matInput formControlName="filterBop">
