@@ -28,8 +28,6 @@ export class HomeComponent {
     { columnName: '*commune' },
   ];
 
-  searchInProgress = false;
-
   constructor() {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
       style: 'currency',

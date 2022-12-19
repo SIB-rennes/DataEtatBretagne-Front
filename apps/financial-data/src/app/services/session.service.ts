@@ -5,7 +5,7 @@ import { Observable, Subject } from 'rxjs';
   providedIn: 'root',
 })
 export class SessionService {
-  public _userInfo: Keycloak.KeycloakProfile | null = null;
+  private _userInfo: Keycloak.KeycloakProfile | null = null;
 
   public userInfo$ = new Subject<Keycloak.KeycloakProfile | null>();
 
