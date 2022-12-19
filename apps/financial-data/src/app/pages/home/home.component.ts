@@ -39,7 +39,12 @@ export class HomeComponent {
     this.columnsMetaData = new ColumnsMetaData([
       { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
       { name: 'Theme', label: 'Thème' },
-      { name: 'nom_programme', label: 'Programme' },
+      {
+        name: 'nom_programme',
+        label: 'Programme',
+        renderFn: (row, _col) =>
+          row['code_programme'] + ' - ' + row['nom_programme'],
+      },
       {
         name: '*commune',
         label: 'Commune',
