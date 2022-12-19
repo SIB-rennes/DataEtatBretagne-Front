@@ -91,7 +91,7 @@ export class FinancialDataHttpService {
     departement: GeoDepartementModel | null
   ): string {
     let params =
-      'sort=Montant,DateModificationEj&limit=4000&where=(Montant,gt,0)';
+      'sort=code_programme,Montant,DateModificationEj&limit=4000&where=(Montant,gt,0)';
     if (bops) {
       params += `~and(code_programme,in,${bops
         .filter((bop) => bop.Code)

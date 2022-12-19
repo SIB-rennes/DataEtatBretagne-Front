@@ -20,7 +20,6 @@ import {
   startWith,
   Observable,
   map,
-  tap,
   finalize,
   BehaviorSubject,
 } from 'rxjs';
@@ -36,7 +35,7 @@ import {
 } from '../../validators/financial-data-form.validators';
 import { FinancialDataModel } from '@models/financial-data.models';
 import { DatePipe } from '@angular/common';
-import { BinaryOperator } from '@angular/compiler';
+import { LoaderService } from '../../services/loader.service';
 
 type BopModelSelected = BopModel & { selected: boolean };
 
@@ -78,22 +77,23 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   public searchInProgress = new BehaviorSubject(false);
 
   /**
+   * Affiche une erreur
+   */
+  public displayError = false;
+  public error: Error | null = null;
+
+  /**
    * Resultats de la recherche.
    */
   @Output() searchResults = new EventEmitter<FinancialDataModel[]>();
-
-  @Output() searchInProgressChange = new EventEmitter<boolean>();
 
   constructor(
     private geoService: GeoHttpService,
     private route: ActivatedRoute,
     private datePipe: DatePipe,
-    private service: FinancialDataHttpService
-  ) {
-    this.searchInProgress.subscribe((value) => {
-      this.searchInProgressChange.next(value);
-    });
-  }
+    private service: FinancialDataHttpService,
+    private loader: LoaderService
+  ) {}
 
   ngAfterViewInit() {
     if (this.triggerTheme) {
@@ -107,15 +107,21 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     // récupération des themes dans le resolver
     this.route.data.subscribe(
-      (response: { financial: FinancialDataResolverModel } | any) => {
-        this.themes = response.financial.themes;
-        this.bop = response.financial.bop;
-        this.bop.map((bop) => {
-          return { ...bop, selected: false };
-        });
+      (response: { financial: FinancialDataResolverModel | Error } | any) => {
+        if ('themes' in response.financial) {
+          this.displayError = false;
+          this.themes = response.financial.themes;
+          this.bop = response.financial.bop;
+          this.bop.map((bop) => {
+            return { ...bop, selected: false };
+          });
 
-        this.filteredTheme = of(this.themes);
-        this.filteredBop = this.bop;
+          this.filteredTheme = of(this.themes);
+          this.filteredBop = this.bop;
+        } else {
+          this.displayError = true;
+          this.error = response.financial as Error;
+        }
       }
     );
 
@@ -181,6 +187,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     if (this.searchForm.valid && !this.searchInProgress.value) {
       const formValue = this.searchForm.value;
       this.searchInProgress.next(true);
+      this.loader.startLoader();
       this.service
         .search(
           formValue.bops,
@@ -190,6 +197,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         )
         .pipe(
           finalize(() => {
+            this.loader.endLoader();
             this.searchInProgress.next(false);
           })
         )
@@ -201,9 +209,11 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   }
 
   public downloadCsv(): void {
+    this.searchForm.markAllAsTouched(); // pour notifier les erreurs sur le formulaire
     if (this.searchForm.valid && !this.searchInProgress.value) {
       const formValue = this.searchForm.value;
       this.searchInProgress.next(true);
+      this.loader.startLoader();
       this.service
         .getCsv(
           formValue.bops,
@@ -213,6 +223,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         )
         .pipe(
           finalize(() => {
+            this.loader.endLoader();
             this.searchInProgress.next(false);
           })
         )
@@ -241,8 +252,14 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     if (formValue.theme !== null) {
       filename += '_' + formValue.theme.Label;
     }
-    if (formValue.bop !== null) {
-      filename += '_' + formValue.bop.Label;
+    if (formValue.bops !== null) {
+      const bops = formValue.bops as BopModel[];
+      filename +=
+        '_' +
+        bops
+          .filter((bop) => bop.Code)
+          .map((bop) => bop.Code)
+          .join('-');
     }
 
     if (formValue.year) {
