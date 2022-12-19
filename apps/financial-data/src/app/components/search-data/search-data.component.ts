@@ -252,8 +252,14 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     if (formValue.theme !== null) {
       filename += '_' + formValue.theme.Label;
     }
-    if (formValue.bop !== null) {
-      filename += '_' + formValue.bop.Label;
+    if (formValue.bops !== null) {
+      const bops = formValue.bops as BopModel[];
+      filename +=
+        '_' +
+        bops
+          .filter((bop) => bop.Code)
+          .map((bop) => bop.Code)
+          .join('-');
     }
 
     if (formValue.year) {
