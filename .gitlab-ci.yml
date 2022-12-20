@@ -3,6 +3,7 @@ stages:
   - build-angular
   - 🔨 docker-build
   - 🐣 deploy
+  - test-e2e
 
 .build-docker:
   image: docker:stable-dind
@@ -78,6 +79,24 @@ deploy-integ-snapshot:
     - main
     - develop
     - /^feature.*$/
-  when: manual
   before_script:
     - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"
+
+run-tests-e2e:
+  stage: test-e2e
+  image: mcr.microsoft.com/playwright:v1.29.0-focal
+  only:
+    - develop
+    - /^feature.*$/
+  script:
+    - cd e2e/
+    - npm ci
+    - export TEST_USERNAME=${TEST_USERNAME}
+    - export TEST_PASSWORD=${TEST_PASSWORD}
+    - echo ${TEST_USERNAME}
+    - npx playwright test
+  artifacts:
+    expire_in: 3 days
+    paths:
+      - e2e/playwright-report/
+      - e2e/test-results/

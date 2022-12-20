@@ -20,3 +20,23 @@
 # Liste des fronts
 
 * [Financial data](./apps/financial-data/README.md)
+
+# Test e2e
+
+Créer un fichier '.env' à la racine du projet [e2e](./e2e) et mettre les identifiants d'un utilisateur pour passer l'authentification :  
+
+```
+TEST_USERNAME=csm@sib.fr
+TEST_PASSWORD=<PASSWORD>
+```
+
+Pour lancer les tests sur l'environnement d'intégration
+```
+npx playwright test
+```
+
+Pour lancer les tests depuis votre environnement locale
+```
+npx playwright test --config=playwright.dev.config.ts
+```
+
