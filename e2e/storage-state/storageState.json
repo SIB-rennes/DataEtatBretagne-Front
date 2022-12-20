@@ -1,0 +1,85 @@
+{
+  "cookies": [
+    {
+      "name": "AUTH_SESSION_ID",
+      "value": "7628e086-0948-4983-81cc-f7f59114f00c.be8033160a04-1923",
+      "domain": "auth.nocode.csm.ovh",
+      "path": "/realms/grist/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "AUTH_SESSION_ID_LEGACY",
+      "value": "7628e086-0948-4983-81cc-f7f59114f00c.be8033160a04-1923",
+      "domain": "auth.nocode.csm.ovh",
+      "path": "/realms/grist/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "KEYCLOAK_LOCALE",
+      "value": "fr",
+      "domain": "auth.nocode.csm.ovh",
+      "path": "/realms/grist/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "KEYCLOAK_IDENTITY",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI5ZGQ4ZmE1Zi1jZmYxLTQxMWEtYjNhOC05MGRkMzVjYzA5MjUifQ.eyJleHAiOjE2NzE1ODUwNDYsImlhdCI6MTY3MTU0OTA0NiwianRpIjoiYTg3NzdiM2YtNzU1YS00NDlmLWFlYzktNTdjZGQ0OTcyZDQ0IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLm5vY29kZS5jc20ub3ZoL3JlYWxtcy9ncmlzdCIsInN1YiI6IjEzNjlkNWNiLTViYmYtNDE0YS05OTljLWEwM2FkODIxMjUxYSIsInR5cCI6IlNlcmlhbGl6ZWQtSUQiLCJzZXNzaW9uX3N0YXRlIjoiNzYyOGUwODYtMDk0OC00OTgzLTgxY2MtZjdmNTkxMTRmMDBjIiwic2lkIjoiNzYyOGUwODYtMDk0OC00OTgzLTgxY2MtZjdmNTkxMTRmMDBjIiwic3RhdGVfY2hlY2tlciI6InJLV3pMOGFRemZpWmZPRHJFT2NPa0RXN19DNE1nT3QwaHNCVE5HSEpIV28ifQ.L7oL5dCzP0s-Dvl4nGQC3oWns6Oj2rZ643m8TMi1fdM",
+      "domain": "auth.nocode.csm.ovh",
+      "path": "/realms/grist/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "KEYCLOAK_IDENTITY_LEGACY",
+      "value": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI5ZGQ4ZmE1Zi1jZmYxLTQxMWEtYjNhOC05MGRkMzVjYzA5MjUifQ.eyJleHAiOjE2NzE1ODUwNDYsImlhdCI6MTY3MTU0OTA0NiwianRpIjoiYTg3NzdiM2YtNzU1YS00NDlmLWFlYzktNTdjZGQ0OTcyZDQ0IiwiaXNzIjoiaHR0cHM6Ly9hdXRoLm5vY29kZS5jc20ub3ZoL3JlYWxtcy9ncmlzdCIsInN1YiI6IjEzNjlkNWNiLTViYmYtNDE0YS05OTljLWEwM2FkODIxMjUxYSIsInR5cCI6IlNlcmlhbGl6ZWQtSUQiLCJzZXNzaW9uX3N0YXRlIjoiNzYyOGUwODYtMDk0OC00OTgzLTgxY2MtZjdmNTkxMTRmMDBjIiwic2lkIjoiNzYyOGUwODYtMDk0OC00OTgzLTgxY2MtZjdmNTkxMTRmMDBjIiwic3RhdGVfY2hlY2tlciI6InJLV3pMOGFRemZpWmZPRHJFT2NPa0RXN19DNE1nT3QwaHNCVE5HSEpIV28ifQ.L7oL5dCzP0s-Dvl4nGQC3oWns6Oj2rZ643m8TMi1fdM",
+      "domain": "auth.nocode.csm.ovh",
+      "path": "/realms/grist/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "KEYCLOAK_SESSION",
+      "value": "grist/1369d5cb-5bbf-414a-999c-a03ad821251a/7628e086-0948-4983-81cc-f7f59114f00c",
+      "domain": "auth.nocode.csm.ovh",
+      "path": "/realms/grist/",
+      "expires": 1671585046.013033,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "KEYCLOAK_SESSION_LEGACY",
+      "value": "grist/1369d5cb-5bbf-414a-999c-a03ad821251a/7628e086-0948-4983-81cc-f7f59114f00c",
+      "domain": "auth.nocode.csm.ovh",
+      "path": "/realms/grist/",
+      "expires": 1671585046.013066,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://auth.nocode.csm.ovh",
+      "localStorage": [
+        {
+          "name": "scheme",
+          "value": "system"
+        }
+      ]
+    }
+  ]
+}

@@ -42,3 +42,8 @@ testem.log
 .DS_Store
 Thumbs.db
 /apps/financial-data/src/assets/settings.json
+/test-results/
+/playwright-report/
+/playwright/.cache/
+.env
+/storage-state/
