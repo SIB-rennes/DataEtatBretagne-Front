@@ -47,3 +47,4 @@ Thumbs.db
 /playwright/.cache/
 .env
 /storage-state/
+/e2e/storage-state
