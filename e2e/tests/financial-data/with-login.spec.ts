@@ -18,6 +18,7 @@ test.describe("Page d'accueil", () => {
 
     // vérification du formulaire
     await page.getByLabel('Theme').isVisible();
+    await page.getByLabel('Theme').click();
     page
       .getByLabel('Theme')
       .click()
