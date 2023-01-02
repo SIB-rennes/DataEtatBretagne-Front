@@ -38,7 +38,7 @@ const config: PlaywrightTestConfig = {
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
-    actionTimeout: 0,
+    actionTimeout: 5000,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'retain-on-failure',
     baseURL: 'https://budget.nocode.csm.ovh',
@@ -52,13 +52,13 @@ const config: PlaywrightTestConfig = {
         ...devices['Desktop Chrome'],
       },
     },
-    // {
-    //   name: 'no-login-firefox',
-    //   testDir: './tests/no-login',
-    //   use: {
-    //     ...devices['Desktop Firefox'],
-    //   },
-    // },
+    {
+      name: 'no-login-firefox',
+      testDir: './tests/no-login',
+      use: {
+        ...devices['Desktop Firefox'],
+      },
+    },
     {
       name: 'with-login',
       testIgnore: '**/no-login/**',
@@ -67,14 +67,14 @@ const config: PlaywrightTestConfig = {
         ...devices['Desktop Chrome'],
       },
     },
-    // {
-    //   name: 'with-login-firefox',
-    //   testIgnore: '**/no-login/**',
-    //   use: {
-    //     storageState: 'storage-state/storageState.json',
-    //     ...devices['Desktop Firefox'],
-    //   },
-    // },
+    {
+      name: 'with-login-firefox',
+      testIgnore: '**/no-login/**',
+      use: {
+        storageState: 'storage-state/storageState.json',
+        ...devices['Desktop Firefox'],
+      },
+    },
     // {
     //   name: 'firefox',
     //   use: {
