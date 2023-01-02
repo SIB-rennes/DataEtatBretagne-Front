@@ -96,8 +96,9 @@ run-tests-e2e:
     - npx playwright test
   artifacts:
     expire_in: 3 days
+    when: always
     paths:
-      - e2e/playwright-report/
-      - e2e/test-results/
-      - test-results/
-      - playwright-report/
+      - e2e/playwright-report/*
+      - e2e/test-results/*
+      - test-results/*
+      - playwright-report/*
