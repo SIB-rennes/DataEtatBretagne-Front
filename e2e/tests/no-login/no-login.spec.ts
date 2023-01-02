@@ -32,12 +32,6 @@ test.describe("Page d'authentification", () => {
   });
 });
 
-// test.describe("Page d'accueil", () => {
-//   test("L'utilisateur est connecté", async ({ page }) => {
-//     await page.goto('./');
-//   });
-// });
-
 // attente de redirection vers keycloak
 async function waitingRedirectKeycloak(page) {
   const navigationPromise = page.waitForNavigation({
