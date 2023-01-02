@@ -17,30 +17,20 @@ test.describe("Page d'accueil", () => {
     );
 
     // vérification du formulaire
-    await page.getByLabel('Theme').isVisible();
     await page.getByLabel('Theme').click();
-    page
-      .getByLabel('Theme')
-      .click()
-      .then(async () => {
-        await expect(
-          page
-            .getByRole('listbox', { name: 'Theme' })
-            .locator('.mdc-list-item__primary-text')
-        ).toHaveCount(19);
-      });
-    await page.getByLabel('Programme').isVisible();
+    await expect(
+      page
+        .getByRole('listbox', { name: 'Theme' })
+        .locator('.mdc-list-item__primary-text')
+    ).toHaveCount(19);
 
-    page
-      .getByLabel('Programme')
-      .click()
-      .then(async () => {
-        await expect(
-          page
-            .getByRole('listbox', { name: 'Programme' })
-            .locator('.mdc-list-item__primary-text')
-        ).toHaveCount(133);
-      });
+    await page.getByLabel('Programme').click();
+    await expect(
+      page
+        .getByRole('listbox', { name: 'Programme' })
+        .locator('.mdc-list-item__primary-text')
+    ).toHaveCount(133);
+
     await page.getByLabel('Département').isVisible();
     await page.getByLabel('Année').isVisible();
     expect((await page.locator('form').getByRole('button').count()) == 1);
