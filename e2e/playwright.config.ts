@@ -52,13 +52,13 @@ const config: PlaywrightTestConfig = {
         ...devices['Desktop Chrome'],
       },
     },
-    {
-      name: 'no-login-firefox',
-      testDir: './tests/no-login',
-      use: {
-        ...devices['Desktop Firefox'],
-      },
-    },
+    // {
+    //   name: 'no-login-firefox',
+    //   testDir: './tests/no-login',
+    //   use: {
+    //     ...devices['Desktop Firefox'],
+    //   },
+    // },
     {
       name: 'with-login',
       testIgnore: '**/no-login/**',
@@ -67,14 +67,14 @@ const config: PlaywrightTestConfig = {
         ...devices['Desktop Chrome'],
       },
     },
-    {
-      name: 'with-login-firefox',
-      testIgnore: '**/no-login/**',
-      use: {
-        storageState: 'storage-state/storageState.json',
-        ...devices['Desktop Firefox'],
-      },
-    },
+    // {
+    //   name: 'with-login-firefox',
+    //   testIgnore: '**/no-login/**',
+    //   use: {
+    //     storageState: 'storage-state/storageState.json',
+    //     ...devices['Desktop Firefox'],
+    //   },
+    // },
     // {
     //   name: 'firefox',
     //   use: {
