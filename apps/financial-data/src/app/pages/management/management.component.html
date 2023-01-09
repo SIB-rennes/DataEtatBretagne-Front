@@ -21,7 +21,7 @@
       <ng-container matColumnDef="username">
         <th mat-header-cell *matHeaderCellDef> Mail </th>
         <td mat-cell *matCellDef="let element"> {{element.username}} </td>
-      </ng-container> -->
+      </ng-container>
 
 
       <!-- Enabled Column -->
@@ -37,7 +37,8 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <mat-paginator [length]="dataSource.pageInfo?.totalRows" [pageSize]="dataSource.users.length"
-      [pageSizeOptions]="[2, 10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+    <mat-paginator (page)="changePage($event)" [length]="dataSource.pageInfo?.totalRows"
+      [pageSize]="dataSource.users.length" [pageSizeOptions]="[2, 4, 6, 10, 20, 50, 100]"
+      showFirstLastButtons></mat-paginator>
   </mat-card-content>
 </mat-card>
