@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LoaderService } from './services/loader.service';
+import { SessionService } from './services/session.service';
 
 @Component({
   selector: 'financial-root',
@@ -8,12 +9,20 @@ import { LoaderService } from './services/loader.service';
 })
 export class AppComponent implements OnInit {
   public progressBarVisible: boolean = false;
+  public isAuthenticated: boolean = false;
 
-  constructor(private loaderService: LoaderService) {}
+  constructor(
+    private loaderService: LoaderService,
+    private sessionService: SessionService
+  ) {}
 
   ngOnInit(): void {
     this.loaderService.isLoading().subscribe((loading) => {
       this.progressBarVisible = loading;
+    });
+
+    this.sessionService.getUser().subscribe((user) => {
+      this.isAuthenticated = user !== null;
     });
   }
 }
