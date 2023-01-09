@@ -1,29 +1,38 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { User } from '@models/users/user.models';
+import { Profil } from '@models/profil.enum.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SessionService {
-  private _userInfo: Keycloak.KeycloakProfile | null = null;
+  private _userInfo: User | null = null;
 
-  public userInfo$ = new Subject<Keycloak.KeycloakProfile | null>();
+  public userInfo$ = new Subject<User | null>();
 
   constructor() {}
 
-  public setAuthentication(info: any): void {
-    this._userInfo = info;
-    this.userInfo$.next(info);
+  public setAuthentication(info: Keycloak.KeycloakProfile, roles: any): void {
+    this._userInfo = info as User;
+    this._userInfo.roles = roles;
+    this.userInfo$.next(this._userInfo);
   }
 
-  public getUser(): Observable<Keycloak.KeycloakProfile | null> {
+  public getUser(): Observable<User | null> {
     return this.userInfo$.asObservable();
   }
 
   /**
    * Return state of User Connected
    */
-  public getCurrentAccount(): Keycloak.KeycloakProfile | null {
+  public getCurrentAccount(): User | null {
     return this._userInfo;
+  }
+
+  public isAdmin(): boolean {
+    return (
+      this._userInfo !== null && this._userInfo?.roles.includes(Profil.ADMIN)
+    );
   }
 }

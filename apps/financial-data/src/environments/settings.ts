@@ -1,5 +1,6 @@
 export class Api {
   financial = '';
+  management = '';
   geo = '';
 }
 export class Keycloak {

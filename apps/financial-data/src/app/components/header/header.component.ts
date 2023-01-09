@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { KeycloakService } from 'keycloak-angular';
-import { KeycloakProfile } from 'keycloak-js';
-import { SessionService } from '../../services/session.service';
+import { User } from '@models/users/user.models';
+import { SessionService } from '@services/session.service';
 
 @Component({
   selector: 'financial-header',
@@ -10,10 +10,10 @@ import { SessionService } from '../../services/session.service';
 })
 export class HeaderComponent implements OnInit {
   public isLoggedIn = false;
-  public user: KeycloakProfile | null = null;
+  public user: User | null = null;
 
   constructor(
-    private session: SessionService,
+    protected session: SessionService,
     private keycloak: KeycloakService
   ) {}
 
