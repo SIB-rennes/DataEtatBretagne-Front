@@ -1,38 +1,24 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTableModule } from '@angular/material/table';
 import {
   MatPaginator,
   MatPaginatorIntl,
-  MatPaginatorModule,
   PageEvent,
 } from '@angular/material/paginator';
-import {
-  MatSlideToggleChange,
-  MatSlideToggleModule,
-} from '@angular/material/slide-toggle';
-import { MatCardModule } from '@angular/material/card';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { UserHttpService } from '@services/management/users-http.service';
 import { ActivatedRoute } from '@angular/router';
-import { User, UsersPagination } from '../../models/users/user.models';
+import { User, UsersPagination } from '@models/users/user.models';
 import { getFrenchPaginatorIntl } from '../../shared/paginator/french-paginator-intl';
 import { Observable } from 'rxjs';
-import { CommonModule } from '@angular/common';
 import { SessionService } from '@services/session.service';
+import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'financial-management',
   styleUrls: [],
-  standalone: true,
   templateUrl: './management.component.html',
   providers: [
     { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() },
-  ],
-  imports: [
-    CommonModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSlideToggleModule,
-    MatCardModule,
   ],
 })
 export class ManagementComponent implements OnInit {
@@ -43,8 +29,8 @@ export class ManagementComponent implements OnInit {
     'enabled',
   ];
 
-  @ViewChild(MatPaginator, { static: true }) paginator:
-    | MatPaginator
+  @ViewChild(MatCheckbox, { static: true }) public checkbox:
+    | MatCheckbox
     | undefined;
   public dataSource: UsersPagination = { users: [] };
 
@@ -73,7 +59,15 @@ export class ManagementComponent implements OnInit {
     }
     request.subscribe({
       next: (_response: string) => {
-        user.enabled = !user.enabled;
+        if (this.checkbox?.checked === true) {
+          this._retrieve_users(true).subscribe(
+            (userPagination: UsersPagination) => {
+              this.dataSource = userPagination;
+            }
+          );
+        } else {
+          user.enabled = !user.enabled;
+        }
       },
       error: (error: any) => {
         console.error(error);
@@ -81,11 +75,29 @@ export class ManagementComponent implements OnInit {
     });
   }
 
-  changePage(event: PageEvent): void {
-    this.userService
-      .getUsers(event.pageIndex + 1, event.pageSize)
-      .subscribe((userPagination: UsersPagination) => {
+  public onlyDisableUser(event: MatCheckboxChange): void {
+    this._retrieve_users(event.checked).subscribe(
+      (userPagination: UsersPagination) => {
         this.dataSource = userPagination;
-      });
+      }
+    );
+  }
+
+  public changePage(event: PageEvent): void {
+    this._retrieve_users(
+      this.checkbox?.checked ?? false,
+      event.pageIndex + 1,
+      event.pageSize
+    ).subscribe((userPagination: UsersPagination) => {
+      this.dataSource = userPagination;
+    });
+  }
+
+  private _retrieve_users(
+    only_disable: boolean,
+    pageIndex: number = 1,
+    pageSize: number = 10
+  ): Observable<UsersPagination> {
+    return this.userService.getUsers(only_disable, pageIndex, pageSize);
   }
 }

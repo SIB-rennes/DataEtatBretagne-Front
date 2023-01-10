@@ -19,6 +19,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonHttpInterceptor } from './interceptors/common-http-interceptor';
+import { ManagementComponent } from './pages/management/management.component';
 
 registerLocaleData(localeFr);
 
@@ -27,6 +28,7 @@ registerLocaleData(localeFr);
     AppComponent,
     HomeComponent,
     SearchDataComponent,
+    ManagementComponent,
     FooterComponent,
     HeaderComponent,
   ],

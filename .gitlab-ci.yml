@@ -34,8 +34,8 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "push"'
       variables:
         DO_E2E: "manual"
-        DO_DEPLOY: "if_changed"
-        DO_BUILD: "if_changed"
+        DO_DEPLOY: "manual"
+        DO_BUILD: "true"
 
 .build-docker:
   image: docker:stable-dind
