@@ -20,11 +20,9 @@ export class CommonHttpInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     this.loader.startLoader();
 
-    // return next.handle(req);
     return next.handle(req).pipe(
       tap({
         next: (event: HttpEvent<any>) => {
-          console.log(event);
           if (event instanceof HttpResponse) {
             this.loader.endLoader();
           }

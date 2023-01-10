@@ -15,6 +15,9 @@ import { UserHttpService } from '@services/management/users-http.service';
 import { ActivatedRoute } from '@angular/router';
 import { User, UsersPagination } from '../../models/users/user.models';
 import { getFrenchPaginatorIntl } from '../../shared/paginator/french-paginator-intl';
+import { Observable } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { SessionService } from '@services/session.service';
 
 @Component({
   selector: 'financial-management',
@@ -25,6 +28,7 @@ import { getFrenchPaginatorIntl } from '../../shared/paginator/french-paginator-
     { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() },
   ],
   imports: [
+    CommonModule,
     MatTableModule,
     MatPaginatorModule,
     MatSlideToggleModule,
@@ -46,7 +50,8 @@ export class ManagementComponent implements OnInit {
 
   constructor(
     private userService: UserHttpService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    protected session: SessionService
   ) {}
 
   ngOnInit(): void {
@@ -57,15 +62,26 @@ export class ManagementComponent implements OnInit {
     );
   }
 
-  toggleEnabled(user: User, event: MatSlideToggleChange) {
-    console.log(event);
-    console.log(user);
+  toggleEnabled(user: User, event: MatSlideToggleChange): void {
+    if (user.id === undefined) return;
+    let request: Observable<string>;
+
+    if (event.checked) {
+      request = this.userService.enableUser(user.id);
+    } else {
+      request = this.userService.disableUser(user.id);
+    }
+    request.subscribe({
+      next: (_response: string) => {
+        user.enabled = !user.enabled;
+      },
+      error: (error: any) => {
+        console.error(error);
+      },
+    });
   }
 
   changePage(event: PageEvent): void {
-    // // TODO fait un httpInterceptor pour le loader
-    // this.loading.startLoader();
-
     this.userService
       .getUsers(event.pageIndex + 1, event.pageSize)
       .subscribe((userPagination: UsersPagination) => {

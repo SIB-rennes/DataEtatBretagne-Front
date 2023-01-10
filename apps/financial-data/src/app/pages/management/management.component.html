@@ -1,11 +1,8 @@
 <mat-card class="mat-card">
-  <mat-card-header>
-    <mat-card-title>Liste des utilisateurs</mat-card-title>
-  </mat-card-header>
-
   <mat-card-content class="content-column">
-    <table mat-table [dataSource]="dataSource.users" class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource.users" class="fr-table">
       <!-- firstName Column -->
+      <caption>Liste des utilisateurs</caption>
       <ng-container matColumnDef="firstName">
         <th mat-header-cell *matHeaderCellDef> Nom </th>
         <td mat-cell *matCellDef="let element"> {{element.firstName}} </td>
@@ -28,7 +25,10 @@
       <ng-container matColumnDef="enabled">
         <th mat-header-cell *matHeaderCellDef> Activer/Désactiver </th>
         <td mat-cell *matCellDef="let element">
-          <mat-slide-toggle [checked]="element.enabled" (change)="toggleEnabled(element, $event)">
+          <mat-slide-toggle [disabled]="session.getCurrentAccount()?.id === element.id" [checked]="element.enabled"
+            color="primary" (change)="toggleEnabled(element, $event)">
+            <span *ngIf="element.enabled">Désactiver l'utilisateur</span>
+            <span *ngIf="!element.enabled">Activer l'utilisateur</span>
           </mat-slide-toggle>
         </td>
       </ng-container>
@@ -37,8 +37,7 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <mat-paginator (page)="changePage($event)" [length]="dataSource.pageInfo?.totalRows"
-      [pageSize]="dataSource.users.length" [pageSizeOptions]="[2, 4, 6, 10, 20, 50, 100]"
-      showFirstLastButtons></mat-paginator>
+    <mat-paginator (page)="changePage($event)" [length]="dataSource.pageInfo?.totalRows" [pageSize]="10"
+      [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
   </mat-card-content>
 </mat-card>

@@ -26,7 +26,7 @@ export class UserHttpService {
    */
   public getUsers(
     pageNumber: number = 1,
-    limit: number = 2
+    limit: number = 10
   ): Observable<UsersPagination> {
     const apiManagement = this.settings.apiManagement;
 
