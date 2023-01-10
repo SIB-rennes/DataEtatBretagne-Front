@@ -28,7 +28,7 @@
       <ng-container matColumnDef="enabled">
         <th mat-header-cell *matHeaderCellDef> Activer/Désactiver </th>
         <td mat-cell *matCellDef="let element">
-          <mat-slide-toggle [checked]="element.enabled" (change)="toggleActif(element)">
+          <mat-slide-toggle [checked]="element.enabled" (change)="toggleEnabled(element, $event)">
           </mat-slide-toggle>
         </td>
       </ng-container>
