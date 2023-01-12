@@ -30,11 +30,16 @@ workflow:
         DO_BUILD: "true"
         DO_DEPLOY: "true"
         DO_E2E: "true"
+    - if: '$CI_PIPELINE_SOURCE == "push" &&  $CI_COMMIT_REF_NAME =~ "/^feature\//"'
+      variables:
+        DO_BUILD: "true"
+        DO_DEPLOY: "true"
+        DO_E2E: "true"
     - if: '$CI_PIPELINE_SOURCE == "push"'
       variables:
-        DO_E2E: "manual"
-        DO_DEPLOY: "manual"
         DO_BUILD: "true"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 .build-docker:
   image: docker:stable-dind
