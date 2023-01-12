@@ -14,9 +14,9 @@ test.describe("Page d'authentification", () => {
 
     await expect(await page.textContent('h1')).toBe('Connexion');
 
-    await expect(await page.locator('button').textContent()).toBe(
-      'Se connecter'
-    );
+    await expect(
+      await page.getByRole('button', { name: 'Se connecter' }).textContent()
+    ).toBe('Se connecter');
   });
 
   test("L'utilisateur ne peux pas se connecter", async ({ page }) => {

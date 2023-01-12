@@ -11,6 +11,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   exports: [
@@ -26,6 +29,9 @@ import { MatDividerModule } from '@angular/material/divider';
     MatDividerModule,
     MatCheckboxModule,
     MatProgressBarModule,
+    MatPaginatorModule,
+    MatSlideToggleModule,
+    MatTableModule,
   ],
 })
 export class MaterialModule {}

@@ -10,7 +10,10 @@ async function login(
   await page.getByLabel('Identifiant').fill(username);
   await page.getByLabel('Mot de passe').fill(password);
 
-  await Promise.all([page.waitForNavigation(), page.locator('button').click()]);
+  await Promise.all([
+    page.waitForNavigation(),
+    page.locator('button', { hasText: 'Se connecter' }).click(),
+  ]);
 }
 
 export default login;

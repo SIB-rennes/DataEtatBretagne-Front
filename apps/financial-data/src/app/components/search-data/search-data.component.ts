@@ -35,7 +35,6 @@ import {
 } from '../../validators/financial-data-form.validators';
 import { FinancialDataModel } from '@models/financial-data.models';
 import { DatePipe } from '@angular/common';
-import { LoaderService } from '../../services/loader.service';
 
 type BopModelSelected = BopModel & { selected: boolean };
 
@@ -91,8 +90,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     private geoService: GeoHttpService,
     private route: ActivatedRoute,
     private datePipe: DatePipe,
-    private service: FinancialDataHttpService,
-    private loader: LoaderService
+    private service: FinancialDataHttpService
   ) {}
 
   ngAfterViewInit() {
@@ -187,7 +185,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     if (this.searchForm.valid && !this.searchInProgress.value) {
       const formValue = this.searchForm.value;
       this.searchInProgress.next(true);
-      this.loader.startLoader();
       this.service
         .search(
           formValue.bops,
@@ -197,7 +194,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         )
         .pipe(
           finalize(() => {
-            this.loader.endLoader();
             this.searchInProgress.next(false);
           })
         )
@@ -213,7 +209,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     if (this.searchForm.valid && !this.searchInProgress.value) {
       const formValue = this.searchForm.value;
       this.searchInProgress.next(true);
-      this.loader.startLoader();
       this.service
         .getCsv(
           formValue.bops,
@@ -223,7 +218,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         )
         .pipe(
           finalize(() => {
-            this.loader.endLoader();
             this.searchInProgress.next(false);
           })
         )

@@ -6,6 +6,7 @@
   },
   "apis": {
     "financial": "<url api financial>",
+    "magagement": "<url api management>",
     "geo": "url api geo"
   }
 }

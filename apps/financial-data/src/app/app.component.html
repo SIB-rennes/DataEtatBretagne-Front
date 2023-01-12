@@ -5,4 +5,4 @@
 
 <router-outlet class="page-content-outlet"></router-outlet>
 
-<financial-footer></financial-footer>
+<financial-footer *ngIf="isAuthenticated"></financial-footer>

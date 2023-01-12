@@ -18,4 +18,8 @@ export class SettingsService {
   public get apiFinancial(): string {
     return this.settings.apis.financial;
   }
+
+  public get apiManagement(): string {
+    return this.settings.apis.management;
+  }
 }

@@ -59,19 +59,38 @@ const config: PlaywrightTestConfig = {
         ...devices['Desktop Firefox'],
       },
     },
+
+    // test profile USE SImple
     {
-      name: 'with-login',
-      testIgnore: '**/no-login/**',
+      name: 'login-simple-chrome',
+      testIgnore: ['**/no-login/**', '**/admin/**'],
       use: {
-        storageState: 'storage-state/storageState.json',
+        storageState: 'storage-state/storageState-simple.json',
         ...devices['Desktop Chrome'],
       },
     },
     {
-      name: 'with-login-firefox',
-      testIgnore: '**/no-login/**',
+      name: 'login-simple-firefox',
+      testIgnore: ['**/no-login/**', '**/admin/**'],
       use: {
-        storageState: 'storage-state/storageState.json',
+        storageState: 'storage-state/storageState-simple.json',
+        ...devices['Desktop Firefox'],
+      },
+    },
+    // test profile ADMIN
+    {
+      name: 'admin-profile-chrome',
+      testMatch: '**/admin/**.spec.ts',
+      use: {
+        storageState: 'storage-state/storageState-admin.json',
+        ...devices['Desktop Chrome'],
+      },
+    },
+    {
+      name: 'admin-profile-firefox',
+      testMatch: '**/admin/**.spec.ts',
+      use: {
+        storageState: 'storage-state/storageState-admin.json',
         ...devices['Desktop Firefox'],
       },
     },
