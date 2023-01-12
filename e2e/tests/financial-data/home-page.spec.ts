@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import mockRefApi from '../utils/mock-api';
 
 test.describe("Page d'accueil", () => {
@@ -15,6 +15,10 @@ test.describe("Page d'accueil", () => {
     await expect(page).toHaveTitle(
       /^Données financières de l'état en Bretagne*/
     );
+
+    await page
+      .getByRole('button', { name: "Information de l'utilisateur" })
+      .isVisible();
 
     // vérification du formulaire
     await page.getByLabel('Theme').click();
@@ -34,5 +38,20 @@ test.describe("Page d'accueil", () => {
     await page.getByLabel('Département').isVisible();
     await page.getByLabel('Année').isVisible();
     expect((await page.locator('form').getByRole('button').count()) == 1);
+  });
+});
+
+test.describe('Page de Management', () => {
+  test("L'utilisateur n'a pas accès à la page de management", async ({
+    page,
+  }) => {
+    const navigationPromise = page.waitForNavigation({
+      waitUntil: 'networkidle',
+      url: /^(http|https):\/\/.*(?<!(management))$/,
+    });
+    await page.goto('./management');
+    await navigationPromise;
+    expect(page.url()).not.toContain('/management');
+    await expect(page.locator('id=administration')).toHaveCount(0);
   });
 });
