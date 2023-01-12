@@ -1,5 +1,4 @@
 stages:
-  - lint
   - build-angular
   - 🔨 docker-build
   - 🐣 deploy
@@ -127,7 +126,7 @@ deploy-integ-snapshot:
 
 run-tests-e2e:
   stage: test-e2e
-  image: mcr.microsoft.com/playwright:v1.29.0-focal
+  image: mcr.microsoft.com/playwright:v1.29.2-focal
   script:
     - cd e2e/
     - npm ci

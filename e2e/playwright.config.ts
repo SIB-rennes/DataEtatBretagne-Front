@@ -77,7 +77,6 @@ const config: PlaywrightTestConfig = {
         ...devices['Desktop Firefox'],
       },
     },
-
     // test profile ADMIN
     {
       name: 'admin-profile-chrome',
