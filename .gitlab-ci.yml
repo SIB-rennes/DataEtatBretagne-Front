@@ -62,7 +62,7 @@ build angular app:
   script:
     - npm ci --cache ${CI_PROJECT_DIR}/.npm --prefer-offline --quiet --force
     - npm run lint
-    - npm run build
+    - npm run build:financial-data
   cache:
     key: ${CI_PROJECT_ID}-npm
     paths:

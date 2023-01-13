@@ -1,11 +1,12 @@
 {
-  "name": "apps",
+  "name": "front-data",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start:financial": "ng serve --project=financial-data",
     "start:financial-dev": "ng serve --project=financial-data --proxy-config proxy.conf.json",
-    "build": "ng build",
+    "build:financial-data": "ng build --project=financial-data",
+    "build:lib-preference-users": "ng build --project=preference-users",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"
@@ -42,6 +43,7 @@
     "@typescript-eslint/eslint-plugin": "5.45.0",
     "@typescript-eslint/parser": "5.45.0",
     "eslint": "^8.28.0",
+    "ng-packagr": "^15.0.0",
     "typescript": "~4.8.2"
   }
 }

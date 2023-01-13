@@ -3,7 +3,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/app",
-    "types": []
+    "types": [],
+    "paths": {
+      "@models/*": ["apps/financial-data/src/app/models/*"],
+      "@services/*": [
+        "apps/financial-data/src/app/services/*"
+      ]
+     }
   },
   "files": [
     "src/main.ts",

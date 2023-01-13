@@ -25,8 +25,12 @@
       "dom"
     ],
     "paths": {
-      "@models/*": ["apps/financial-data/src/app/models/*"],
-      "@services/*": ["apps/financial-data/src/app/services/*"]
+      "@preference-users": [
+        "dist/preference-users"
+      ],
+      "@preference-users/*": [
+        "dist/preference-users/*"
+      ]
      }
   },
   "angularCompilerOptions": {
