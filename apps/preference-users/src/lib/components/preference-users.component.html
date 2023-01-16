@@ -1,0 +1,68 @@
+<mat-card class="mat-card">
+  <mat-card-header>
+    <mat-card-title-group>
+      <mat-card-title>Préférences</mat-card-title>
+    </mat-card-title-group>
+  </mat-card-header>
+
+  <mat-card-content>
+    <table mat-table [dataSource]="dataSource" class="fr-table fr-table--no-caption">
+      <caption>Liste des utilisateurs</caption>
+      <!-- name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Nom </th>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+      </ng-container>
+
+      <!-- filters Column -->
+      <ng-container matColumnDef="filters">
+        <th mat-header-cell *matHeaderCellDef> Filtres </th>
+        <td mat-cell *matCellDef="let element">
+
+          <ul class="fr-badge-group">
+            <li class="fr-mr-3v" *ngFor="let field of objectKeys(element.filters)">
+              <p class="fr-mr-1v fr-badge fr-badge--blue-ecume"> {{field}} :</p>
+              <ng-container
+                [ngTemplateOutlet]="getTypeField(element.filters[field]) === 'simple' ? badgeSimple : badgeComplexe"
+                [ngTemplateOutletContext]="{value:element.filters[field], type: getTypeField(element.filters[field])}">
+              </ng-container>
+            </li>
+          </ul>
+
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card-content>
+</mat-card>
+
+
+<ng-template #badgeSimple let-value="value">
+  <p class="fr-tag fr-mr-0">{{value}}</p>
+</ng-template>
+
+
+<ng-template #badgeArray let-value="value">
+
+  <ul class="fr-badge-group">
+    <li *ngFor="let field of objectKeys(value)">
+      <p class="fr-tag fr-mr-2v">{{json.stringify(value[field])}}</p>
+    </li>
+  </ul>
+
+</ng-template>
+
+<ng-template #badgObject let-value="value">
+
+  <p class="fr-tag fr-mr-2v">{{json.stringify(value)}}</p>
+
+</ng-template>
+
+
+<ng-template #badgeComplexe let-value="value" let-type="type">
+
+  <ng-container [ngTemplateOutlet]="type ==='array' ? badgeArray: badgObject" [ngTemplateOutletContext]="{value:value}">
+  </ng-container>
+</ng-template>

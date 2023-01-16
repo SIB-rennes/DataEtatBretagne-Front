@@ -21,6 +21,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonHttpInterceptor } from './interceptors/common-http-interceptor';
 import { ManagementComponent } from './pages/management/management.component';
 import { PreferenceUsersModule } from 'apps/preference-users/src/lib/preference-users.module';
+import { API_PREFERENCE_PATH } from 'apps/preference-users/src/public-api';
+import { SettingsService } from '../environments/settings.service';
 
 registerLocaleData(localeFr);
 
@@ -49,6 +51,13 @@ registerLocaleData(localeFr);
     {
       provide: LOCALE_ID,
       useValue: 'fr-FR',
+    },
+    {
+      provide: API_PREFERENCE_PATH,
+      useFactory: (settings: SettingsService) => {
+        return settings.apiManagement;
+      },
+      deps: [SettingsService],
     },
   ],
   bootstrap: [AppComponent],

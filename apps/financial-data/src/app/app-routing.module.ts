@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { PreferenceUsersComponent } from 'apps/preference-users/src/public-api';
 import { AuthGuard } from './guards/auth-guard.service';
 import { Profil } from './models/profil.enum.model';
 import { HomeComponent } from './pages/home/home.component';
@@ -27,6 +28,12 @@ const routes: Routes = [
     resolve: {
       usersPagination: UsersResolver,
     },
+    runGuardsAndResolvers: 'always',
+  },
+  {
+    path: 'preference',
+    component: PreferenceUsersComponent,
+    canActivate: [AuthGuard],
     runGuardsAndResolvers: 'always',
   },
 ];

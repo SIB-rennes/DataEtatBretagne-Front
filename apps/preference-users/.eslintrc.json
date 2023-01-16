@@ -1,14 +1,17 @@
 {
   "extends": "../../.eslintrc.json",
-  "ignorePatterns": [
-    "!**/*"
-  ],
   "overrides": [
     {
       "files": [
         "*.ts"
       ],
       "rules": {
+        "@angular-eslint/no-host-metadata-property": [
+          "error",
+          {
+            "allowStatic": true
+          }
+        ],
         "@angular-eslint/directive-selector": [
           "error",
           {
@@ -26,12 +29,6 @@
           }
         ]
       }
-    },
-    {
-      "files": [
-        "*.html"
-      ],
-      "rules": {}
     }
   ]
 }
