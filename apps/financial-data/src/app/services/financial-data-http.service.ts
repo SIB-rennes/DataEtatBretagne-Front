@@ -48,7 +48,7 @@ export class FinancialDataHttpService {
 
     return this.http
       .get<NocoDbResponse<RefSiret>>(
-        `${apiFinancial}/RefSiret/RefSiret?fields=Code,Denomination&sort=Label&${whereClause}`
+        `${apiFinancial}/RefSiret/RefSiret?fields=Code,Denomination&sort=Code&${whereClause}`
       )
       .pipe(map((response) => response.list))
   }
