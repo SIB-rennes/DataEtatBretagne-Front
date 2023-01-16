@@ -8,12 +8,13 @@ import { SettingsService } from '../../environments/settings.service';
 import { RefTheme } from '@models/theme.models';
 import { GeoDepartementModel } from '@models/geo.models';
 import { FinancialDataModel } from '@models/financial-data.models';
+import { RefSiret } from '@models/RefSiret';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FinancialDataHttpService {
-  constructor(private http: HttpClient, private settings: SettingsService) {}
+  constructor(private http: HttpClient, private settings: SettingsService) { }
 
   public getBop(): Observable<BopModel[]> {
     const apiFinancial = this.settings.apiFinancial;
@@ -40,8 +41,31 @@ export class FinancialDataHttpService {
       .pipe(map((response) => response.list));
   }
 
+  public filterRefSiret(nomOuSiret: string): Observable<RefSiret[]> {
+    const apiFinancial = this.settings.apiFinancial;
+
+    let whereClause = this._filterRefSiretWhereClause(nomOuSiret);
+
+    return this.http
+      .get<NocoDbResponse<RefSiret>>(
+        `${apiFinancial}/RefSiret/RefSiret?fields=Code,Denomination&sort=Code&${whereClause}`
+      )
+      .pipe(map((response) => response.list))
+  }
+
+  public _filterRefSiretWhereClause(nomOuSiret: string): string {
+
+    let is_number = /^\d+$/.test(nomOuSiret)
+
+    if (is_number)
+      return `where=(Code,like,${nomOuSiret}%)`
+    else
+      return `where=(Denomination,like,${nomOuSiret})`
+  }
+
   /**
    *
+   * @param beneficiaire
    * @param bops
    * @param theme
    * @param year
@@ -49,6 +73,7 @@ export class FinancialDataHttpService {
    * @returns
    */
   public search(
+    beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
@@ -59,7 +84,7 @@ export class FinancialDataHttpService {
 
     const apiFinancial = this.settings.apiFinancial;
 
-    const params = this._buildparams(bops, theme, year, departement);
+    const params = this._buildparams(beneficiaire, bops, theme, year, departement);
     return this.http
       .get<NocoDbResponse<FinancialDataModel>>(
         `${apiFinancial}/DataChorus/Chorus-front?${params}`
@@ -68,6 +93,7 @@ export class FinancialDataHttpService {
   }
 
   public getCsv(
+    beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
@@ -77,7 +103,7 @@ export class FinancialDataHttpService {
       return of();
 
     const apiFinancial = this.settings.apiFinancial;
-    const params = this._buildparams(bops, theme, year, departement);
+    const params = this._buildparams(beneficiaire, bops, theme, year, departement);
     return this.http.get(
       `${apiFinancial}/DataChorus/Chorus-front/csv?${params}`,
       { responseType: 'blob' }
@@ -85,6 +111,7 @@ export class FinancialDataHttpService {
   }
 
   private _buildparams(
+    beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
@@ -92,6 +119,9 @@ export class FinancialDataHttpService {
   ): string {
     let params =
       'sort=code_programme,Montant,DateModificationEj&limit=4000&where=(Montant,gt,0)';
+    if (beneficiaire) {
+      params += `~and(code_siret,eq,${beneficiaire.Code})`
+    }
     if (bops) {
       params += `~and(code_programme,in,${bops
         .filter((bop) => bop.Code)
