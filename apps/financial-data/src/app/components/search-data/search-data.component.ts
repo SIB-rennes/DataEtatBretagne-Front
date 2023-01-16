@@ -344,7 +344,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
       startWith(''),
       debounceTime(300),
       switchMap((value) => {
-        if (value && value.length > 1) {
+        if (value && value.length > 3) {
           return this.service.filterRefSiret(value);
         }
         return of([])

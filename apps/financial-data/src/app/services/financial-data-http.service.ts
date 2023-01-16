@@ -44,13 +44,23 @@ export class FinancialDataHttpService {
   public filterRefSiret(nomOuSiret: string): Observable<RefSiret[]> {
     const apiFinancial = this.settings.apiFinancial;
 
-    let whereClause = `where=(Code,like,${nomOuSiret}%)~or(Denomination,like,${nomOuSiret})`
+    let whereClause = this._filterRefSiretWhereClause(nomOuSiret);
 
     return this.http
       .get<NocoDbResponse<RefSiret>>(
         `${apiFinancial}/RefSiret/RefSiret?fields=Code,Denomination&sort=Label&${whereClause}`
       )
       .pipe(map((response) => response.list))
+  }
+
+  public _filterRefSiretWhereClause(nomOuSiret: string): string {
+
+    let is_number = /^\d+$/.test(nomOuSiret)
+
+    if (is_number)
+      return `where=(Code,like,${nomOuSiret})`
+    else
+      return `where=(Denomination,like,${nomOuSiret})`
   }
 
   /**
