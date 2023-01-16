@@ -157,7 +157,17 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   }
 
   public displayBeneficiaire(element: RefSiret): string {
-    return element?.Denomination || element?.Code;
+
+    let code = element?.Code
+    let nom = element?.Denomination
+
+    if ( code && nom ) {
+      return `${nom} (${code})`
+    } else if (code) {
+      return code;
+    } else {
+      return nom;
+    }
   }
 
   /**
