@@ -11,7 +11,7 @@
     <div class="box">
       <mat-form-field class="field-30-width" appearance="fill">
         <mat-label>Bénéficiaire</mat-label>
-        <input type="text" matInput formControlName="beneficiaire" [matAutocomplete]="beneficiaire">
+        <input type="text" matInput formControlName="beneficiaire" [matAutocomplete]="beneficiaire" [errorStateMatcher]="errorMatcher">
         <button *ngIf="searchForm.controls['beneficiaire'].value !== null" matSuffix mat-icon-button
           (click)="searchForm.controls['beneficiaire'].setValue(null)">
           <mat-icon>close</mat-icon>
@@ -22,7 +22,8 @@
             {{displayBeneficiaire(beneficiaire)}}
           </mat-option>
         </mat-autocomplete>
-        <mat-error *ngIf="beneficiaireControls?.invalid">Le bénéficiaire est invalide</mat-error>
+
+        <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
       <mat-form-field class="field-30-width" appearance="fill">
@@ -39,7 +40,8 @@
             {{theme.Label}}
           </mat-option>
         </mat-autocomplete>
-        <mat-error *ngIf="errorsBop">Renseigner un Thème ou un Programme</mat-error>
+
+        <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
       <mat-form-field class="field-30-width" appearance="fill">
@@ -56,7 +58,7 @@
           <mat-icon>close</mat-icon>
         </button>
 
-        <mat-error *ngIf="errorsBop">Renseigner un Thème ou un Programme</mat-error>
+        <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
       <mat-form-field class="field-15-width" appearance="fill">

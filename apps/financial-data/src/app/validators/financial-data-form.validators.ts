@@ -19,11 +19,12 @@ export function financialDataFormValidators(): ValidatorFn {
       return null;
     }
 
+    const beneficiaire = value.beneficiaire;
     const theme = value.theme;
     const bops = value.bops;
 
-    if (theme == null && bops == null) {
-      return { bopRequired: true };
+    if (beneficiaire == null && theme == null && bops == null) {
+      return { benefOrBopRequired: 'Renseignez un Bénéficiaire, un Thème ou un Programme' };
     }
 
     return null;
@@ -36,6 +37,6 @@ export class CrossFieldErrorMatcher implements ErrorStateMatcher {
     if (control == null || form.invalid == null || form.errors == null)
       return false;
 
-    return control.touched && form.errors['bopRequired'];
+    return control.touched && form.errors['benefOrBopRequired'];
   }
 }

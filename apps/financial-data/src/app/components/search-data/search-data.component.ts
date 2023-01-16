@@ -197,11 +197,11 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Retourne le ValidationErrors bopRequired
+   * Retourne le ValidationErrors benefOrBopRequired
    */
-  public get errorsBop(): ValidationErrors | null {
+  public get errorsBenefOrBop(): ValidationErrors | null {
     return this.searchForm.errors != null
-      ? this.searchForm.errors['bopRequired']
+      ? this.searchForm.errors['benefOrBopRequired']
       : null;
   }
 
