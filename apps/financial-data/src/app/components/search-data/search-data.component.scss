@@ -18,23 +18,18 @@ form .mat-fab {
 
 .box {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-start;
   flex-direction: row;
 }
-.field-50-width {
-  width: 50%;
+
+.spacer {
+  flex-grow: 1;
 }
 
-.field-10-width {
-  width: 10%;
-}
-
-.field-100-width {
-  width: 100%;
-}
-
-.field-15-width {
-  width: 15%;
+.break {
+  flex-basis: 100%;
+  height: 0;
 }
 
 .field-100-width {
@@ -45,6 +40,9 @@ form .mat-fab {
   width: 30%;
 }
 
+.field-19-width {
+  width: 19%;
+}
 
 @media (max-width: 800px) {
   .box {
