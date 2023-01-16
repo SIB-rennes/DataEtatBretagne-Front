@@ -58,7 +58,7 @@ export class FinancialDataHttpService {
     let is_number = /^\d+$/.test(nomOuSiret)
 
     if (is_number)
-      return `where=(Code,like,${nomOuSiret})`
+      return `where=(Code,like,${nomOuSiret}%)`
     else
       return `where=(Denomination,like,${nomOuSiret})`
   }
