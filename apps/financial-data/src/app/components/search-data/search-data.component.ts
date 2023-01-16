@@ -22,6 +22,7 @@ import {
   map,
   finalize,
   BehaviorSubject,
+  debounceTime,
 } from 'rxjs';
 import { BopModel } from '@models//bop.models';
 import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
@@ -35,6 +36,7 @@ import {
 } from '../../validators/financial-data-form.validators';
 import { FinancialDataModel } from '@models/financial-data.models';
 import { DatePipe } from '@angular/common';
+import { RefSiret } from '@models/RefSiret';
 
 type BopModelSelected = BopModel & { selected: boolean };
 
@@ -57,6 +59,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   public themes: RefTheme[] = [];
 
   public filteredTheme: Observable<RefTheme[]> | null | undefined = null;
+  public filteredBeneficiaire: Observable<RefSiret[]> | null | undefined = null;
   public filteredBop: BopModelSelected[] | undefined = undefined;
 
   @ViewChild('autoCompleteThemeInput', {
@@ -149,6 +152,14 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     this.searchForm.controls['bops'].setValue(null);
   }
 
+  public onSelectBeneficiaire(benef: RefSiret): void {
+    this.searchForm.controls['beneficiaire'].setValue(benef);
+  }
+
+  public displayBeneficiaire(element: RefSiret): string {
+    return element?.Denomination || element?.Code;
+  }
+
   /**
    * Fonction utile pour afficher le theme ou un bop
    * @param theme
@@ -159,6 +170,13 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
       return element.Label;
     }
     return '';
+  }
+
+  /**
+   * 
+   */
+  public get beneficiaireControls(): FormControl | null {
+    return this.searchForm.get('beneficiaire') as FormControl;
   }
 
   /**
@@ -187,6 +205,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
       this.searchInProgress.next(true);
       this.service
         .search(
+          formValue.beneficiaire,
           formValue.bops,
           formValue.theme,
           formValue.year,
@@ -211,6 +230,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
       this.searchInProgress.next(true);
       this.service
         .getCsv(
+          formValue.beneficiaire,
           formValue.bops,
           formValue.theme,
           formValue.year,
@@ -278,6 +298,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         }),
         bops: new FormControl(null),
         theme: new FormControl(null),
+        beneficiaire: new FormControl(null),
         filterBop: new FormControl(null), // controls pour le filtre des bops
         departement: new FormControl(null, [Validators.required]),
       },
@@ -316,6 +337,19 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         return of([]);
       })
     );
+
+    // filtre beneficiaire
+    this.filteredBeneficiaire = this.searchForm.controls['beneficiaire']
+    .valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      switchMap((value) => {
+        if (value && value.length > 1) {
+          return this.service.filterRefSiret(value);
+        }
+        return of([])
+      })
+    )
   }
 
   private _filterTheme(value: string): RefTheme[] {
