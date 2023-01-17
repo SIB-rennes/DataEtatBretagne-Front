@@ -1,0 +1,13 @@
+<div mat-dialog-title>
+  <div class="dialog-title">
+    <h2>{{title}}</h2>
+    <button type="button" mat-icon-button mat-dialog-close aria-label="Fermer" matTooltip="Fermer">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+
+<mat-dialog-actions align="end">
+  <button mat-button color="warn" type="button" (click)="validate()">Oui</button>
+  <button mat-button mat-dialog-close type="button">Non</button>
+</mat-dialog-actions>

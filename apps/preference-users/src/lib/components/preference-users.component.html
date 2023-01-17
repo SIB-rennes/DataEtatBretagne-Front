@@ -8,10 +8,29 @@
   <mat-card-content>
     <table mat-table [dataSource]="dataSource" class="fr-table fr-table--no-caption fr-table--bordered">
       <caption>Liste des recherches sauvegarder</caption>
-      <!-- name Column -->
+
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> Libellé de la page </th>
-        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+        <td mat-cell *matCellDef="let element">
+          <div>
+            <span>{{element.name}}</span>
+          </div>
+
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="warn" matTooltip="Supprimer le filtre" (click)="deleteFilter(element.uuid)">
+            <mat-icon fontIcon="delete"></mat-icon>
+          </button>
+
+          <button mat-icon-button color="primary" matTooltip="Partager le filtre">
+            <mat-icon fontIcon="share"></mat-icon>
+          </button>
+        </td>
       </ng-container>
 
       <!-- filters Column -->
@@ -21,10 +40,18 @@
 
           <ul class="fr-badge-group">
             <li class="fr-mr-3v" *ngFor="let field of objectKeys(element.filters)">
-              <p class="fr-mr-1v fr-badge fr-badge--blue-ecume">{{displayField(field)}}</p>
+              <p class="fr-mr-1v fr-badge fr-badge--blue-ecume">
+                <ng-container *ngIf="mappingMetadata && mappingMetadata[field] else defaultLabel">
+                  {{mappingMetadata[field].label}}
+                </ng-container>
+
+                <ng-template #defaultLabel>
+                  {{field}}
+                </ng-template>
+              </p>
               <ng-container
-                [ngTemplateOutlet]="getTypeField(element.filters[field]) === 'simple' ? badgeSimple : badgeComplexe"
-                [ngTemplateOutletContext]="{value:element.filters[field], type: getTypeField(element.filters[field])}">
+                [ngTemplateOutlet]="getTypeField(element.filters[field]) === 'array' ? badgeArray : badgeSimple"
+                [ngTemplateOutletContext]="{value: element.filters[field], metadata: mappingMetadata[field]}">
               </ng-container>
             </li>
           </ul>
@@ -37,31 +64,19 @@
   </mat-card-content>
 </mat-card>
 
-
-<ng-template #badgeSimple let-value="value">
-  <p class="fr-tag fr-mr-0">{{value}}</p>
-</ng-template>
-
-
-<ng-template #badgeArray let-value="value">
+<ng-template #badgeArray let-value="value" let-metadata="metadata">
 
   <ul class="fr-badge-group">
     <li *ngFor="let field of objectKeys(value)">
-      <p class="fr-tag fr-mr-2v">{{json.stringify(value[field])}}</p>
+      <p class="fr-tag fr-mr-2v">
+        {{metadata && metadata.renderFn ? metadata.renderFn(value[field]) : json.stringify(value[field])}}
+      </p>
     </li>
   </ul>
-
 </ng-template>
 
-<ng-template #badgObject let-value="value">
-
-  <p class="fr-tag fr-mr-2v">{{json.stringify(value)}}</p>
-
-</ng-template>
-
-
-<ng-template #badgeComplexe let-value="value" let-type="type">
-
-  <ng-container [ngTemplateOutlet]="type ==='array' ? badgeArray: badgObject" [ngTemplateOutletContext]="{value:value}">
-  </ng-container>
+<ng-template #badgeSimple let-value="value" let-metadata="metadata">
+  <p class="fr-tag fr-mr-2v">
+    {{metadata && metadata.renderFn ? metadata.renderFn(value) : json.stringify(value)}}
+  </p>
 </ng-template>

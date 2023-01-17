@@ -9,15 +9,22 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 
 import { SavePreferenceDialogComponent } from './components/save-filter/save-preference-dialog.component';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
-  declarations: [PreferenceUsersComponent, SavePreferenceDialogComponent],
+  declarations: [
+    PreferenceUsersComponent,
+    SavePreferenceDialogComponent,
+    ConfirmDialogComponent,
+  ],
   imports: [
     MatCardModule,
     MatButtonModule,
+    MatTooltipModule,
     MatSlideToggleModule,
     MatTableModule,
     FormsModule,
@@ -27,6 +34,10 @@ import { SavePreferenceDialogComponent } from './components/save-filter/save-pre
     MatDialogModule,
     MatFormFieldModule,
   ],
-  exports: [PreferenceUsersComponent, SavePreferenceDialogComponent],
+  exports: [
+    PreferenceUsersComponent,
+    SavePreferenceDialogComponent,
+    ConfirmDialogComponent,
+  ],
 })
 export class PreferenceUsersModule {}
