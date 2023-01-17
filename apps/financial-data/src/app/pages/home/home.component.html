@@ -22,11 +22,12 @@
       <button mat-button (click)="openGroupConfigDialog()" aria-label="Choisir les groupes">
         Choisir les groupes
       </button>
-      <button mat-icon-button color="primary" matTooltip="Enregistrer le filtre" (click)="openSaveFilterDialog()">
+      <button *ngIf="filter" mat-icon-button color="primary" matTooltip="Enregistrer le filtre"
+        (click)="openSaveFilterDialog()">
         <mat-icon fontIcon="save"></mat-icon>
       </button>
     </mat-toolbar>
-    <financial-grouping-table class="h-100" [tableData]="tableData" [columnsMetaData]="columnsMetaData"
+    <financial-grouping-table class=" h-100" [tableData]="tableData" [columnsMetaData]="columnsMetaData"
       [groupingColumns]="groupingColumns"></financial-grouping-table>
   </ng-container>
 </ng-template>

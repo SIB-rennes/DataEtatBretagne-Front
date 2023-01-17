@@ -22,7 +22,7 @@ export class PreferenceComponent {
       renderFn: (row: JSONObject) => row['Label'],
     },
     beneficiaire: {
-      label: 'Bénificiare',
+      label: 'Bénéficiare',
       renderFn: (row: JSONObject) => {
         if (row['Denomination']) {
           return `${row['Denomination']} (${row['Code']})`;
