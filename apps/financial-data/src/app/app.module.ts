@@ -20,6 +20,10 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonHttpInterceptor } from './interceptors/common-http-interceptor';
 import { ManagementComponent } from './pages/management/management.component';
+import { PreferenceUsersModule } from 'apps/preference-users/src/lib/preference-users.module';
+import { API_PREFERENCE_PATH } from 'apps/preference-users/src/public-api';
+import { SettingsService } from '../environments/settings.service';
+import { PreferenceComponent } from './pages/preference/preference.component';
 
 registerLocaleData(localeFr);
 
@@ -27,22 +31,11 @@ registerLocaleData(localeFr);
   declarations: [
     AppComponent,
     HomeComponent,
+    PreferenceComponent,
     SearchDataComponent,
     ManagementComponent,
     FooterComponent,
     HeaderComponent,
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    KeycloakAngularModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    ReactiveFormsModule,
-    MaterialModule,
-    GroupingTableModule,
-    MatDialogModule,
-    MatButtonModule,
   ],
   providers: [
     {
@@ -61,8 +54,28 @@ registerLocaleData(localeFr);
       provide: LOCALE_ID,
       useValue: 'fr-FR',
     },
+    {
+      provide: API_PREFERENCE_PATH,
+      useFactory: (settings: SettingsService) => {
+        return settings.apiManagement;
+      },
+      deps: [SettingsService],
+    },
   ],
   bootstrap: [AppComponent],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    KeycloakAngularModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    ReactiveFormsModule,
+    MaterialModule,
+    GroupingTableModule,
+    MatDialogModule,
+    MatButtonModule,
+    PreferenceUsersModule,
+  ],
 })
 export class AppModule {}
 

@@ -8,6 +8,8 @@ import {
 import { DatePipe } from '@angular/common';
 import { GroupingConfigDialogComponent } from '../../components/grouping-config-dialog/grouping-config-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { SavePreferenceDialogComponent } from 'apps/preference-users/src/public-api';
+import { Preference } from 'apps/preference-users/src/lib/models/preference.models';
 
 @Component({
   selector: 'financial-home',
@@ -21,6 +23,8 @@ export class HomeComponent {
   columnsMetaData: ColumnsMetaData;
 
   tableData?: TableData;
+
+  filter?: Preference;
 
   groupingColumns: GroupingColumn[] = [
     { columnName: 'nom_programme' },
@@ -107,5 +111,17 @@ export class HomeComponent {
           this.groupingColumns = updatedGroupingColumns;
         }
       });
+  }
+
+  public openSaveFilterDialog(): void {
+    const dialogRef = this.dialog.open(SavePreferenceDialogComponent, {
+      data: this.filter,
+      width: '40rem',
+      autoFocus: 'input',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      this.filter = undefined;
+    });
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { SettingsService } from '../../../environments/settings.service';
-import { UsersPagination } from '@models/users/user.models';
 import { Observable } from 'rxjs';
+import { UsersPagination } from '../../models/users/user.models';
 
 /**
  * Service for user-related HTTP requests

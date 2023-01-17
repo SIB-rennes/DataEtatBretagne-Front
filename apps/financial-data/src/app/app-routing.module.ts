@@ -4,6 +4,7 @@ import { AuthGuard } from './guards/auth-guard.service';
 import { Profil } from './models/profil.enum.model';
 import { HomeComponent } from './pages/home/home.component';
 import { ManagementComponent } from './pages/management/management.component';
+import { PreferenceComponent } from './pages/preference/preference.component';
 import { FinancialDataResolver } from './resolvers/financial-data.resolver';
 import { UsersResolver } from './resolvers/management/users.resolver';
 
@@ -27,6 +28,12 @@ const routes: Routes = [
     resolve: {
       usersPagination: UsersResolver,
     },
+    runGuardsAndResolvers: 'always',
+  },
+  {
+    path: 'preference',
+    component: PreferenceComponent,
+    canActivate: [AuthGuard],
     runGuardsAndResolvers: 'always',
   },
 ];

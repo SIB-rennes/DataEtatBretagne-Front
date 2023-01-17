@@ -62,7 +62,7 @@ build angular app:
   script:
     - npm ci --cache ${CI_PROJECT_DIR}/.npm --prefer-offline --quiet --force
     - npm run lint
-    - npm run build
+    - npm run build:financial-data
   cache:
     key: ${CI_PROJECT_ID}-npm
     paths:
@@ -112,6 +112,7 @@ docker-build-tags:
     - echo ${VERSION}
     - ssh ${USER_INTEG}@${SERVER_INTEG} "docker network create -d overlay --attachable app_network || true"
     - ssh ${USER_INTEG}@${SERVER_INTEG} "export VERSION=${VERSION};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file ~/stack-nocode/compose/integ/front.yml '"${STACK_NAME}"
+    - ssh ${USER_INTEG}@${SERVER_INTEG} "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait -n financial-data ${STACK_NAME}"
 
 deploy-integ-tag:
   extends: .deploy-integ

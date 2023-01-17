@@ -1,0 +1,82 @@
+<mat-card class="mat-card">
+  <mat-card-header>
+    <mat-card-title-group>
+      <mat-card-title>Préférences</mat-card-title>
+    </mat-card-title-group>
+  </mat-card-header>
+
+  <mat-card-content>
+    <table mat-table [dataSource]="dataSource" class="fr-table fr-table--no-caption fr-table--bordered">
+      <caption>Liste des recherches sauvegarder</caption>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Libellé de la page </th>
+        <td mat-cell *matCellDef="let element">
+          <div>
+            <span>{{element.name}}</span>
+          </div>
+
+
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="warn" matTooltip="Supprimer le filtre" (click)="deleteFilter(element.uuid)">
+            <mat-icon fontIcon="delete"></mat-icon>
+          </button>
+
+          <button mat-icon-button color="primary" matTooltip="Partager le filtre">
+            <mat-icon fontIcon="share"></mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- filters Column -->
+      <ng-container matColumnDef="filters">
+        <th mat-header-cell *matHeaderCellDef> Liste des filtres enregistrés </th>
+        <td mat-cell *matCellDef="let element">
+
+          <ul class="fr-badge-group">
+            <li class="fr-mr-3v" *ngFor="let field of objectKeys(element.filters)">
+              <p class="fr-mr-1v fr-badge fr-badge--blue-ecume">
+                <ng-container *ngIf="mappingMetadata && mappingMetadata[field] else defaultLabel">
+                  {{mappingMetadata[field].label}}
+                </ng-container>
+
+                <ng-template #defaultLabel>
+                  {{field}}
+                </ng-template>
+              </p>
+              <ng-container
+                [ngTemplateOutlet]="getTypeField(element.filters[field]) === 'array' ? badgeArray : badgeSimple"
+                [ngTemplateOutletContext]="{value: element.filters[field], metadata: mappingMetadata[field]}">
+              </ng-container>
+            </li>
+          </ul>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </mat-card-content>
+</mat-card>
+
+<ng-template #badgeArray let-value="value" let-metadata="metadata">
+
+  <ul class="fr-badge-group">
+    <li *ngFor="let field of objectKeys(value)">
+      <p class="fr-tag fr-mr-2v">
+        {{metadata && metadata.renderFn ? metadata.renderFn(value[field]) : json.stringify(value[field])}}
+      </p>
+    </li>
+  </ul>
+</ng-template>
+
+<ng-template #badgeSimple let-value="value" let-metadata="metadata">
+  <p class="fr-tag fr-mr-2v">
+    {{metadata && metadata.renderFn ? metadata.renderFn(value) : json.stringify(value)}}
+  </p>
+</ng-template>

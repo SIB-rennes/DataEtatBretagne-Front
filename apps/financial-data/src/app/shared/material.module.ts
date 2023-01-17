@@ -14,6 +14,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 @NgModule({
   exports: [
@@ -31,6 +32,7 @@ import { MatTableModule } from '@angular/material/table';
     MatProgressBarModule,
     MatPaginatorModule,
     MatSlideToggleModule,
+    MatToolbarModule,
     MatTableModule,
   ],
 })
