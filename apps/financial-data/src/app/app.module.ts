@@ -23,6 +23,7 @@ import { ManagementComponent } from './pages/management/management.component';
 import { PreferenceUsersModule } from 'apps/preference-users/src/lib/preference-users.module';
 import { API_PREFERENCE_PATH } from 'apps/preference-users/src/public-api';
 import { SettingsService } from '../environments/settings.service';
+import { PreferenceComponent } from './pages/preference/preference.component';
 
 registerLocaleData(localeFr);
 
@@ -30,6 +31,7 @@ registerLocaleData(localeFr);
   declarations: [
     AppComponent,
     HomeComponent,
+    PreferenceComponent,
     SearchDataComponent,
     ManagementComponent,
     FooterComponent,

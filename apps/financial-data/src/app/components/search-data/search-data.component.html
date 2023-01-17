@@ -71,12 +71,13 @@
 
       <mat-form-field class="field-30-width" appearance="fill">
         <mat-label>Bénéficiaire</mat-label>
-        <input type="text" matInput formControlName="beneficiaire" [matAutocomplete]="beneficiaire" [errorStateMatcher]="errorMatcher">
+        <input type="text" matInput formControlName="beneficiaire" [matAutocomplete]="beneficiaire"
+          [errorStateMatcher]="errorMatcher">
         <button *ngIf="searchForm.controls['beneficiaire'].value !== null" matSuffix mat-icon-button
           (click)="searchForm.controls['beneficiaire'].setValue(null)">
           <mat-icon>close</mat-icon>
         </button>
-        <mat-autocomplete #beneficiaire ="matAutocomplete" [displayWith]="displayBeneficiaire"
+        <mat-autocomplete #beneficiaire="matAutocomplete" [displayWith]="displayBeneficiaire"
           (optionSelected)="onSelectBeneficiaire($event.option.value)">
           <mat-option *ngFor="let beneficiaire of filteredBeneficiaire | async" [value]="beneficiaire">
             {{displayBeneficiaire(beneficiaire)}}

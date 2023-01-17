@@ -1,6 +1,6 @@
 export interface Preference {
-  uuid: string;
-  name: string;
+  uuid?: string;
+  name?: string;
   filters: JSONObject;
 }
 

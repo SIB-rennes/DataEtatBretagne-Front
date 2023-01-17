@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
+import { Preference } from '../models/preference.models';
 export const API_PREFERENCE_PATH = new InjectionToken<string>(
   'Helper service type'
 );
@@ -19,7 +20,11 @@ export class PreferenceUsersHttpService {
     @Inject(API_PREFERENCE_PATH) private readonly apiPath: string
   ) {}
 
-  public getPreferences(): Observable<any> {
+  public getPreferences(): Observable<Preference[]> {
     return this.http.get<any>(`${this.apiPath}/users/preferences`);
+  }
+
+  public savePreference(preference: Preference): Observable<any> {
+    return this.http.post(`${this.apiPath}/users/preferences`, preference);
   }
 }

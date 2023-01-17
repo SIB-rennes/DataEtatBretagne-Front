@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { JSONValue, Preference } from '../models/preference.models';
 import { PreferenceUsersHttpService } from '../services/preference-users-http.service';
 
@@ -8,6 +8,8 @@ import { PreferenceUsersHttpService } from '../services/preference-users-http.se
   styles: ['.mat-column-filters { width: 80%; }'],
 })
 export class PreferenceUsersComponent implements OnInit {
+  @Input() mappingFilter?: { [k: string]: string };
+
   public displayedColumns: string[] = ['name', 'filters'];
 
   public dataSource: Preference[] = [];
@@ -18,6 +20,7 @@ export class PreferenceUsersComponent implements OnInit {
   constructor(private service: PreferenceUsersHttpService) {}
 
   ngOnInit(): void {
+    console.log(this.mappingFilter);
     this.service.getPreferences().subscribe((response) => {
       this.dataSource = response;
     });
@@ -30,5 +33,12 @@ export class PreferenceUsersComponent implements OnInit {
 
     if (typeof element !== 'object') return 'simple';
     return 'object';
+  }
+
+  public displayField(field: string): string {
+    if (this.mappingFilter && this.mappingFilter[field]) {
+      return this.mappingFilter[field];
+    }
+    return field;
   }
 }

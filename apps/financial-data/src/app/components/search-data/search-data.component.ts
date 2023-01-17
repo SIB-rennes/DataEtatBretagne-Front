@@ -37,6 +37,10 @@ import {
 import { FinancialDataModel } from '@models/financial-data.models';
 import { DatePipe } from '@angular/common';
 import { RefSiret } from '@models/RefSiret';
+import {
+  JSONObject,
+  Preference,
+} from 'apps/preference-users/src/lib/models/preference.models';
 
 type BopModelSelected = BopModel & { selected: boolean };
 
@@ -88,6 +92,11 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
    * Resultats de la recherche.
    */
   @Output() searchResults = new EventEmitter<FinancialDataModel[]>();
+
+  /**
+   * Resultats de la recherche.
+   */
+  @Output() filter = new EventEmitter<Preference>();
 
   constructor(
     private geoService: GeoHttpService,
@@ -157,12 +166,11 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   }
 
   public displayBeneficiaire(element: RefSiret): string {
+    let code = element?.Code;
+    let nom = element?.Denomination;
 
-    let code = element?.Code
-    let nom = element?.Denomination
-
-    if ( code && nom ) {
-      return `${nom} (${code})`
+    if (code && nom) {
+      return `${nom} (${code})`;
     } else if (code) {
       return code;
     } else {
@@ -183,7 +191,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * 
+   *
    */
   public get beneficiaireControls(): FormControl | null {
     return this.searchForm.get('beneficiaire') as FormControl;
@@ -228,9 +236,30 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         )
         .subscribe((response: FinancialDataModel[]) => {
           this.searchFinish = true;
+          this.filter.next(this._buildPreference(formValue));
           this.searchResults.next(response);
         });
     }
+  }
+
+  /**
+   * Clean les donners undefined, null et vide pour enregistrer en tant que preference
+   * @param object
+   * @returns
+   */
+  private _buildPreference(object: JSONObject): Preference {
+    const preference: Preference = { filters: {} };
+
+    Object.keys(object).forEach((key) => {
+      if (
+        object[key] !== null &&
+        object[key] !== undefined &&
+        object[key] !== ''
+      ) {
+        preference.filters[key] = object[key];
+      }
+    });
+    return preference;
   }
 
   public downloadCsv(): void {
@@ -349,17 +378,18 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     );
 
     // filtre beneficiaire
-    this.filteredBeneficiaire = this.searchForm.controls['beneficiaire']
-    .valueChanges.pipe(
+    this.filteredBeneficiaire = this.searchForm.controls[
+      'beneficiaire'
+    ].valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       switchMap((value) => {
         if (value && value.length > 3) {
           return this.service.filterRefSiret(value);
         }
-        return of([])
+        return of([]);
       })
-    )
+    );
   }
 
   private _filterTheme(value: string): RefTheme[] {
@@ -388,7 +418,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
 
   public generateArrayOfYears() {
     const max_year = new Date().getFullYear();
-    let arr = Array(10).fill(new Date().getFullYear());
+    let arr = Array(8).fill(new Date().getFullYear());
     arr = arr.map((_val, index) => max_year - index);
     return arr;
   }

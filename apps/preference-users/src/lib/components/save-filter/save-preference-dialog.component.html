@@ -1,0 +1,24 @@
+<div mat-dialog-title>
+  <div class="dialog-title">
+    <h2>Sauvegarde du filtre</h2>
+    <button type="button" mat-icon-button mat-dialog-close aria-label="Fermer" matTooltip="Fermer">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>
+
+<mat-dialog-content>
+  <p>Saisir le nom de votre filtre</p>
+  <mat-form-field appearance="fill">
+    <mat-label>Nom</mat-label>
+    <input matInput type="text" [(ngModel)]="preference.name" required>
+    <mat-error *ngIf="preference.name === null ||preference.name === undefined">
+      Le nom est obligatoire
+    </mat-error>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button color="primary" type="button" (click)="validate()">Enregistrer</button>
+  <button mat-button mat-dialog-close type="button">Annuler</button>
+</mat-dialog-actions>

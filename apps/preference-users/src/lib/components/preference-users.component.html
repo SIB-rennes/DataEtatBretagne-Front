@@ -6,29 +6,28 @@
   </mat-card-header>
 
   <mat-card-content>
-    <table mat-table [dataSource]="dataSource" class="fr-table fr-table--no-caption">
-      <caption>Liste des utilisateurs</caption>
+    <table mat-table [dataSource]="dataSource" class="fr-table fr-table--no-caption fr-table--bordered">
+      <caption>Liste des recherches sauvegarder</caption>
       <!-- name Column -->
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Nom </th>
+        <th mat-header-cell *matHeaderCellDef> Libellé de la page </th>
         <td mat-cell *matCellDef="let element"> {{element.name}} </td>
       </ng-container>
 
       <!-- filters Column -->
       <ng-container matColumnDef="filters">
-        <th mat-header-cell *matHeaderCellDef> Filtres </th>
+        <th mat-header-cell *matHeaderCellDef> Liste des filtres enregistrés </th>
         <td mat-cell *matCellDef="let element">
 
           <ul class="fr-badge-group">
             <li class="fr-mr-3v" *ngFor="let field of objectKeys(element.filters)">
-              <p class="fr-mr-1v fr-badge fr-badge--blue-ecume"> {{field}} :</p>
+              <p class="fr-mr-1v fr-badge fr-badge--blue-ecume">{{displayField(field)}}</p>
               <ng-container
                 [ngTemplateOutlet]="getTypeField(element.filters[field]) === 'simple' ? badgeSimple : badgeComplexe"
                 [ngTemplateOutletContext]="{value:element.filters[field], type: getTypeField(element.filters[field])}">
               </ng-container>
             </li>
           </ul>
-
         </td>
       </ng-container>
 
