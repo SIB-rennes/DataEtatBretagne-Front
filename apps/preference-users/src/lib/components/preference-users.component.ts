@@ -3,6 +3,7 @@ import {
   JSONValue,
   Preference,
   MapPreferenceFilterMetadata,
+  JSONObject,
 } from '../models/preference.models';
 import { MatDialog } from '@angular/material/dialog';
 import { PreferenceUsersHttpService } from '../services/preference-users-http.service';
@@ -19,6 +20,11 @@ export class PreferenceUsersComponent implements OnInit {
    */
   @Input() mappingMetadata!: MapPreferenceFilterMetadata;
 
+  /**
+   * FOnction de callback pour appliquer la preference
+   */
+  @Input() applyPreference: (uuid: string, filter: Preference) => void;
+
   private dialog = inject(MatDialog);
 
   public displayedColumns: string[] = ['name', 'filters', 'actions'];
@@ -28,7 +34,9 @@ export class PreferenceUsersComponent implements OnInit {
   public readonly objectKeys = Object.keys;
   public readonly json = JSON;
 
-  constructor(private service: PreferenceUsersHttpService) {}
+  constructor(private service: PreferenceUsersHttpService) {
+    this.applyPreference = (_uuid: string) => {};
+  }
 
   ngOnInit(): void {
     this.service.getPreferences().subscribe((response) => {

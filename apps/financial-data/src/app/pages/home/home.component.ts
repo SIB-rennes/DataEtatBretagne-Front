@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   AggregatorFns,
   ColumnsMetaData,
@@ -10,13 +10,14 @@ import { GroupingConfigDialogComponent } from '../../components/grouping-config-
 import { MatDialog } from '@angular/material/dialog';
 import { SavePreferenceDialogComponent } from 'apps/preference-users/src/public-api';
 import { Preference } from 'apps/preference-users/src/lib/models/preference.models';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'financial-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   private datePipe = inject(DatePipe);
   private dialog = inject(MatDialog);
 
@@ -32,7 +33,7 @@ export class HomeComponent {
     { columnName: '*commune' },
   ];
 
-  constructor() {
+  constructor(private route: ActivatedRoute) {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR',
@@ -93,6 +94,12 @@ export class HomeComponent {
         },
       },
     ]);
+  }
+
+  ngOnInit() {
+    this.route.queryParams.subscribe((param) => {
+      console.log(param);
+    });
   }
 
   openGroupConfigDialog() {

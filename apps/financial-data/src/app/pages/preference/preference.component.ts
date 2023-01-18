@@ -1,7 +1,10 @@
+import { JsonPipe } from '@angular/common';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   JSONObject,
   MapPreferenceFilterMetadata,
+  Preference,
 } from 'apps/preference-users/src/lib/models/preference.models';
 
 @Component({
@@ -9,6 +12,8 @@ import {
   templateUrl: './preference.component.html',
 })
 export class PreferenceComponent {
+  constructor(private router: Router) {}
+
   public mappingValueFilter: MapPreferenceFilterMetadata = {
     bops: {
       label: 'Programmes',
@@ -36,5 +41,11 @@ export class PreferenceComponent {
         return `${row['nom']} (${row['code']})`;
       },
     },
+  };
+
+  public applyPreference = (_uuid: string, pref: Preference) => {
+    this.router.navigate([''], {
+      queryParams: { filter: JSON.stringify(pref.filters), name: pref.name },
+    });
   };
 }
