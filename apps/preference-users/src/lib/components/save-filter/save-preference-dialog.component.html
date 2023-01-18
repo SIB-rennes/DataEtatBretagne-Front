@@ -9,7 +9,7 @@
 
 <mat-dialog-content>
   <p>Saisir le nom de votre filtre</p>
-  <mat-form-field appearance="fill">
+  <mat-form-field appearance="fill" class="w-full">
     <mat-label>Nom</mat-label>
     <input matInput type="text" [(ngModel)]="preference.name" required>
     <mat-error *ngIf="preference.name === null ||preference.name === undefined">
