@@ -60,12 +60,37 @@ export class HomeComponent implements OnInit {
 
     this.columnsMetaData = new ColumnsMetaData([
       { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
+      {
+        name: 'Montant',
+        label: 'Montant',
+        renderFn: (row, col) =>
+          row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
+        aggregateReducer: AggregatorFns.sum,
+        aggregateRenderFn: (aggregateValue) =>
+          aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
+        columnStyle: {
+          'text-align': 'right',
+          'min-width': '16ex',
+          'flex-grow': '0',
+        },
+      },
       { name: 'Theme', label: 'Thème' },
       {
         name: 'nom_programme',
         label: 'Programme',
         renderFn: (row, _col) =>
           row['code_programme'] + ' - ' + row['nom_programme'],
+      },
+      {
+        name: 'domaine',
+        label: 'Domaine fonctionnel',
+        renderFn: (row, _col) => row['code_domaine'] + ' - ' + row['domaine'],
+      },
+      {
+        name: 'ref_programmation',
+        label: 'Ref Programmation',
+        renderFn: (row, _col) =>
+          row['code_ref_programmation'] + ' - ' + row['ref_programmation'],
       },
       {
         name: '*commune',
@@ -93,20 +118,6 @@ export class HomeComponent implements OnInit {
           row[col.name] ? dateFormat(row[col.name]) : row[col.name],
         columnStyle: {
           'min-width': '18ex',
-          'flex-grow': '0',
-        },
-      },
-      {
-        name: 'Montant',
-        label: 'Montant',
-        renderFn: (row, col) =>
-          row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
-        aggregateReducer: AggregatorFns.sum,
-        aggregateRenderFn: (aggregateValue) =>
-          aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
-        columnStyle: {
-          'text-align': 'right',
-          'min-width': '16ex',
           'flex-grow': '0',
         },
       },

@@ -3,6 +3,8 @@
   <mat-progress-bar mode="query"></mat-progress-bar>
 </div>
 
-<router-outlet class="page-content-outlet"></router-outlet>
+<main>
+  <router-outlet class="page-content-outlet"></router-outlet>
+</main>
 
 <financial-footer *ngIf="isAuthenticated"></financial-footer>
