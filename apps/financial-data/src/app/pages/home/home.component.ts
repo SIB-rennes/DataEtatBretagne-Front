@@ -8,8 +8,14 @@ import {
 import { DatePipe } from '@angular/common';
 import { GroupingConfigDialogComponent } from '../../components/grouping-config-dialog/grouping-config-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { SavePreferenceDialogComponent } from 'apps/preference-users/src/public-api';
-import { Preference } from 'apps/preference-users/src/lib/models/preference.models';
+import {
+  PreferenceUsersHttpService,
+  SavePreferenceDialogComponent,
+} from 'apps/preference-users/src/public-api';
+import {
+  JSONObject,
+  Preference,
+} from 'apps/preference-users/src/lib/models/preference.models';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -25,7 +31,15 @@ export class HomeComponent implements OnInit {
 
   tableData?: TableData;
 
-  filter?: Preference;
+  /**
+   * Filtre retourner par le formulaire de recherche
+   */
+  newFilter?: Preference;
+
+  /**
+   * Filtre à appliquer sur la recherche
+   */
+  preFilter: JSONObject | null;
 
   groupingColumns: GroupingColumn[] = [
     { columnName: 'nom_programme' },
@@ -33,7 +47,10 @@ export class HomeComponent implements OnInit {
     { columnName: '*commune' },
   ];
 
-  constructor(private route: ActivatedRoute) {
+  constructor(
+    private route: ActivatedRoute,
+    private preferenceService: PreferenceUsersHttpService
+  ) {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR',
@@ -94,11 +111,19 @@ export class HomeComponent implements OnInit {
         },
       },
     ]);
+
+    this.preFilter = null;
   }
 
   ngOnInit() {
     this.route.queryParams.subscribe((param) => {
-      console.log(param);
+      if (param['uuid']) {
+        this.preferenceService
+          .getPreference(param['uuid'])
+          .subscribe((preference) => {
+            this.preFilter = preference.filters;
+          });
+      }
     });
   }
 
@@ -122,13 +147,13 @@ export class HomeComponent implements OnInit {
 
   public openSaveFilterDialog(): void {
     const dialogRef = this.dialog.open(SavePreferenceDialogComponent, {
-      data: this.filter,
+      data: this.newFilter,
       width: '40rem',
       autoFocus: 'input',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      this.filter = undefined;
+      this.newFilter = undefined;
     });
   }
 }

@@ -1,4 +1,3 @@
-import { JsonPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -43,9 +42,15 @@ export class PreferenceComponent {
     },
   };
 
-  public applyPreference = (_uuid: string, pref: Preference) => {
+  /**
+   * redirige vers la page d'accueil avec l'identifiant du filtre
+   *
+   * @param uuid
+   * @param _pref
+   */
+  public applyPreference = (uuid: string, _pref: Preference) => {
     this.router.navigate([''], {
-      queryParams: { filter: JSON.stringify(pref.filters), name: pref.name },
+      queryParams: { uuid: uuid },
     });
   };
 }

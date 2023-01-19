@@ -4,7 +4,8 @@
   </mat-card-header>
 
   <mat-card-content class="content-column">
-    <financial-search-data (searchResults)="tableData = $event" (filter)="filter = $event">
+    <financial-search-data (searchResults)="tableData = $event" (currentFilter)="newFilter = $event"
+      [preFilter]="preFilter">
     </financial-search-data>
 
     <div class="main-content overlay-container">
@@ -22,7 +23,7 @@
       <button mat-button (click)="openGroupConfigDialog()" aria-label="Choisir les groupes">
         Choisir les groupes
       </button>
-      <button *ngIf="filter" mat-icon-button color="primary" matTooltip="Enregistrer le filtre"
+      <button *ngIf="newFilter" mat-icon-button color="primary" matTooltip="Enregistrer le filtre"
         (click)="openSaveFilterDialog()">
         <mat-icon fontIcon="save"></mat-icon>
       </button>

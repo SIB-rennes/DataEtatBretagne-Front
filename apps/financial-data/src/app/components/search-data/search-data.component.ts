@@ -2,8 +2,11 @@ import {
   AfterViewInit,
   Component,
   EventEmitter,
+  Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import {
@@ -42,14 +45,12 @@ import {
   Preference,
 } from 'apps/preference-users/src/lib/models/preference.models';
 
-type BopModelSelected = BopModel & { selected: boolean };
-
 @Component({
   selector: 'financial-search-data',
   templateUrl: './search-data.component.html',
   styleUrls: ['./search-data.component.scss'],
 })
-export class SearchDataComponent implements OnInit, AfterViewInit {
+export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
   public searchForm!: FormGroup;
 
   public errorMatcher = new CrossFieldErrorMatcher();
@@ -59,12 +60,12 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     | null
     | undefined = null;
 
-  public bop: BopModelSelected[] = [];
+  public bop: BopModel[] = [];
   public themes: RefTheme[] = [];
 
   public filteredTheme: Observable<RefTheme[]> | null | undefined = null;
   public filteredBeneficiaire: Observable<RefSiret[]> | null | undefined = null;
-  public filteredBop: BopModelSelected[] | undefined = undefined;
+  public filteredBop: BopModel[] | undefined = undefined;
 
   @ViewChild('autoCompleteThemeInput', {
     static: false,
@@ -96,7 +97,10 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
   /**
    * Resultats de la recherche.
    */
-  @Output() filter = new EventEmitter<Preference>();
+  @Output() currentFilter = new EventEmitter<Preference>();
+
+  @Input()
+  preFilter: JSONObject | null = null;
 
   constructor(
     private geoService: GeoHttpService,
@@ -104,6 +108,40 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     private datePipe: DatePipe,
     private service: FinancialDataHttpService
   ) {}
+
+  /**
+   * Applique le filtre par défaut
+   * @param _changes
+   */
+  ngOnChanges(_changes: SimpleChanges): void {
+    if (this.preFilter !== null) {
+      this.searchForm.controls['departement'].setValue(
+        this.preFilter['departement']
+      );
+      this.searchForm.controls['year'].setValue(this.preFilter['year']);
+      this.searchForm.controls['theme'].setValue(
+        this.preFilter['theme'] ?? null
+      );
+      this.searchForm.controls['beneficiaire'].setValue(
+        this.preFilter['beneficiaire'] ?? null
+      );
+
+      // Application du bops
+      // Il faut rechercher dans les filtres "this.filteredBop"
+      if (this.preFilter['bops']) {
+        const prefilterBops = this.preFilter['bops'] as unknown as BopModel[];
+        const bopSelect = this.filteredBop?.filter(
+          (bop) =>
+            prefilterBops.findIndex(
+              (bopFilter) => bop.Code === bopFilter.Code
+            ) !== -1
+        );
+        this.searchForm.controls['bops'].setValue(bopSelect);
+      }
+      // lance la recherche pour afficher les resultats
+      this.doSearch();
+    }
+  }
 
   ngAfterViewInit() {
     if (this.triggerTheme) {
@@ -122,9 +160,9 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
           this.displayError = false;
           this.themes = response.financial.themes;
           this.bop = response.financial.bop;
-          this.bop.map((bop) => {
-            return { ...bop, selected: false };
-          });
+          // this.bop.map((bop) => {
+          //   return { ...bop, selected: false };
+          // });
 
           this.filteredTheme = of(this.themes);
           this.filteredBop = this.bop;
@@ -134,7 +172,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         }
       }
     );
-
     this._onFilter();
   }
 
@@ -236,7 +273,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
         )
         .subscribe((response: FinancialDataModel[]) => {
           this.searchFinish = true;
-          this.filter.next(this._buildPreference(formValue));
+          this.currentFilter.next(this._buildPreference(formValue));
           this.searchResults.next(response);
         });
     }
@@ -399,7 +436,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit {
     );
   }
 
-  private _filterBop(value: string): BopModelSelected[] {
+  private _filterBop(value: string): BopModel[] {
     const filterValue = value ? value.toLowerCase() : '';
     const theme = this.searchForm.controls['theme'].value as RefTheme;
     return this.bop.filter((option) => {
