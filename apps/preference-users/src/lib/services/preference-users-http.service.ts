@@ -31,4 +31,10 @@ export class PreferenceUsersHttpService {
   public deletePreference(uuid: string): Observable<any> {
     return this.http.delete(`${this.apiPath}/users/preferences/${uuid}`);
   }
+
+  public getPreference(uuid: string): Observable<Preference> {
+    return this.http.get<Preference>(
+      `${this.apiPath}/users/preferences/${uuid}`
+    );
+  }
 }

@@ -31,7 +31,8 @@
             <mat-icon fontIcon="share"></mat-icon>
           </button>
 
-          <button mat-icon-button color="primary" matTooltip="appliquer le filtre">
+          <button mat-icon-button color="primary" matTooltip="appliquer le filtre"
+            (click)="applyPreference(element.uuid, element)">
             <mat-icon fontIcon="published_with_changes"></mat-icon>
           </button>
 

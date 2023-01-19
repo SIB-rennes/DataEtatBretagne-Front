@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   AggregatorFns,
   ColumnsMetaData,
@@ -8,15 +8,22 @@ import {
 import { DatePipe } from '@angular/common';
 import { GroupingConfigDialogComponent } from '../../components/grouping-config-dialog/grouping-config-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { SavePreferenceDialogComponent } from 'apps/preference-users/src/public-api';
-import { Preference } from 'apps/preference-users/src/lib/models/preference.models';
+import {
+  PreferenceUsersHttpService,
+  SavePreferenceDialogComponent,
+} from 'apps/preference-users/src/public-api';
+import {
+  JSONObject,
+  Preference,
+} from 'apps/preference-users/src/lib/models/preference.models';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'financial-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   private datePipe = inject(DatePipe);
   private dialog = inject(MatDialog);
 
@@ -24,7 +31,15 @@ export class HomeComponent {
 
   tableData?: TableData;
 
-  filter?: Preference;
+  /**
+   * Filtre retourner par le formulaire de recherche
+   */
+  newFilter?: Preference;
+
+  /**
+   * Filtre à appliquer sur la recherche
+   */
+  preFilter: JSONObject | null;
 
   groupingColumns: GroupingColumn[] = [
     { columnName: 'nom_programme' },
@@ -32,7 +47,10 @@ export class HomeComponent {
     { columnName: '*commune' },
   ];
 
-  constructor() {
+  constructor(
+    private route: ActivatedRoute,
+    private preferenceService: PreferenceUsersHttpService
+  ) {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR',
@@ -93,6 +111,20 @@ export class HomeComponent {
         },
       },
     ]);
+
+    this.preFilter = null;
+  }
+
+  ngOnInit() {
+    this.route.queryParams.subscribe((param) => {
+      if (param['uuid']) {
+        this.preferenceService
+          .getPreference(param['uuid'])
+          .subscribe((preference) => {
+            this.preFilter = preference.filters;
+          });
+      }
+    });
   }
 
   openGroupConfigDialog() {
@@ -115,13 +147,13 @@ export class HomeComponent {
 
   public openSaveFilterDialog(): void {
     const dialogRef = this.dialog.open(SavePreferenceDialogComponent, {
-      data: this.filter,
+      data: this.newFilter,
       width: '40rem',
       autoFocus: 'input',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      this.filter = undefined;
+      this.newFilter = undefined;
     });
   }
 }
