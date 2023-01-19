@@ -82,6 +82,17 @@ export class HomeComponent implements OnInit {
           row['code_programme'] + ' - ' + row['nom_programme'],
       },
       {
+        name: 'domaine',
+        label: 'Domaine fonctionnel',
+        renderFn: (row, _col) => row['code_domaine'] + ' - ' + row['domaine'],
+      },
+      {
+        name: 'ref_programmation',
+        label: 'Ref Programmation',
+        renderFn: (row, _col) =>
+          row['code_ref_programmation'] + ' - ' + row['ref_programmation'],
+      },
+      {
         name: '*commune',
         label: 'Commune',
         renderFn: (row, _col) => row['commune']?.['LabelCommune'],
