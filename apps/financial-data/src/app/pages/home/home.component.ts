@@ -60,6 +60,20 @@ export class HomeComponent implements OnInit {
 
     this.columnsMetaData = new ColumnsMetaData([
       { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
+      {
+        name: 'Montant',
+        label: 'Montant',
+        renderFn: (row, col) =>
+          row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
+        aggregateReducer: AggregatorFns.sum,
+        aggregateRenderFn: (aggregateValue) =>
+          aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
+        columnStyle: {
+          'text-align': 'right',
+          'min-width': '16ex',
+          'flex-grow': '0',
+        },
+      },
       { name: 'Theme', label: 'Thème' },
       {
         name: 'nom_programme',
@@ -93,20 +107,6 @@ export class HomeComponent implements OnInit {
           row[col.name] ? dateFormat(row[col.name]) : row[col.name],
         columnStyle: {
           'min-width': '18ex',
-          'flex-grow': '0',
-        },
-      },
-      {
-        name: 'Montant',
-        label: 'Montant',
-        renderFn: (row, col) =>
-          row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
-        aggregateReducer: AggregatorFns.sum,
-        aggregateRenderFn: (aggregateValue) =>
-          aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
-        columnStyle: {
-          'text-align': 'right',
-          'min-width': '16ex',
           'flex-grow': '0',
         },
       },
