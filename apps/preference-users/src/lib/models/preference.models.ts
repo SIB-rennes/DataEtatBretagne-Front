@@ -2,6 +2,7 @@ export interface Preference {
   uuid?: string;
   name?: string;
   filters: JSONObject;
+  options?: JSONObject;
 }
 
 export type JSONValue = string | number | boolean | JSONObject | JSONArray;

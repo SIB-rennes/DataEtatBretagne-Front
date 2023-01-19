@@ -133,6 +133,12 @@ export class HomeComponent implements OnInit {
           .getPreference(param['uuid'])
           .subscribe((preference) => {
             this.preFilter = preference.filters;
+
+            if (preference.options && preference.options['grouping']) {
+              this.groupingColumns = preference.options[
+                'grouping'
+              ] as GroupingColumn[];
+            }
           });
       }
     });
@@ -157,6 +163,10 @@ export class HomeComponent implements OnInit {
   }
 
   public openSaveFilterDialog(): void {
+    if (this.newFilter) {
+      this.newFilter.options = { grouping: this.groupingColumns };
+    }
+
     const dialogRef = this.dialog.open(SavePreferenceDialogComponent, {
       data: this.newFilter,
       width: '40rem',
