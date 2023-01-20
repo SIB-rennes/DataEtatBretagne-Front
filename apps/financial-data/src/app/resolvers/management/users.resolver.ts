@@ -10,7 +10,7 @@ export class UsersResolver implements Resolve<UsersPagination | Error> {
 
   resolve(): Observable<UsersPagination | Error> {
     return this.service.getUsers().pipe(
-      catchError((error) => {
+      catchError((_error) => {
         return of({
           name: 'Erreur',
           message: 'Erreurs lors de la récupération des données.',

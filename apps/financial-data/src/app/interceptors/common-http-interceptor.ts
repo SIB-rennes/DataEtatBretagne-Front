@@ -9,10 +9,14 @@ import {
 } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { LoaderService } from '@services/loader.service';
+import { AlertService } from 'apps/common-lib/src/public-api';
 
 @Injectable()
 export class CommonHttpInterceptor implements HttpInterceptor {
-  constructor(private loader: LoaderService) {}
+  constructor(
+    private loader: LoaderService,
+    private alertService: AlertService
+  ) {}
 
   intercept(
     req: HttpRequest<any>,
@@ -29,6 +33,7 @@ export class CommonHttpInterceptor implements HttpInterceptor {
         },
         error: (_error: HttpErrorResponse) => {
           this.loader.endLoader();
+          this.alertService.openAlertError('Une erreur est survenue');
         },
       })
     );

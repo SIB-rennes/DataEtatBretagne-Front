@@ -17,6 +17,7 @@ import {
   Preference,
 } from 'apps/preference-users/src/lib/models/preference.models';
 import { ActivatedRoute } from '@angular/router';
+import { AlertService } from 'apps/common-lib/src/public-api';
 
 @Component({
   selector: 'financial-home',
@@ -49,6 +50,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private alertService: AlertService,
     private preferenceService: PreferenceUsersHttpService
   ) {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
@@ -139,6 +141,9 @@ export class HomeComponent implements OnInit {
                 'grouping'
               ] as GroupingColumn[];
             }
+            this.alertService.openAlertSuccess(
+              `Application du filtre ${preference.name}`
+            );
           });
       }
     });

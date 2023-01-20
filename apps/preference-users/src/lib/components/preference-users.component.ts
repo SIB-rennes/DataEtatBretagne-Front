@@ -8,6 +8,7 @@ import {
 import { MatDialog } from '@angular/material/dialog';
 import { PreferenceUsersHttpService } from '../services/preference-users-http.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { AlertService } from 'apps/common-lib/src/public-api';
 
 @Component({
   selector: 'lib-preference-users',
@@ -34,7 +35,10 @@ export class PreferenceUsersComponent implements OnInit {
   public readonly objectKeys = Object.keys;
   public readonly json = JSON;
 
-  constructor(private service: PreferenceUsersHttpService) {
+  constructor(
+    private service: PreferenceUsersHttpService,
+    private alertService: AlertService
+  ) {
     this.applyPreference = (_uuid: string) => {};
   }
 
@@ -66,10 +70,13 @@ export class PreferenceUsersComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
-        this.service.deletePreference(uuid).subscribe(() => {
-          this.dataSource = this.dataSource.filter(
-            (data) => data.uuid && data.uuid !== uuid
-          );
+        this.service.deletePreference(uuid).subscribe({
+          next: () => {
+            this.dataSource = this.dataSource.filter(
+              (data) => data.uuid && data.uuid !== uuid
+            );
+            this.alertService.openAlertSuccess('Suppression du filtre');
+          },
         });
       }
     });
