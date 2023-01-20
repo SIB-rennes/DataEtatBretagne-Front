@@ -34,6 +34,18 @@ html, body {
   max-width: 90%;
 }
 
+.toaster {
+  .mdc-snackbar__surface {
+    background-color: white !important;
+
+    .mdc-snackbar__label{
+      color: black
+    }
+  }
+
+
+}
+
 
 /**
  * Overlay : container (à placer sur le parent) et panel (élément englobant le contenu à placer en overlay).

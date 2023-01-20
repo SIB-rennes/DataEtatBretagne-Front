@@ -8,6 +8,7 @@ import { getFrenchPaginatorIntl } from '../../shared/paginator/french-paginator-
 import { Observable } from 'rxjs';
 import { SessionService } from '@services/session.service';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
+import { AlertService } from 'apps/common-lib/src/public-api';
 
 @Component({
   selector: 'financial-management',
@@ -33,6 +34,7 @@ export class ManagementComponent implements OnInit {
   constructor(
     private userService: UserHttpService,
     private route: ActivatedRoute,
+    private alertService: AlertService,
     protected session: SessionService
   ) {}
 
@@ -64,6 +66,12 @@ export class ManagementComponent implements OnInit {
         } else {
           user.enabled = !user.enabled;
         }
+
+        this.alertService.openAlertSuccess(
+          `Utilisateur ${user.email} ${
+            user.enabled ? 'activé' : 'désactivé'
+          } avec succès.`
+        );
       },
       error: (error: any) => {
         console.error(error);

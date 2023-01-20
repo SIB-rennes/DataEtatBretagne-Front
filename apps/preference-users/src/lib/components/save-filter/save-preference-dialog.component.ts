@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { AlertService } from 'apps/common-lib/src/public-api';
 import { Preference } from '../../models/preference.models';
 import { PreferenceUsersHttpService } from '../../services/preference-users-http.service';
 
@@ -15,6 +16,7 @@ export class SavePreferenceDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<SavePreferenceDialogComponent>,
     private service: PreferenceUsersHttpService,
+    private alertService: AlertService,
     @Inject(MAT_DIALOG_DATA) public data: Preference
   ) {
     this.preference = data;
@@ -22,7 +24,8 @@ export class SavePreferenceDialogComponent {
 
   public validate(): void {
     if (this.preference.name) {
-      this.service.savePreference(this.preference).subscribe((response) => {
+      this.service.savePreference(this.preference).subscribe((_response) => {
+        this.alertService.openAlertSuccess('Filtre enregistré avec succès');
         this.dialogRef.close(this.preference);
       });
     }
