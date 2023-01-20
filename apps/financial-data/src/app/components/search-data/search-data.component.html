@@ -10,7 +10,7 @@
   <form [formGroup]="searchForm" autocomplete="off">
     <div class="box">
 
-      <mat-form-field class="field-30-width" appearance="fill">
+      <mat-form-field class="field-20-width" appearance="fill">
         <mat-label>Theme</mat-label>
         <input type="text" matInput formControlName="theme" [matAutocomplete]="theme"
           #autoCompleteThemeInput="matAutocompleteTrigger" [errorStateMatcher]="errorMatcher">
@@ -28,7 +28,7 @@
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
-      <mat-form-field class="field-30-width" appearance="fill">
+      <mat-form-field class="field-25-width" appearance="fill">
         <mat-label>Programme</mat-label>
         <mat-select formControlName="bops" multiple [errorStateMatcher]="errorMatcher">
           <mat-form-field class="field-100-width" appearance="fill">
@@ -45,19 +45,39 @@
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
-      <mat-form-field class="field-19-width" appearance="fill">
-        <mat-label>Département</mat-label>
-        <input type="text" matInput formControlName="departement" [matAutocomplete]="dpt" required>
-        <mat-icon matSuffix>map</mat-icon>
-        <mat-autocomplete #dpt="matAutocomplete" [displayWith]="displayDepartement">
-          <mat-option *ngFor="let departement of filterDepartement | async" [value]="departement">
-            {{departement.code}} - {{departement.nom}}
-          </mat-option>
-        </mat-autocomplete>
-        <mat-error *ngIf="departementControls?.invalid">Le département est obligatoire</mat-error>
-      </mat-form-field>
 
-      <mat-form-field class="field-19-width" appearance="fill">
+      <div class="field-localisation field-30-width">
+
+        <lib-localisation [control]="departementControls"></lib-localisation>
+
+      </div>
+      <!-- <div class="field-localisation field-30-width">
+        <mat-form-field appearance="fill">
+          <mat-label>Localisation</mat-label>
+          <mat-select (onSelectionChange)="selectedCategory($event)">
+            <mat-option *ngFor="let type of TypeLocalisation" [value]="type">
+              {{type}}
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>map</mat-icon>
+
+          <mat-error *ngIf="departementControls?.invalid">La localisation est obligatoire</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Département</mat-label>
+          <input matInput formControlName="departement" [matAutocomplete]="dpt">
+          <mat-icon matSuffix>map</mat-icon>
+          <mat-autocomplete #dpt="matAutocomplete" [displayWith]="displayDepartement">
+            <mat-option *ngFor="let departement of filterDepartement | async" [value]="departement">
+              {{departement.code}} - {{departement.nom}}
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="departementControls?.invalid">La localisation est obligatoire</mat-error>
+        </mat-form-field>
+      </div> -->
+
+      <mat-form-field class="field-9-width" appearance="fill">
         <mat-label>Année</mat-label>
         <mat-select formControlName="year">
           <mat-option *ngFor="let year of generateArrayOfYears()" [value]="year">
@@ -69,7 +89,7 @@
 
       <div class="break"></div>
 
-      <mat-form-field class="field-30-width" appearance="fill">
+      <mat-form-field class="field-25-width" appearance="fill">
         <mat-label>Bénéficiaire</mat-label>
         <input type="text" matInput formControlName="beneficiaire" [matAutocomplete]="beneficiaire"
           [errorStateMatcher]="errorMatcher">
@@ -86,6 +106,7 @@
 
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
+
 
       <div class="spacer"></div>
 

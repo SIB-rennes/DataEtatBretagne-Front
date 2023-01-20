@@ -1,0 +1,28 @@
+<!-- <div class="field-localisation field-30-width"> -->
+<mat-form-field appearance="fill">
+  <mat-label>Localisation</mat-label>
+  <mat-select (onSelectionChange)="selectedCategory($event)">
+    <mat-option *ngFor="let type of TypeLocalisation" [value]="type">
+      {{type}}
+    </mat-option>
+  </mat-select>
+  <mat-icon matSuffix>map</mat-icon>
+
+  <mat-error *ngIf="control?.invalid">La localisation est obligatoire</mat-error>
+</mat-form-field>
+
+<mat-form-field appearance="fill">
+  <mat-label>Département</mat-label>
+  <input matInput [formControl]="control" [matAutocomplete]="dpt">
+  <mat-icon matSuffix>map</mat-icon>
+  <mat-autocomplete #dpt="matAutocomplete" [displayWith]="displayDepartement">
+    <mat-option *ngFor="let type of TypeLocalisation" [value]="type">
+      {{type}}
+    </mat-option>
+    <!-- <mat-option *ngFor="let departement of filterDepartement | async" [value]="departement">
+        {{departement.code}} - {{departement.nom}}
+      </mat-option> -->
+  </mat-autocomplete>
+  <mat-error *ngIf="control?.invalid">La localisation est obligatoire</mat-error>
+</mat-form-field>
+<!-- </div> -->

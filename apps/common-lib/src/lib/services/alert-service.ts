@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   AlertSnackBarComponent,
   AlertType,
-} from '../components/alert-snackbar.component';
+} from '../components/snackbar/alert-snackbar.component';
 
 @Injectable({
   providedIn: 'root',

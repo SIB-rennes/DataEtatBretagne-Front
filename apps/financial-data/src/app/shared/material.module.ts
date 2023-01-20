@@ -16,10 +16,12 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
   exports: [
     MatMenuModule,
+    MatButtonToggleModule,
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,

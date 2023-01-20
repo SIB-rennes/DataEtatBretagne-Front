@@ -1,7 +1,8 @@
 
-.box .mat-mdc-form-field + .mat-mdc-form-field {
+.box .mat-mdc-form-field + .mat-mdc-form-field, .box .field-localisation + .mat-mdc-form-field, .box .field-localisation {
   margin-left: 8px;
 }
+
 
 .box button {
   margin-left: 15px
@@ -36,12 +37,20 @@ form .mat-fab {
   width: 100%;
 }
 
-.field-30-width {
-  width: 30%;
+.field-20-width {
+  width: 20%;
 }
 
-.field-19-width {
-  width: 19%;
+.field-25-width {
+  width: 25%;
+}
+
+.field-15-width {
+  width: 15%;
+}
+
+.field-9-width {
+  width: 9%;
 }
 
 @media (max-width: 800px) {
