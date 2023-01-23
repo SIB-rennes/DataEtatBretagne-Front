@@ -22,8 +22,6 @@ export class AlertSnackBarComponent {
   public title: string;
 
   constructor(@Inject(MAT_SNACK_BAR_DATA) public alert: AlertMessage) {
-    console.log(alert);
-
     this.classAlert = 'fr-alert--info';
     this.title = 'Information';
     if (alert.type === AlertType.Error) {

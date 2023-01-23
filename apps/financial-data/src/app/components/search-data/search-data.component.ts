@@ -107,9 +107,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
    */
   ngOnChanges(_changes: SimpleChanges): void {
     if (this.preFilter !== null) {
-      this.searchForm.controls['departement'].setValue(
-        this.preFilter['departement']
-      );
+      this.searchForm.controls['location'].setValue(this.preFilter['location']);
       this.searchForm.controls['year'].setValue(this.preFilter['year']);
       this.searchForm.controls['theme'].setValue(
         this.preFilter['theme'] ?? null
@@ -212,10 +210,10 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   /**
-   * Retourne le FormControl du departement
+   * Retourne le FormControl de location
    */
-  public get departementControls(): FormControl {
-    return this.searchForm.get('departement') as FormControl;
+  public get locationControls(): FormControl {
+    return this.searchForm.get('location') as FormControl;
   }
 
   /**
@@ -241,7 +239,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
           formValue.bops,
           formValue.theme,
           formValue.year,
-          formValue.departement
+          formValue.location
         )
         .pipe(
           finalize(() => {
@@ -287,7 +285,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
           formValue.bops,
           formValue.theme,
           formValue.year,
-          formValue.departement
+          formValue.location
         )
         .pipe(
           finalize(() => {
@@ -313,7 +311,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
   private _filenameCsv(): string {
     const formValue = this.searchForm.value;
     let filename = `${this.datePipe.transform(new Date(), 'yyyyMMdd')}_export_${
-      formValue.departement.nom
+      formValue.location.nom
     }`;
 
     if (formValue.theme !== null) {
@@ -353,7 +351,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
         theme: new FormControl(null),
         beneficiaire: new FormControl(null),
         filterBop: new FormControl(null), // controls pour le filtre des bops
-        departement: new FormControl({ value: null, disabled: true }, [
+        location: new FormControl({ value: null, disabled: true }, [
           Validators.required,
         ]),
       },

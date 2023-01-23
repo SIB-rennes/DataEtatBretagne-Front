@@ -8,7 +8,7 @@ import { SettingsService } from '../../environments/settings.service';
 import { RefTheme } from '@models/theme.models';
 import { FinancialDataModel } from '@models/financial-data.models';
 import { RefSiret } from '@models/RefSiret';
-import { GeoDepartementModel } from 'apps/common-lib/src/public-api';
+import { GeoModel } from 'apps/common-lib/src/public-api';
 
 @Injectable({
   providedIn: 'root',
@@ -74,7 +74,7 @@ export class FinancialDataHttpService {
     bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
-    departement: GeoDepartementModel | null
+    departement: GeoModel | null
   ): Observable<FinancialDataModel[]> {
     if (bops == null && theme == null && year == null && departement == null)
       return of();
@@ -100,7 +100,7 @@ export class FinancialDataHttpService {
     bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
-    departement: GeoDepartementModel | null
+    departement: GeoModel | null
   ): Observable<Blob> {
     if (bops == null && theme == null && year == null && departement == null)
       return of();
@@ -124,7 +124,7 @@ export class FinancialDataHttpService {
     bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
-    departement: GeoDepartementModel | null
+    departement: GeoModel | null
   ): string {
     let params =
       'sort=code_programme,Montant,DateModificationEj&limit=4000&where=(Montant,gt,0)';

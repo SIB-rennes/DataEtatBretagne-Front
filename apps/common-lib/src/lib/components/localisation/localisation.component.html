@@ -1,7 +1,6 @@
-<!-- <div class="field-localisation field-30-width"> -->
 <mat-form-field appearance="fill">
-  <mat-label>Localisation</mat-label>
-  <mat-select (onSelectionChange)="selectedCategory($event)">
+  <mat-label>Niveau de localisation</mat-label>
+  <mat-select (selectionChange)="selectedCategory($event)">
     <mat-option *ngFor="let type of TypeLocalisation" [value]="type">
       {{type}}
     </mat-option>
@@ -11,18 +10,14 @@
   <mat-error *ngIf="control?.invalid">La localisation est obligatoire</mat-error>
 </mat-form-field>
 
-<mat-form-field appearance="fill">
-  <mat-label>Département</mat-label>
-  <input matInput [formControl]="control" [matAutocomplete]="dpt">
+<mat-form-field appearance="fill" class="location">
+  <mat-label>{{categorySelected ?? 'Localisation'}}</mat-label>
+  <input matInput [formControl]="control" [matAutocomplete]="geo">
   <mat-icon matSuffix>map</mat-icon>
-  <mat-autocomplete #dpt="matAutocomplete" [displayWith]="displayDepartement">
-    <mat-option *ngFor="let type of TypeLocalisation" [value]="type">
-      {{type}}
+  <mat-autocomplete #geo="matAutocomplete" [displayWith]="displayGeo">
+    <mat-option *ngFor="let geo of filterGeo | async" [value]="geo">
+      {{geo.code}} - {{geo.nom}}
     </mat-option>
-    <!-- <mat-option *ngFor="let departement of filterDepartement | async" [value]="departement">
-        {{departement.code}} - {{departement.nom}}
-      </mat-option> -->
   </mat-autocomplete>
   <mat-error *ngIf="control?.invalid">La localisation est obligatoire</mat-error>
 </mat-form-field>
-<!-- </div> -->
