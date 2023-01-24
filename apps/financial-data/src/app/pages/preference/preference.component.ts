@@ -34,10 +34,10 @@ export class PreferenceComponent {
         return `Siret : (${row['Code']})`;
       },
     },
-    departement: {
-      label: 'Département',
+    location: {
+      label: 'Territoire',
       renderFn: (row: JSONObject) => {
-        return `${row['nom']} (${row['code']})`;
+        return `${row['type']} : ${row['nom']} (${row['code']})`;
       },
     },
   };

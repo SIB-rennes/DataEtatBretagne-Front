@@ -6,15 +6,15 @@ import { map, Observable, of } from 'rxjs';
 import { NocoDbResponse } from '@models/nocodb-response';
 import { SettingsService } from '../../environments/settings.service';
 import { RefTheme } from '@models/theme.models';
-import { GeoDepartementModel } from '@models/geo.models';
 import { FinancialDataModel } from '@models/financial-data.models';
 import { RefSiret } from '@models/RefSiret';
+import { GeoModel, TypeLocalisation } from 'apps/common-lib/src/public-api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FinancialDataHttpService {
-  constructor(private http: HttpClient, private settings: SettingsService) { }
+  constructor(private http: HttpClient, private settings: SettingsService) {}
 
   public getBop(): Observable<BopModel[]> {
     const apiFinancial = this.settings.apiFinancial;
@@ -50,17 +50,14 @@ export class FinancialDataHttpService {
       .get<NocoDbResponse<RefSiret>>(
         `${apiFinancial}/RefSiret/RefSiret?fields=Code,Denomination&sort=Code&${whereClause}`
       )
-      .pipe(map((response) => response.list))
+      .pipe(map((response) => response.list));
   }
 
   public _filterRefSiretWhereClause(nomOuSiret: string): string {
+    let is_number = /^\d+$/.test(nomOuSiret);
 
-    let is_number = /^\d+$/.test(nomOuSiret)
-
-    if (is_number)
-      return `where=(Code,like,${nomOuSiret}%)`
-    else
-      return `where=(Denomination,like,${nomOuSiret})`
+    if (is_number) return `where=(Code,like,${nomOuSiret}%)`;
+    else return `where=(Denomination,like,${nomOuSiret})`;
   }
 
   /**
@@ -69,7 +66,7 @@ export class FinancialDataHttpService {
    * @param bops
    * @param theme
    * @param year
-   * @param departement
+   * @param location
    * @returns
    */
   public search(
@@ -77,14 +74,14 @@ export class FinancialDataHttpService {
     bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
-    departement: GeoDepartementModel | null
+    location: GeoModel[] | null
   ): Observable<FinancialDataModel[]> {
-    if (bops == null && theme == null && year == null && departement == null)
+    if (bops == null && theme == null && year == null && location == null)
       return of();
 
     const apiFinancial = this.settings.apiFinancial;
 
-    const params = this._buildparams(beneficiaire, bops, theme, year, departement);
+    const params = this._buildparams(beneficiaire, bops, theme, year, location);
     return this.http
       .get<NocoDbResponse<FinancialDataModel>>(
         `${apiFinancial}/DataChorus/Chorus-front?${params}`
@@ -97,13 +94,13 @@ export class FinancialDataHttpService {
     bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
-    departement: GeoDepartementModel | null
+    location: GeoModel[] | null
   ): Observable<Blob> {
-    if (bops == null && theme == null && year == null && departement == null)
+    if (bops == null && theme == null && year == null && location == null)
       return of();
 
     const apiFinancial = this.settings.apiFinancial;
-    const params = this._buildparams(beneficiaire, bops, theme, year, departement);
+    const params = this._buildparams(beneficiaire, bops, theme, year, location);
     return this.http.get(
       `${apiFinancial}/DataChorus/Chorus-front/csv?${params}`,
       { responseType: 'blob' }
@@ -115,12 +112,12 @@ export class FinancialDataHttpService {
     bops: BopModel[] | null,
     theme: RefTheme | null,
     year: number | null,
-    departement: GeoDepartementModel | null
+    location: GeoModel[] | null
   ): string {
     let params =
-      'sort=code_programme,Montant,DateModificationEj&limit=4000&where=(Montant,gt,0)';
+      'sort=code_programme,label_commune&limit=4000&where=(Montant,gt,0)';
     if (beneficiaire) {
-      params += `~and(code_siret,eq,${beneficiaire.Code})`
+      params += `~and(code_siret,eq,${beneficiaire.Code})`;
     }
     if (bops) {
       params += `~and(code_programme,in,${bops
@@ -131,8 +128,24 @@ export class FinancialDataHttpService {
       params += `~and(Theme,eq,${theme.Label})`;
     }
 
-    if (departement) {
-      params += `~and(code_departement,eq,${departement.code})`;
+    if (location && location.length > 0) {
+      // on est toujours sur le même type
+
+      const listCode = location.map((l) => l.code).join(',');
+      switch (location[0].type) {
+        case TypeLocalisation.DEPARTEMENT:
+          params += `~and(code_departement,in,${listCode})`;
+          break;
+        case TypeLocalisation.COMMUNE:
+          params += `~and(commune,in,${listCode})`;
+          break;
+        case TypeLocalisation.EPCI:
+          params += `~and(code_epci,in,${listCode})`;
+          break;
+        case TypeLocalisation.CRTE:
+          params += `~and(code_crte,in,${listCode})`;
+          break;
+      }
     }
 
     if (year) {

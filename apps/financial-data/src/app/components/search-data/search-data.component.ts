@@ -29,10 +29,8 @@ import {
 } from 'rxjs';
 import { BopModel } from '@models//bop.models';
 import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
-import { GeoDepartementModel } from '@models//geo.models';
 import { RefTheme } from '@models//theme.models';
 import { FinancialDataHttpService } from '../../services/financial-data-http.service';
-import { GeoHttpService } from '../../services/geo-http.service';
 import {
   CrossFieldErrorMatcher,
   financialDataFormValidators,
@@ -54,11 +52,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
   public searchForm!: FormGroup;
 
   public errorMatcher = new CrossFieldErrorMatcher();
-
-  public filterDepartement:
-    | Observable<GeoDepartementModel[]>
-    | null
-    | undefined = null;
 
   public bop: BopModel[] = [];
   public themes: RefTheme[] = [];
@@ -103,7 +96,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
   preFilter: JSONObject | null = null;
 
   constructor(
-    private geoService: GeoHttpService,
     private route: ActivatedRoute,
     private datePipe: DatePipe,
     private service: FinancialDataHttpService
@@ -115,9 +107,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
    */
   ngOnChanges(_changes: SimpleChanges): void {
     if (this.preFilter !== null) {
-      this.searchForm.controls['departement'].setValue(
-        this.preFilter['departement']
-      );
+      this.searchForm.controls['location'].setValue(this.preFilter['location']);
       this.searchForm.controls['year'].setValue(this.preFilter['year']);
       this.searchForm.controls['theme'].setValue(
         this.preFilter['theme'] ?? null
@@ -160,9 +150,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
           this.displayError = false;
           this.themes = response.financial.themes;
           this.bop = response.financial.bop;
-          // this.bop.map((bop) => {
-          //   return { ...bop, selected: false };
-          // });
 
           this.filteredTheme = of(this.themes);
           this.filteredBop = this.bop;
@@ -173,18 +160,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
       }
     );
     this._onFilter();
-  }
-
-  /**
-   * Affiche le nom du departement une fois sélectionné
-   * @param departement
-   * @returns
-   */
-  public displayDepartement(departement: GeoDepartementModel): string {
-    if (departement) {
-      return departement.nom;
-    }
-    return '';
   }
 
   /**
@@ -235,10 +210,10 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   /**
-   * Retourne le FormControl du departement
+   * Retourne le FormControl de location
    */
-  public get departementControls(): FormControl | null {
-    return this.searchForm.get('departement') as FormControl;
+  public get locationControls(): FormControl {
+    return this.searchForm.get('location') as FormControl;
   }
 
   /**
@@ -264,7 +239,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
           formValue.bops,
           formValue.theme,
           formValue.year,
-          formValue.departement
+          formValue.location
         )
         .pipe(
           finalize(() => {
@@ -310,7 +285,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
           formValue.bops,
           formValue.theme,
           formValue.year,
-          formValue.departement
+          formValue.location
         )
         .pipe(
           finalize(() => {
@@ -336,7 +311,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
   private _filenameCsv(): string {
     const formValue = this.searchForm.value;
     let filename = `${this.datePipe.transform(new Date(), 'yyyyMMdd')}_export_${
-      formValue.departement.nom
+      formValue.location.nom
     }`;
 
     if (formValue.theme !== null) {
@@ -376,7 +351,9 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
         theme: new FormControl(null),
         beneficiaire: new FormControl(null),
         filterBop: new FormControl(null), // controls pour le filtre des bops
-        departement: new FormControl(null, [Validators.required]),
+        location: new FormControl({ value: null, disabled: true }, [
+          Validators.required,
+        ]),
       },
       financialDataFormValidators()
     );
@@ -400,19 +377,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
         this.filteredBop = this._filterBop(value ? value?.Label : '');
       }
     });
-
-    // filtre departement
-    this.filterDepartement = this.searchForm.controls[
-      'departement'
-    ].valueChanges.pipe(
-      startWith(''),
-      switchMap((value) => {
-        if (value && value.length > 1) {
-          return this.geoService.filterDepartement(value);
-        }
-        return of([]);
-      })
-    );
 
     // filtre beneficiaire
     this.filteredBeneficiaire = this.searchForm.controls[

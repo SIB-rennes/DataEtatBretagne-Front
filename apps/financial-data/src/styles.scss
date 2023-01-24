@@ -16,6 +16,8 @@ html, body {
   height: 100%;
   display: flex;
   flex-direction: column;
+
+  --mdc-typography-body1-font-size : 14px
 }
 
 .page-content-outlet + * {

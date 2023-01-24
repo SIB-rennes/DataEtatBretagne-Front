@@ -1,4 +1,4 @@
-import { Component, inject, Inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 
 export enum AlertType {
@@ -22,8 +22,6 @@ export class AlertSnackBarComponent {
   public title: string;
 
   constructor(@Inject(MAT_SNACK_BAR_DATA) public alert: AlertMessage) {
-    console.log(alert);
-
     this.classAlert = 'fr-alert--info';
     this.title = 'Information';
     if (alert.type === AlertType.Error) {
