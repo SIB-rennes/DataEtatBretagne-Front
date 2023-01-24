@@ -35,7 +35,11 @@
 
       <div class="spacer"></div>
 
-      <button mat-button (click)="toggle_grid_fullscreen()">{{fullscreen_label}}</button>  
+      <button mat-button (click)="toggle_grid_fullscreen()">
+        <mat-icon matSuffix *ngIf="grid_fullscreen" >close_fullscreen</mat-icon>
+        <mat-icon matSuffix *ngIf="!grid_fullscreen" >fullscreen</mat-icon>
+        {{fullscreen_label}}
+      </button>  
     </mat-toolbar>
     <financial-grouping-table class="h-100" [tableData]="tableData" [columnsMetaData]="columnsMetaData"
       [groupingColumns]="groupingColumns"></financial-grouping-table>
