@@ -9,12 +9,14 @@ import { LocalisationComponent } from './components/localisation/localisation.co
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [AlertSnackBarComponent, LocalisationComponent],
   imports: [
     CommonModule,
     MatFormFieldModule,
+    MatCheckboxModule,
     MatIconModule,
     MatInputModule,
     ReactiveFormsModule,

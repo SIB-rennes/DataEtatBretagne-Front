@@ -15,6 +15,10 @@ export class SettingsService {
     return this.settings.apis.geo;
   }
 
+  public get apiReferentiel(): string {
+    return this.settings.apis.referentiel;
+  }
+
   public get apiFinancial(): string {
     return this.settings.apis.financial;
   }

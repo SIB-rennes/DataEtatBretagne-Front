@@ -2,6 +2,7 @@ export class Api {
   financial = '';
   management = '';
   geo = '';
+  referentiel = '';
 }
 export class Keycloak {
   url = '';

@@ -41,15 +41,13 @@
           (click)="searchForm.controls['bops'].setValue(null)">
           <mat-icon>close</mat-icon>
         </button>
-
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
 
       <div class="field-localisation field-30-width">
-
-        <lib-localisation [control]="locationControls"></lib-localisation>
-
+        <lib-localisation [control]="locationControls"
+          [categorySelected]="locationControls.value ? locationControls.value[0].type : null"></lib-localisation>
       </div>
 
       <mat-form-field class="field-9-width" appearance="fill">

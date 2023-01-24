@@ -2,12 +2,13 @@ export enum TypeLocalisation {
   DEPARTEMENT = 'Département',
   EPCI = 'Epci',
   COMMUNE = 'Commune',
+  CRTE = 'Crte',
 }
 
 export interface GeoModel {
   nom: string;
   code: string;
-  codeRegion: String;
+  codeRegion?: string;
   type?: TypeLocalisation;
 }
 

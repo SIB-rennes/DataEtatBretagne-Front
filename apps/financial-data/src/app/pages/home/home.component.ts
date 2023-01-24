@@ -45,7 +45,7 @@ export class HomeComponent implements OnInit {
   groupingColumns: GroupingColumn[] = [
     { columnName: 'nom_programme' },
     { columnName: 'type_etablissement' },
-    { columnName: '*commune' },
+    { columnName: 'label_commune' },
   ];
 
   constructor(
@@ -95,9 +95,9 @@ export class HomeComponent implements OnInit {
           row['code_ref_programmation'] + ' - ' + row['ref_programmation'],
       },
       {
-        name: '*commune',
+        name: 'label_commune',
         label: 'Commune',
-        renderFn: (row, _col) => row['commune']?.['LabelCommune'],
+        renderFn: (row, _col) => row['label_commune'],
       },
       {
         name: 'code_siret',

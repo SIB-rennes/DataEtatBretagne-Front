@@ -24,7 +24,11 @@ import { PreferenceUsersModule } from 'apps/preference-users/src/lib/preference-
 import { API_PREFERENCE_PATH } from 'apps/preference-users/src/public-api';
 import { SettingsService } from '../environments/settings.service';
 import { PreferenceComponent } from './pages/preference/preference.component';
-import { API_GEO_PATH, CommonLibModule } from 'apps/common-lib/src/public-api';
+import {
+  API_REF_PATH,
+  API_GEO_PATH,
+  CommonLibModule,
+} from 'apps/common-lib/src/public-api';
 
 registerLocaleData(localeFr);
 
@@ -66,6 +70,13 @@ registerLocaleData(localeFr);
       provide: API_GEO_PATH,
       useFactory: (settings: SettingsService) => {
         return settings.apiGeo;
+      },
+      deps: [SettingsService],
+    },
+    {
+      provide: API_REF_PATH,
+      useFactory: (settings: SettingsService) => {
+        return settings.apiReferentiel;
       },
       deps: [SettingsService],
     },
