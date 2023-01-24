@@ -378,19 +378,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
       }
     });
 
-    // filtre departement
-    // this.filterDepartement = this.searchForm.controls[
-    //   'departement'
-    // ].valueChanges.pipe(
-    //   startWith(''),
-    //   switchMap((value) => {
-    //     if (value && value.length > 1) {
-    //       return this.geoService.filterDepartement(value);
-    //     }
-    //     return of([]);
-    //   })
-    // );
-
     // filtre beneficiaire
     this.filteredBeneficiaire = this.searchForm.controls[
       'beneficiaire'
