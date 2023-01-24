@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { GridInFullscreenStateService } from 'apps/common-lib/src/lib/services/grid-in-fullscreen-state.service';
 import { LoaderService } from './services/loader.service';
 import { SessionService } from './services/session.service';
 
@@ -11,9 +12,14 @@ export class AppComponent implements OnInit {
   public progressBarVisible: boolean = false;
   public isAuthenticated: boolean = false;
 
+  get grid_fullscreen() {
+    return this._gridFullscreen.fullscreen;
+  }
+
   constructor(
     private loaderService: LoaderService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private _gridFullscreen: GridInFullscreenStateService,
   ) {}
 
   ngOnInit(): void {

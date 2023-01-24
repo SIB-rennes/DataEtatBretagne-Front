@@ -18,6 +18,7 @@ import {
 } from 'apps/preference-users/src/lib/models/preference.models';
 import { ActivatedRoute } from '@angular/router';
 import { AlertService } from 'apps/common-lib/src/public-api';
+import { GridInFullscreenStateService } from 'apps/common-lib/src/lib/services/grid-in-fullscreen-state.service';
 
 @Component({
   selector: 'financial-home',
@@ -48,10 +49,24 @@ export class HomeComponent implements OnInit {
     { columnName: 'label_commune' },
   ];
 
+  get grid_fullscreen() {
+    return this._gridFullscreen.fullscreen;
+  }
+  toggle_grid_fullscreen() {
+    this._gridFullscreen.fullscreen = !this.grid_fullscreen;
+  }
+  get fullscreen_label() {
+    if (!this.grid_fullscreen)
+      return 'Aggrandir le tableau'
+    else
+      return 'Rétrécir le tableau'
+  }
+
   constructor(
     private route: ActivatedRoute,
     private alertService: AlertService,
-    private preferenceService: PreferenceUsersHttpService
+    private preferenceService: PreferenceUsersHttpService,
+    private _gridFullscreen: GridInFullscreenStateService,
   ) {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
       style: 'currency',

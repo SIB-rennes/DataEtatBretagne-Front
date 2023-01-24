@@ -1,10 +1,14 @@
-<financial-header></financial-header>
+<financial-header 
+  [ngClass]="{'hidden': grid_fullscreen }"
+></financial-header>
+
 <div *ngIf="progressBarVisible === true">
   <mat-progress-bar mode="query"></mat-progress-bar>
 </div>
 
-<main>
-  <router-outlet class="page-content-outlet"></router-outlet>
-</main>
+<router-outlet class="page-content-outlet"></router-outlet>
 
-<financial-footer *ngIf="isAuthenticated"></financial-footer>
+<financial-footer 
+  *ngIf="isAuthenticated"
+  [ngClass]="{'hidden': grid_fullscreen }"
+></financial-footer>
