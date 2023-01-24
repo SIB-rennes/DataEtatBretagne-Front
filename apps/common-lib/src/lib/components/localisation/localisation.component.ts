@@ -50,18 +50,6 @@ export class LocalisationComponent implements OnChanges {
     }
   }
 
-  /**
-   * Affiche le nom du departement une fois sélectionné
-   * @param departement
-   * @returns
-   */
-  public displayGeo(geo: any): string {
-    if (geo) {
-      return geo.nom;
-    }
-    return '';
-  }
-
   public changeSearchGeo(): void {
     this.searchGeoChanged.next(this.searchGeo);
   }

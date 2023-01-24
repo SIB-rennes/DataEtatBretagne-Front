@@ -127,7 +127,7 @@ export class GeoHttpService {
       if (!isNaN(Number(search)) && search.length <= 2) {
         params += `&departement=${search}`;
       } else {
-        params = `&nom=${search}`;
+        params += `&nom=${search}`;
       }
     }
 
