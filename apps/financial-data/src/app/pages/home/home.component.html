@@ -1,11 +1,15 @@
 <mat-card class="mat-card">
-  <mat-card-header>
+  <mat-card-header
+    [ngClass]="{'hidden': grid_fullscreen }"
+  >
     <mat-card-title>Rechercher des données financières</mat-card-title>
   </mat-card-header>
 
   <mat-card-content class="content-column">
     <financial-search-data (searchResults)="tableData = $event" (currentFilter)="newFilter = $event"
-      [preFilter]="preFilter">
+      [preFilter]="preFilter"
+      [ngClass]="{ 'hidden': grid_fullscreen }"
+      >
     </financial-search-data>
 
     <div class="main-content overlay-container">
@@ -18,16 +22,26 @@
 
 <ng-template #groupingTable>
   <ng-container *ngIf="tableData">
-    <mat-toolbar>
-      <button mat-button (click)="openGroupConfigDialog()" aria-label="Choisir les groupes">
-        Choisir les groupes
-      </button>
-      <button *ngIf="newFilter" mat-icon-button color="primary" matTooltip="Enregistrer le filtre"
-        (click)="openSaveFilterDialog()">
-        <mat-icon fontIcon="save"></mat-icon>
-      </button>
+    <mat-toolbar class="grid-buttons">
+      <div *ngIf="!grid_fullscreen">
+        <button mat-button (click)="openGroupConfigDialog()" aria-label="Choisir les groupes">
+          Choisir les groupes
+        </button>
+        <button *ngIf="newFilter" mat-icon-button color="primary" matTooltip="Enregistrer le filtre"
+          (click)="openSaveFilterDialog()">
+          <mat-icon fontIcon="save"></mat-icon>
+        </button>
+      </div>
+
+      <div class="spacer"></div>
+
+      <button mat-button (click)="toggle_grid_fullscreen()">
+        <mat-icon matSuffix *ngIf="grid_fullscreen" >close_fullscreen</mat-icon>
+        <mat-icon matSuffix *ngIf="!grid_fullscreen" >fullscreen</mat-icon>
+        {{fullscreen_label}}
+      </button>  
     </mat-toolbar>
-    <financial-grouping-table class=" h-100" [tableData]="tableData" [columnsMetaData]="columnsMetaData"
+    <financial-grouping-table class="h-100" [tableData]="tableData" [columnsMetaData]="columnsMetaData"
       [groupingColumns]="groupingColumns"></financial-grouping-table>
   </ng-container>
 </ng-template>
