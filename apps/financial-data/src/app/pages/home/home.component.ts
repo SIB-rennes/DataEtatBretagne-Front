@@ -57,7 +57,7 @@ export class HomeComponent implements OnInit {
   }
   get fullscreen_label() {
     if (!this.grid_fullscreen)
-      return 'Aggrandir le tableau'
+      return 'Agrandir le tableau'
     else
       return 'Rétrécir le tableau'
   }
