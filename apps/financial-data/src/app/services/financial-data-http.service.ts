@@ -73,7 +73,7 @@ export class FinancialDataHttpService {
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
     theme: RefTheme | null,
-    year: number | null,
+    year: number[] | null,
     location: GeoModel[] | null
   ): Observable<FinancialDataModel[]> {
     if (bops == null && theme == null && year == null && location == null)
@@ -93,7 +93,7 @@ export class FinancialDataHttpService {
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
     theme: RefTheme | null,
-    year: number | null,
+    year: number[] | null,
     location: GeoModel[] | null
   ): Observable<Blob> {
     if (bops == null && theme == null && year == null && location == null)
@@ -111,7 +111,7 @@ export class FinancialDataHttpService {
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
     theme: RefTheme | null,
-    year: number | null,
+    year: number[] | null,
     location: GeoModel[] | null
   ): string {
     let params =
@@ -148,8 +148,12 @@ export class FinancialDataHttpService {
       }
     }
 
-    if (year) {
-      params += `~and(DateModificationEj,like,${year})`;
+    if (year && year.length > 0) {
+      params += `~and(`;
+      year.forEach((value) => {
+        params += `~or(DateModificationEj,like,${value})`;
+      });
+      params += `)`;
     }
     return params;
   }

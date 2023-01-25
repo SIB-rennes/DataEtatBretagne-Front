@@ -110,7 +110,11 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
       this.searchForm.controls['location'].setValue(this.preFilter['location']);
       // si on enable pas le controls, la recherche sur les territoires ne sera pas prise en compte
       this.searchForm.controls['location'].enable();
-      this.searchForm.controls['year'].setValue(this.preFilter['year']);
+      this.searchForm.controls['year'].setValue(
+        Array.isArray(this.preFilter['year'])
+          ? this.preFilter['year']
+          : [this.preFilter['year']]
+      );
       this.searchForm.controls['theme'].setValue(
         this.preFilter['theme'] ?? null
       );
