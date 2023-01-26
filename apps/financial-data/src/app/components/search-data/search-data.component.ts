@@ -42,6 +42,7 @@ import {
   JSONObject,
   Preference,
 } from 'apps/preference-users/src/lib/models/preference.models';
+import { TypeLocalisation } from 'apps/common-lib/src/public-api';
 
 @Component({
   selector: 'financial-search-data',
@@ -49,6 +50,7 @@ import {
   styleUrls: ['./search-data.component.scss'],
 })
 export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
+  public readonly TypeLocalisation = TypeLocalisation;
   public searchForm!: FormGroup;
 
   public errorMatcher = new CrossFieldErrorMatcher();
@@ -108,8 +110,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
   ngOnChanges(_changes: SimpleChanges): void {
     if (this.preFilter !== null) {
       this.searchForm.controls['location'].setValue(this.preFilter['location']);
-      // si on enable pas le controls, la recherche sur les territoires ne sera pas prise en compte
-      this.searchForm.controls['location'].enable();
       this.searchForm.controls['year'].setValue(
         Array.isArray(this.preFilter['year'])
           ? this.preFilter['year']
@@ -357,7 +357,7 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
         theme: new FormControl(null),
         beneficiaire: new FormControl(null),
         filterBop: new FormControl(null), // controls pour le filtre des bops
-        location: new FormControl({ value: null, disabled: true }, [
+        location: new FormControl({ value: null, disabled: false }, [
           Validators.required,
         ]),
       },

@@ -6,11 +6,10 @@
     </mat-option>
   </mat-select>
   <mat-icon matSuffix>map</mat-icon>
-  <mat-error *ngIf="control?.invalid">La localisation est obligatoire</mat-error>
 </mat-form-field>
 
 <mat-form-field appearance="fill" class="location">
-  <mat-label>{{categorySelected ?? 'Localisation'}}</mat-label>
+  <mat-label>{{categorySelected}}</mat-label>
 
   <mat-select [formControl]="control" multiple>
     <mat-form-field class="field-100-width" appearance="fill">
@@ -28,5 +27,5 @@
   </mat-select>
 
   <mat-icon matSuffix>map</mat-icon>
-  <mat-error *ngIf=" control?.invalid">La localisation est obligatoire</mat-error>
+  <mat-error *ngIf="control?.invalid">La localisation est obligatoire</mat-error>
 </mat-form-field>
