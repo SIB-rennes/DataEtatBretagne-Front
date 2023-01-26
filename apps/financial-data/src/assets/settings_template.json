@@ -6,6 +6,8 @@
   },
   "apis": {
     "financial": "<url api financial>",
-    "geo": "url api geo"
+    "magagement": "<url api management>",
+    "geo": "url api geo",
+    "referentiel": "url api referentiel"
   }
 }

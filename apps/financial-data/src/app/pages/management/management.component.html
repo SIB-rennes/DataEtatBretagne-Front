@@ -1,0 +1,54 @@
+<mat-card class="mat-card">
+  <mat-card-header>
+    <mat-card-title-group>
+      <mat-card-title>Liste des utilisateurs</mat-card-title>
+      <mat-checkbox (change)="onlyDisableUser($event)" color="primary">Afficher les comptes
+        désactivés</mat-checkbox>
+    </mat-card-title-group>
+  </mat-card-header>
+
+  <mat-card-content>
+
+    <table mat-table [dataSource]="dataSource.users" class="fr-table fr-table--no-caption">
+      <caption>Liste des utilisateurs</caption>
+      <!-- firstName Column -->
+      <ng-container matColumnDef="firstName">
+        <th mat-header-cell *matHeaderCellDef> Nom </th>
+        <td mat-cell *matCellDef="let element"> {{element.firstName}} </td>
+      </ng-container>
+
+      <!-- lastname Column -->
+      <ng-container matColumnDef="lastName">
+        <th mat-header-cell *matHeaderCellDef> Prénom </th>
+        <td mat-cell *matCellDef="let element"> {{element.lastName}} </td>
+      </ng-container>
+
+      <!-- usernamle Column -->
+      <ng-container matColumnDef="username">
+        <th mat-header-cell *matHeaderCellDef> Mail </th>
+        <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+      </ng-container>
+
+
+      <!-- Enabled Column -->
+      <ng-container matColumnDef="enabled">
+        <th mat-header-cell *matHeaderCellDef> Activer/Désactiver </th>
+        <td mat-cell *matCellDef="let element">
+          <mat-slide-toggle [disabled]="session.getCurrentAccount()?.id === element.id" [checked]="element.enabled"
+            color="primary" (change)="toggleEnabled(element, $event)">
+            <span *ngIf="element.enabled">Désactiver l'utilisateur</span>
+            <span *ngIf="!element.enabled">Activer l'utilisateur</span>
+          </mat-slide-toggle>
+        </td>
+      </ng-container>
+
+
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator (page)="changePage($event)" [length]="dataSource.pageInfo?.totalRows" [pageSize]="10"
+      [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+  </mat-card-content>
+</mat-card>

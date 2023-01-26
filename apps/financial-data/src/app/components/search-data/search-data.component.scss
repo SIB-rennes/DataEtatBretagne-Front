@@ -1,7 +1,8 @@
 
-.box .mat-mdc-form-field + .mat-mdc-form-field {
+.box .mat-mdc-form-field + .mat-mdc-form-field, .box .field-localisation + .mat-mdc-form-field, .box .field-localisation {
   margin-left: 8px;
 }
+
 
 .box button {
   margin-left: 15px
@@ -18,33 +19,39 @@ form .mat-fab {
 
 .box {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-start;
   flex-direction: row;
 }
-.field-50-width {
-  width: 50%;
+
+.spacer {
+  flex-grow: 1;
 }
 
-.field-10-width {
-  width: 10%;
+.break {
+  flex-basis: 100%;
+  height: 0;
 }
 
 .field-100-width {
   width: 100%;
+}
+
+.field-20-width {
+  width: 20%;
+}
+
+.field-25-width {
+  width: 25%;
 }
 
 .field-15-width {
   width: 15%;
 }
 
-.field-100-width {
-  width: 100%;
+.field-9-width {
+  width: 9%;
 }
-
-.field-30-width {
-  width: 30%;
-}
-
 
 @media (max-width: 800px) {
   .box {

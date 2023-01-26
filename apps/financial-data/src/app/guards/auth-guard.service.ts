@@ -16,13 +16,13 @@ export class AuthGuard extends KeycloakAuthGuard {
     protected override readonly router: Router,
     protected readonly keycloak: KeycloakService,
     protected location: Location,
-    private sessionService: SessionService
+    protected sessionService: SessionService
   ) {
     super(router, keycloak);
   }
 
   public async isAccessAllowed(
-    _route: ActivatedRouteSnapshot,
+    route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ) {
     // Force the user to log in if currently unauthenticated.
@@ -35,10 +35,25 @@ export class AuthGuard extends KeycloakAuthGuard {
     }
 
     this.sessionService.setAuthentication(
-      await this.keycloak.loadUserProfile()
+      await this.keycloak.loadUserProfile(),
+      this.keycloak.getUserRoles()
     );
 
+    // Get the roles required from the route.
+    const requiredRoles = route.data['roles'];
+
+    // Allow the user to to proceed if no additional roles are required to access the route.
+    if (!(requiredRoles instanceof Array) || requiredRoles.length === 0) {
+      return this.authenticated;
+    }
+
     // Allow the user to proceed if all the required roles are present.
+
+    if (!requiredRoles.every((role) => this.roles.includes(role))) {
+      this.router.navigate(['']);
+      return false;
+    }
+
     return this.authenticated;
   }
 }

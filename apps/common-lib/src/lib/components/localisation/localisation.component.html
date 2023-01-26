@@ -1,0 +1,32 @@
+<mat-form-field appearance="fill">
+  <mat-label>Niveau de localisation</mat-label>
+  <mat-select (selectionChange)="selectedCategory($event)" [value]="categorySelected">
+    <mat-option *ngFor="let type of TypeLocalisation" [value]="type">
+      {{type}}
+    </mat-option>
+  </mat-select>
+  <mat-icon matSuffix>map</mat-icon>
+  <mat-error *ngIf="control?.invalid">La localisation est obligatoire</mat-error>
+</mat-form-field>
+
+<mat-form-field appearance="fill" class="location">
+  <mat-label>{{categorySelected ?? 'Localisation'}}</mat-label>
+
+  <mat-select [formControl]="control" multiple>
+    <mat-form-field class="field-100-width" appearance="fill">
+      <mat-label>Rechercher</mat-label>
+      <input #filterInput type="text" class="fr-input" matInput [(ngModel)]="searchGeo"
+        (ngModelChange)="changeSearchGeo()">
+    </mat-form-field>
+    <mat-select-trigger>
+      {{control.value ? control.value[0].code +' - '+ control.value[0].nom : ''}}
+      <span *ngIf="control.value?.length > 1" class="example-additional-selection">
+        (+{{control.value.length - 1}} {{control.value?.length === 2 ? 'autre' : 'autres'}})
+      </span>
+    </mat-select-trigger>
+    <mat-option *ngFor=" let geo of filteredGeo" [value]="geo"> {{geo.code}} - {{geo.nom}}</mat-option>
+  </mat-select>
+
+  <mat-icon matSuffix>map</mat-icon>
+  <mat-error *ngIf=" control?.invalid">La localisation est obligatoire</mat-error>
+</mat-form-field>

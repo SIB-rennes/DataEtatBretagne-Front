@@ -26,7 +26,21 @@
     ],
     "paths": {
       "@models/*": ["apps/financial-data/src/app/models/*"],
-      "@services/*": ["apps/financial-data/src/app/services/*"]
+      "@services/*": [
+        "apps/financial-data/src/app/services/*"
+      ],
+      "@preference-users": [
+        "dist/preference-users"
+      ],
+      "@preference-users/*": [
+        "dist/preference-users/*"
+      ],
+      "common-lib": [
+        "dist/common-lib"
+      ],
+      "common-lib/*": [
+        "dist/common-lib/*"
+      ]
      }
   },
   "angularCompilerOptions": {

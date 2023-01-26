@@ -7,7 +7,6 @@
       "^/api": "/"
     }
   },
-
   "/integ-api": {
     "target": "https://api.nocode.csm.ovh/nocodb/CHORUS-DATA",
     "secure": false,

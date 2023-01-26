@@ -1,7 +1,7 @@
 import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,8 +16,19 @@ import { GroupingTableModule } from './components/grouping-table/grouping-table.
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { HeaderComponent } from './components/header/header.component';
-import { MatDialogModule } from "@angular/material/dialog";
-import { MatButtonModule } from "@angular/material/button";
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { CommonHttpInterceptor } from './interceptors/common-http-interceptor';
+import { ManagementComponent } from './pages/management/management.component';
+import { PreferenceUsersModule } from 'apps/preference-users/src/lib/preference-users.module';
+import { API_PREFERENCE_PATH } from 'apps/preference-users/src/public-api';
+import { SettingsService } from '../environments/settings.service';
+import { PreferenceComponent } from './pages/preference/preference.component';
+import {
+  API_REF_PATH,
+  API_GEO_PATH,
+  CommonLibModule,
+} from 'apps/common-lib/src/public-api';
 
 registerLocaleData(localeFr);
 
@@ -25,10 +36,52 @@ registerLocaleData(localeFr);
   declarations: [
     AppComponent,
     HomeComponent,
+    PreferenceComponent,
     SearchDataComponent,
+    ManagementComponent,
     FooterComponent,
     HeaderComponent,
   ],
+  providers: [
+    {
+      provide: APP_INITIALIZER,
+      useFactory: app_Init,
+      multi: true,
+      deps: [SettingsHttpService, KeycloakService],
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CommonHttpInterceptor,
+      multi: true,
+    },
+    DatePipe,
+    {
+      provide: LOCALE_ID,
+      useValue: 'fr-FR',
+    },
+    {
+      provide: API_PREFERENCE_PATH,
+      useFactory: (settings: SettingsService) => {
+        return settings.apiManagement;
+      },
+      deps: [SettingsService],
+    },
+    {
+      provide: API_GEO_PATH,
+      useFactory: (settings: SettingsService) => {
+        return settings.apiGeo;
+      },
+      deps: [SettingsService],
+    },
+    {
+      provide: API_REF_PATH,
+      useFactory: (settings: SettingsService) => {
+        return settings.apiReferentiel;
+      },
+      deps: [SettingsService],
+    },
+  ],
+  bootstrap: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -40,21 +93,9 @@ registerLocaleData(localeFr);
     GroupingTableModule,
     MatDialogModule,
     MatButtonModule,
+    PreferenceUsersModule,
+    CommonLibModule,
   ],
-  providers: [
-    {
-      provide: APP_INITIALIZER,
-      useFactory: app_Init,
-      multi: true,
-      deps: [SettingsHttpService, KeycloakService],
-    },
-    DatePipe,
-    {
-      provide: LOCALE_ID,
-      useValue: 'fr-FR',
-    },
-  ],
-  bootstrap: [AppComponent],
 })
 export class AppModule {}
 

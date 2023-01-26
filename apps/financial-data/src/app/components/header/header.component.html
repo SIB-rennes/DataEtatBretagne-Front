@@ -29,15 +29,23 @@
           <div class="fr-header__tools-links">
             <ul class="fr-btns-group" *ngIf="isLoggedIn && user !== null">
               <li>
-                <button mat-icon-button [matMenuTriggerFor]="infoUser" matTooltip="{{user.username}}" class="fr-btn">
-                  <mat-icon aria-hidden="false" aria-label="Information de l'utilisateur" fontIcon="person_outline">
+                <button mat-icon-button [matMenuTriggerFor]="infoUser" matTooltip="Préférence {{user.username}}"
+                  class="fr-btn">
+                  <mat-icon aria-hidden="false" aria-label="Paramètre de l'utilisateur" fontIcon="person_outline">
                   </mat-icon>
                 </button>
 
                 <mat-menu #infoUser="matMenu">
-                  <button mat-menu-item>{{user.firstName}} {{user.lastName}}</button>
-                  <button mat-menu-item>{{user.email}}</button>
+                  <button mat-menu-item routerLink='preference'>Préférence</button>
                 </mat-menu>
+              </li>
+
+
+              <li *ngIf="session.isAdmin()">
+                <button mat-icon-button routerLink="/management" matTooltip="Administration" class="fr-btn"
+                  id="administration">
+                  <mat-icon aria-hidden="false" aria-label="Administration" fontIcon="settings"></mat-icon>
+                </button>
               </li>
 
               <li>

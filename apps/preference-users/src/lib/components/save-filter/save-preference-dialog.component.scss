@@ -1,0 +1,17 @@
+.dialog-title {
+  display: inline-flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.dialog-content {
+  min-height: 22rem;
+
+  > * + * {
+    margin-top: .5rem;
+  }
+}
+
+.w-full {
+  width: 100%;
+}

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { GridInFullscreenStateService } from 'apps/common-lib/src/lib/services/grid-in-fullscreen-state.service';
 import { LoaderService } from './services/loader.service';
+import { SessionService } from './services/session.service';
 
 @Component({
   selector: 'financial-root',
@@ -8,12 +10,25 @@ import { LoaderService } from './services/loader.service';
 })
 export class AppComponent implements OnInit {
   public progressBarVisible: boolean = false;
+  public isAuthenticated: boolean = false;
 
-  constructor(private loaderService: LoaderService) {}
+  get grid_fullscreen() {
+    return this._gridFullscreen.fullscreen;
+  }
+
+  constructor(
+    private loaderService: LoaderService,
+    private sessionService: SessionService,
+    private _gridFullscreen: GridInFullscreenStateService,
+  ) {}
 
   ngOnInit(): void {
     this.loaderService.isLoading().subscribe((loading) => {
       this.progressBarVisible = loading;
+    });
+
+    this.sessionService.getUser().subscribe((user) => {
+      this.isAuthenticated = user !== null;
     });
   }
 }

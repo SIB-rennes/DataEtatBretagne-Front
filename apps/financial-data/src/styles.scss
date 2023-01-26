@@ -16,6 +16,16 @@ html, body {
   height: 100%;
   display: flex;
   flex-direction: column;
+
+  --mdc-typography-body1-font-size : 14px
+}
+
+.hidden {
+  display: none !important;
+}
+
+.spacer {
+  flex-grow: 1;
 }
 
 .page-content-outlet + * {
@@ -32,6 +42,18 @@ html, body {
 
 .fr-container {
   max-width: 90%;
+}
+
+.toaster {
+  .mdc-snackbar__surface {
+    background-color: white !important;
+
+    .mdc-snackbar__label{
+      color: black
+    }
+  }
+
+
 }
 
 

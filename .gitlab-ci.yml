@@ -1,8 +1,45 @@
 stages:
-  - lint
   - build-angular
   - 🔨 docker-build
   - 🐣 deploy
+  - test-e2e
+
+variables:
+  DO_BUILD:
+    description: "Activation du build de base des projets (build + TU) : true | if_changed | manual"
+    value: "true"
+  DO_DEPLOY:
+    description: "Activation du déploiement des images crées: manual_if_changed | manual"
+    value: "manual"
+  DO_E2E:
+    description: "Activation des tests end-to-end: true"
+    value: "manual"
+
+workflow:
+  rules:
+    # Désactive les pipelines sur création de branche
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
+      variables:
+        DO_BUILD: "true"
+        DO_DEPLOY: "true"
+        DO_E2E: "false"
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "develop"'
+      variables:
+        DO_BUILD: "true"
+        DO_DEPLOY: "true"
+        DO_E2E: "true"
+    - if: '$CI_PIPELINE_SOURCE == "push" &&  $CI_COMMIT_REF_NAME =~ "/^feature\//"'
+      variables:
+        DO_BUILD: "true"
+        DO_DEPLOY: "true"
+        DO_E2E: "true"
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      variables:
+        DO_BUILD: "true"
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 .build-docker:
   image: docker:stable-dind
@@ -25,7 +62,7 @@ build angular app:
   script:
     - npm ci --cache ${CI_PROJECT_DIR}/.npm --prefer-offline --quiet --force
     - npm run lint
-    - npm run build
+    - npm run build:financial-data
   cache:
     key: ${CI_PROJECT_ID}-npm
     paths:
@@ -34,19 +71,30 @@ build angular app:
     expire_in: 15 mins
     paths:
       - dist/
+  rules:
+    - if: '$DO_BUILD == "true"'
+    - if: '$DO_BUILD == "manual"'
+      when: manual
+    - if: '$DO_BUILD == "if_changed"'
+      changes:
+        - "apps/**/*"
 
 docker-image-snapshot:
   extends: .build-docker
-  only:
-    - develop
-    - main
-    - /^feature.*$/
-    - /^hotfix.*$/
   variables:
     IMAGE: "${REGISTRY_DOCKER}nocode/financial-data/${CI_COMMIT_REF_NAME}"
     DOCKERFILE: "apps/financial-data/DockerFile"
+  needs:
+    - job: build angular app
   before_script:
     - export VERSION_IMAGE="${CI_COMMIT_SHA:0:8}-snapshot"
+  rules:
+    - if: '$DO_BUILD == "true" && $DO_DEPLOY == "true"'
+    - if: '$DO_DEPLOY == "manual"'
+      when: manual
+    - if: '$DO_DEPLOY == "if_changed"'
+      changes:
+        - "apps/**/*"
 
 docker-build-tags:
   extends: .build-docker
@@ -64,6 +112,7 @@ docker-build-tags:
     - echo ${VERSION}
     - ssh ${USER_INTEG}@${SERVER_INTEG} "docker network create -d overlay --attachable app_network || true"
     - ssh ${USER_INTEG}@${SERVER_INTEG} "export VERSION=${VERSION};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file ~/stack-nocode/compose/integ/front.yml '"${STACK_NAME}"
+    - ssh ${USER_INTEG}@${SERVER_INTEG} "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait -n financial-data ${STACK_NAME}"
 
 deploy-integ-tag:
   extends: .deploy-integ
@@ -74,10 +123,33 @@ deploy-integ-tag:
 
 deploy-integ-snapshot:
   extends: .deploy-integ
-  only:
-    - main
-    - develop
-    - /^feature.*$/
-  when: manual
   before_script:
     - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"
+  rules:
+    - if: '$DO_DEPLOY == "true" && $DO_BUILD == "true"'
+    - if: '$DO_DEPLOY == "manual"'
+      when: manual
+
+run-tests-e2e:
+  stage: test-e2e
+  image: mcr.microsoft.com/playwright:v1.29.2-focal
+  script:
+    - cd e2e/
+    - npm ci
+    - export TEST_USERNAME=${TEST_USERNAME}
+    - export TEST_PASSWORD=${TEST_PASSWORD}
+    - export TEST_USERNAME_ADMIN=${TEST_USERNAME_ADMIN}
+    - export TEST_PASSWORD_ADMIN=${TEST_PASSWORD_ADMIN}
+    - npx playwright test
+  artifacts:
+    expire_in: 3 days
+    when: always
+    paths:
+      - e2e/playwright-report/*
+      - e2e/test-results/*
+      - test-results/*
+      - playwright-report/*
+  rules:
+    - if: '$DO_E2E == "true"'
+    - if: '$DO_E2E == "manual"'
+      when: manual

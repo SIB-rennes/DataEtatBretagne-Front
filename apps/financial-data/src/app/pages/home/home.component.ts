@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   AggregatorFns,
   ColumnsMetaData,
@@ -8,13 +8,24 @@ import {
 import { DatePipe } from '@angular/common';
 import { GroupingConfigDialogComponent } from '../../components/grouping-config-dialog/grouping-config-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import {
+  PreferenceUsersHttpService,
+  SavePreferenceDialogComponent,
+} from 'apps/preference-users/src/public-api';
+import {
+  JSONObject,
+  Preference,
+} from 'apps/preference-users/src/lib/models/preference.models';
+import { ActivatedRoute } from '@angular/router';
+import { AlertService } from 'apps/common-lib/src/public-api';
+import { GridInFullscreenStateService } from 'apps/common-lib/src/lib/services/grid-in-fullscreen-state.service';
 
 @Component({
   selector: 'financial-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   private datePipe = inject(DatePipe);
   private dialog = inject(MatDialog);
 
@@ -22,13 +33,41 @@ export class HomeComponent {
 
   tableData?: TableData;
 
+  /**
+   * Filtre retourner par le formulaire de recherche
+   */
+  newFilter?: Preference;
+
+  /**
+   * Filtre à appliquer sur la recherche
+   */
+  preFilter: JSONObject | null;
+
   groupingColumns: GroupingColumn[] = [
     { columnName: 'nom_programme' },
     { columnName: 'type_etablissement' },
-    { columnName: '*commune' },
+    { columnName: 'label_commune' },
   ];
 
-  constructor() {
+  get grid_fullscreen() {
+    return this._gridFullscreen.fullscreen;
+  }
+  toggle_grid_fullscreen() {
+    this._gridFullscreen.fullscreen = !this.grid_fullscreen;
+  }
+  get fullscreen_label() {
+    if (!this.grid_fullscreen)
+      return 'Agrandir le tableau'
+    else
+      return 'Rétrécir le tableau'
+  }
+
+  constructor(
+    private route: ActivatedRoute,
+    private alertService: AlertService,
+    private preferenceService: PreferenceUsersHttpService,
+    private _gridFullscreen: GridInFullscreenStateService,
+  ) {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR',
@@ -38,6 +77,20 @@ export class HomeComponent {
 
     this.columnsMetaData = new ColumnsMetaData([
       { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
+      {
+        name: 'Montant',
+        label: 'Montant',
+        renderFn: (row, col) =>
+          row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
+        aggregateReducer: AggregatorFns.sum,
+        aggregateRenderFn: (aggregateValue) =>
+          aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
+        columnStyle: {
+          'text-align': 'right',
+          'min-width': '16ex',
+          'flex-grow': '0',
+        },
+      },
       { name: 'Theme', label: 'Thème' },
       {
         name: 'nom_programme',
@@ -46,9 +99,20 @@ export class HomeComponent {
           row['code_programme'] + ' - ' + row['nom_programme'],
       },
       {
-        name: '*commune',
+        name: 'domaine',
+        label: 'Domaine fonctionnel',
+        renderFn: (row, _col) => row['code_domaine'] + ' - ' + row['domaine'],
+      },
+      {
+        name: 'ref_programmation',
+        label: 'Ref Programmation',
+        renderFn: (row, _col) =>
+          row['code_ref_programmation'] + ' - ' + row['ref_programmation'],
+      },
+      {
+        name: 'label_commune',
         label: 'Commune',
-        renderFn: (row, _col) => row['commune']?.['LabelCommune'],
+        renderFn: (row, _col) => row['label_commune'],
       },
       {
         name: 'code_siret',
@@ -74,21 +138,30 @@ export class HomeComponent {
           'flex-grow': '0',
         },
       },
-      {
-        name: 'Montant',
-        label: 'Montant',
-        renderFn: (row, col) =>
-          row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
-        aggregateReducer: AggregatorFns.sum,
-        aggregateRenderFn: (aggregateValue) =>
-          aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
-        columnStyle: {
-          'text-align': 'right',
-          'min-width': '16ex',
-          'flex-grow': '0',
-        },
-      },
     ]);
+
+    this.preFilter = null;
+  }
+
+  ngOnInit() {
+    this.route.queryParams.subscribe((param) => {
+      if (param['uuid']) {
+        this.preferenceService
+          .getPreference(param['uuid'])
+          .subscribe((preference) => {
+            this.preFilter = preference.filters;
+
+            if (preference.options && preference.options['grouping']) {
+              this.groupingColumns = preference.options[
+                'grouping'
+              ] as GroupingColumn[];
+            }
+            this.alertService.openAlertSuccess(
+              `Application du filtre ${preference.name}`
+            );
+          });
+      }
+    });
   }
 
   openGroupConfigDialog() {
@@ -107,5 +180,21 @@ export class HomeComponent {
           this.groupingColumns = updatedGroupingColumns;
         }
       });
+  }
+
+  public openSaveFilterDialog(): void {
+    if (this.newFilter) {
+      this.newFilter.options = { grouping: this.groupingColumns };
+    }
+
+    const dialogRef = this.dialog.open(SavePreferenceDialogComponent, {
+      data: this.newFilter,
+      width: '40rem',
+      autoFocus: 'input',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      this.newFilter = undefined;
+    });
   }
 }

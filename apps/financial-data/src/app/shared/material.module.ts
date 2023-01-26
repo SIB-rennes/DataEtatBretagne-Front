@@ -11,10 +11,17 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @NgModule({
   exports: [
     MatMenuModule,
+    MatButtonToggleModule,
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
@@ -24,8 +31,13 @@ import { MatDividerModule } from '@angular/material/divider';
     MatAutocompleteModule,
     MatSelectModule,
     MatDividerModule,
+    MatSnackBarModule,
     MatCheckboxModule,
     MatProgressBarModule,
+    MatPaginatorModule,
+    MatSlideToggleModule,
+    MatToolbarModule,
+    MatTableModule,
   ],
 })
 export class MaterialModule {}
