@@ -83,7 +83,7 @@ docker-image-snapshot:
   extends: .build-docker
   variables:
     IMAGE: "${REGISTRY_DOCKER}nocode/financial-data/${CI_COMMIT_REF_NAME}"
-    DOCKERFILE: "apps/financial-data/DockerFile"
+    DOCKERFILE: "apps/financial-data/Dockerfile"
   needs:
     - job: build angular app
   before_script:
