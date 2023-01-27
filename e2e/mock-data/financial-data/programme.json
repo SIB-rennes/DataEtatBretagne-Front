@@ -1181,16 +1181,10 @@
       "Code": "723",
       "Label": null,
       "RefTheme": null
-    },
-    {
-      "Id": 133,
-      "Code": "751",
-      "Label": null,
-      "RefTheme": null
     }
   ],
   "pageInfo": {
-    "totalRows": 133,
+    "totalRows": 132,
     "page": 1,
     "pageSize": 500,
     "isFirstPage": true,
