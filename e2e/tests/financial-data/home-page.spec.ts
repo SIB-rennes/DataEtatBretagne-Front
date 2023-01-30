@@ -28,7 +28,7 @@ test.describe("Page d'accueil", () => {
         .locator('.mdc-list-item__primary-text')
     ).toHaveCount(18);
 
-    await page.getByLabel('Programme').click();
+    await page.getByLabel('Programme').click({ force: true });
     await expect(
       page
         .getByRole('listbox', { name: 'Programme' })
