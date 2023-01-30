@@ -12,18 +12,15 @@
 
       <mat-form-field class="field-20-width" appearance="fill">
         <mat-label>Theme</mat-label>
-        <input type="text" matInput formControlName="theme" [matAutocomplete]="theme"
-          #autoCompleteThemeInput="matAutocompleteTrigger" [errorStateMatcher]="errorMatcher">
-        <button *ngIf="searchForm.controls['theme'].value !== null" matSuffix mat-icon-button
-          (click)="searchForm.controls['theme'].setValue(null)">
-          <mat-icon>close</mat-icon>
-        </button>
-        <mat-autocomplete #theme="matAutocomplete" [displayWith]="displayTheme"
-          (optionSelected)="onSelectTheme($event.option.value)">
-          <mat-option *ngFor="let theme of filteredTheme | async" [value]="theme">
+        <mat-select formControlName="theme" multiple [errorStateMatcher]="errorMatcher"
+          (selectionChange)="onSelectTheme($event)">
+          <mat-option *ngFor="let theme of themes" [value]="theme">
             {{theme.Label}}
           </mat-option>
-        </mat-autocomplete>
+        </mat-select>
+        <button *ngIf="searchForm.controls['theme'].value !== null" matSuffix mat-icon-button (click)="cancelTheme()">
+          <mat-icon>close</mat-icon>
+        </button>
 
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
@@ -44,7 +41,6 @@
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
-
       <div class="field-localisation field-30-width">
         <lib-localisation [control]="locationControls"
           [categorySelected]="locationControls.value ? locationControls.value[0].type : null"></lib-localisation>
@@ -52,7 +48,7 @@
 
       <mat-form-field class="field-9-width" appearance="fill">
         <mat-label>Année</mat-label>
-        <mat-select formControlName="year">
+        <mat-select formControlName="year" multiple>
           <mat-option *ngFor="let year of generateArrayOfYears()" [value]="year">
             {{year}}
           </mat-option>

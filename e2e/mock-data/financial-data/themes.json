@@ -71,16 +71,12 @@
     {
       "Id": 13,
       "Label": "Investissements d'avenir"
-    },
-    {
-      "Id": 20,
-      "Label": "Justice"
     }
   ],
   "pageInfo": {
-    "totalRows": 19,
+    "totalRows": 18,
     "page": 1,
-    "pageSize": 20,
+    "pageSize": 18,
     "isFirstPage": true,
     "isLastPage": true
   }
