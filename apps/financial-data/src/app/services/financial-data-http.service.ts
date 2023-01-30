@@ -72,16 +72,22 @@ export class FinancialDataHttpService {
   public search(
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
-    theme: RefTheme | null,
+    themes: RefTheme[] | null,
     year: number[] | null,
     location: GeoModel[] | null
   ): Observable<FinancialDataModel[]> {
-    if (bops == null && theme == null && year == null && location == null)
+    if (bops == null && themes == null && year == null && location == null)
       return of();
 
     const apiFinancial = this.settings.apiFinancial;
 
-    const params = this._buildparams(beneficiaire, bops, theme, year, location);
+    const params = this._buildparams(
+      beneficiaire,
+      bops,
+      themes,
+      year,
+      location
+    );
     return this.http
       .get<NocoDbResponse<FinancialDataModel>>(
         `${apiFinancial}/DataChorus/Chorus-front?${params}`
@@ -92,15 +98,21 @@ export class FinancialDataHttpService {
   public getCsv(
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
-    theme: RefTheme | null,
+    themes: RefTheme[] | null,
     year: number[] | null,
     location: GeoModel[] | null
   ): Observable<Blob> {
-    if (bops == null && theme == null && year == null && location == null)
+    if (bops == null && themes == null && year == null && location == null)
       return of();
 
     const apiFinancial = this.settings.apiFinancial;
-    const params = this._buildparams(beneficiaire, bops, theme, year, location);
+    const params = this._buildparams(
+      beneficiaire,
+      bops,
+      themes,
+      year,
+      location
+    );
     return this.http.get(
       `${apiFinancial}/DataChorus/Chorus-front/csv?${params}`,
       { responseType: 'blob' }
@@ -110,7 +122,7 @@ export class FinancialDataHttpService {
   private _buildparams(
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
-    theme: RefTheme | null,
+    themes: RefTheme[] | null,
     year: number[] | null,
     location: GeoModel[] | null
   ): string {
@@ -124,8 +136,10 @@ export class FinancialDataHttpService {
         .filter((bop) => bop.Code)
         .map((bop) => bop.Code)
         .join(',')})`;
-    } else if (theme) {
-      params += `~and(Theme,eq,${theme.Label})`;
+    } else if (themes) {
+      params += `~and(Theme,in,${themes
+        .map((theme) => theme.Label)
+        .join(',')})`;
     }
 
     if (location && location.length > 0) {

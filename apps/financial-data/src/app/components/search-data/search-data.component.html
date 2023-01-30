@@ -12,18 +12,15 @@
 
       <mat-form-field class="field-20-width" appearance="fill">
         <mat-label>Theme</mat-label>
-        <input type="text" matInput formControlName="theme" [matAutocomplete]="theme"
-          #autoCompleteThemeInput="matAutocompleteTrigger" [errorStateMatcher]="errorMatcher">
-        <button *ngIf="searchForm.controls['theme'].value !== null" matSuffix mat-icon-button
-          (click)="searchForm.controls['theme'].setValue(null)">
-          <mat-icon>close</mat-icon>
-        </button>
-        <mat-autocomplete #theme="matAutocomplete" [displayWith]="displayTheme"
-          (optionSelected)="onSelectTheme($event.option.value)">
+        <mat-select formControlName="theme" multiple [errorStateMatcher]="errorMatcher"
+          (selectionChange)="onSelectTheme($event)">
           <mat-option *ngFor="let theme of filteredTheme | async" [value]="theme">
             {{theme.Label}}
           </mat-option>
-        </mat-autocomplete>
+        </mat-select>
+        <button *ngIf="searchForm.controls['theme'].value !== null" matSuffix mat-icon-button (click)="cancelTheme()">
+          <mat-icon>close</mat-icon>
+        </button>
 
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
@@ -43,7 +40,6 @@
         </button>
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
-
 
       <div class="field-localisation field-30-width">
         <lib-localisation [control]="locationControls"
