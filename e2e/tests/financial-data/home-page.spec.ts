@@ -29,6 +29,7 @@ test.describe("Page d'accueil", () => {
     ).toHaveCount(18);
 
     await page.getByLabel('Programme').click({ force: true });
+    await page.getByLabel('Programme').click({ force: true });
     await expect(
       page
         .getByRole('listbox', { name: 'Programme' })
