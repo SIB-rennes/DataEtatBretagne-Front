@@ -14,7 +14,7 @@
         <mat-label>Theme</mat-label>
         <mat-select formControlName="theme" multiple [errorStateMatcher]="errorMatcher"
           (selectionChange)="onSelectTheme($event)">
-          <mat-option *ngFor="let theme of filteredTheme | async" [value]="theme">
+          <mat-option *ngFor="let theme of themes" [value]="theme">
             {{theme.Label}}
           </mat-option>
         </mat-select>

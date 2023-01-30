@@ -54,7 +54,6 @@ export class SearchDataComponent implements OnInit, OnChanges {
   public bop: BopModel[] = [];
   public themes: RefTheme[] = [];
 
-  public filteredTheme: Observable<RefTheme[]> | null | undefined = null;
   public filteredBeneficiaire: Observable<RefSiret[]> | null | undefined = null;
   public filteredBop: BopModel[] | undefined = undefined;
 
@@ -100,14 +99,27 @@ export class SearchDataComponent implements OnInit, OnChanges {
   ngOnChanges(_changes: SimpleChanges): void {
     if (this.preFilter !== null) {
       this.searchForm.controls['location'].setValue(this.preFilter['location']);
-      this.searchForm.controls['year'].setValue(
-        Array.isArray(this.preFilter['year'])
-          ? this.preFilter['year']
-          : [this.preFilter['year']]
-      );
-      this.searchForm.controls['theme'].setValue(
-        this.preFilter['theme'] ?? null
-      );
+      if (this.preFilter['year']) {
+        this.searchForm.controls['year'].setValue(
+          Array.isArray(this.preFilter['year'])
+            ? this.preFilter['year']
+            : [this.preFilter['year']]
+        );
+      }
+
+      if (this.preFilter['theme']) {
+        const preFilterTheme = Array.isArray(this.preFilter['theme'])
+          ? (this.preFilter['theme'] as unknown as RefTheme[])
+          : ([this.preFilter['theme']] as unknown as RefTheme[]);
+        const themeSelected = this.themes?.filter(
+          (theme) =>
+            preFilterTheme.findIndex(
+              (themeFilter) => themeFilter.Id === theme.Id
+            ) !== -1
+        );
+        this.searchForm.controls['theme'].setValue(themeSelected);
+      }
+
       this.searchForm.controls['beneficiaire'].setValue(
         this.preFilter['beneficiaire'] ?? null
       );
@@ -138,7 +150,6 @@ export class SearchDataComponent implements OnInit, OnChanges {
           this.themes = response.financial.themes;
           this.bop = response.financial.bop;
 
-          this.filteredTheme = of(this.themes);
           this.filteredBop = this.bop;
         } else {
           this.displayError = true;
