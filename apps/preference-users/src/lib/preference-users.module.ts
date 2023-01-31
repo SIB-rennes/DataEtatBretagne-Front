@@ -7,10 +7,13 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import {MatChipsModule} from '@angular/material/chips';
 
 import { SavePreferenceDialogComponent } from './components/save-filter/save-preference-dialog.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
@@ -25,9 +28,13 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
     MatCardModule,
     MatButtonModule,
     MatTooltipModule,
+    MatChipsModule,
     MatSlideToggleModule,
     MatTableModule,
+    MatCheckboxModule,
+    MatAutocompleteModule,
     FormsModule,
+    ReactiveFormsModule,
     CommonModule,
     MatIconModule,
     MatInputModule,

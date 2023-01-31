@@ -56,17 +56,15 @@ export class HomeComponent implements OnInit {
     this._gridFullscreen.fullscreen = !this.grid_fullscreen;
   }
   get fullscreen_label() {
-    if (!this.grid_fullscreen)
-      return 'Agrandir le tableau'
-    else
-      return 'Rétrécir le tableau'
+    if (!this.grid_fullscreen) return 'Agrandir le tableau';
+    else return 'Rétrécir le tableau';
   }
 
   constructor(
     private route: ActivatedRoute,
     private alertService: AlertService,
     private preferenceService: PreferenceUsersHttpService,
-    private _gridFullscreen: GridInFullscreenStateService,
+    private _gridFullscreen: GridInFullscreenStateService
   ) {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
       style: 'currency',
@@ -194,7 +192,7 @@ export class HomeComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      this.newFilter = undefined;
+      if (result) this.newFilter = undefined;
     });
   }
 }

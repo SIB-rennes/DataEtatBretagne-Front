@@ -1,8 +1,13 @@
+export interface Shared {
+  shared_username_email: string;
+}
+
 export interface Preference {
   uuid?: string;
   name?: string;
   filters: JSONObject;
   options?: JSONObject;
+  shares?: Shared[];
 }
 
 export type JSONValue = string | number | boolean | JSONObject | JSONArray;

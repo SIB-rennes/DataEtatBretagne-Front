@@ -21,7 +21,7 @@ export class PreferenceUsersHttpService {
   ) {}
 
   public getPreferences(): Observable<Preference[]> {
-    return this.http.get<any>(`${this.apiPath}/users/preferences`);
+    return this.http.get<Preference[]>(`${this.apiPath}/users/preferences`);
   }
 
   public savePreference(preference: Preference): Observable<any> {
@@ -35,6 +35,12 @@ export class PreferenceUsersHttpService {
   public getPreference(uuid: string): Observable<Preference> {
     return this.http.get<Preference>(
       `${this.apiPath}/users/preferences/${uuid}`
+    );
+  }
+
+  public searchUser(search: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiPath}/users/preferences/search-user?username=${search}`
     );
   }
 }

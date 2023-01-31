@@ -16,6 +16,28 @@
       Le nom est obligatoire
     </mat-error>
   </mat-form-field>
+
+  <mat-checkbox [(ngModel)]="shared">Partager le filtre</mat-checkbox>
+
+
+  <mat-form-field *ngIf="shared" appearance="fill" class="w-full">
+    <mat-label>Saisir les courriels des utilisateurs</mat-label>
+    <mat-chip-grid #chipGrid aria-label="Sélection d'utilisateurs">
+      <mat-chip-row *ngFor="let user of preference.shares" (removed)="removeUserSelected(user)">
+        {{user.shared_username_email}}
+        <button matChipRemove [attr.aria-label]="'Supprimer ' + user.shared_username_email">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip-row>
+    </mat-chip-grid>
+    <input placeholder="Courriels ..." #userInput [(ngModel)]="searchUser" (ngModelChange)="changeSearchUsername()"
+      [matChipInputFor]="chipGrid" [matAutocomplete]="auto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" />
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addUser($event.option.value)">
+      <mat-option *ngFor="let user of filterUser" [value]="user.username">
+        {{user.username}}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
