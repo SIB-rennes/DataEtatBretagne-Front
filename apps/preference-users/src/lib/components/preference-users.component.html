@@ -1,12 +1,16 @@
-<mat-card class="mat-card">
-  <mat-card-header>
-    <mat-card-title-group>
-      <mat-card-title>Préférences</mat-card-title>
-    </mat-card-title-group>
-  </mat-card-header>
+<mat-accordion>
 
-  <mat-card-content>
-    <table mat-table [dataSource]="dataSource" class="fr-table fr-table--no-caption fr-table--bordered">
+  <mat-expansion-panel *ngIf="dataSource.create_by_user.length > 0" [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Mes Filtres
+      </mat-panel-title>
+      <mat-panel-description>
+        Liste des filtres que j'ai créé
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <table mat-table [dataSource]="dataSource.create_by_user" class="fr-table fr-table--no-caption fr-table--bordered">
       <caption>Liste des recherches sauvegarder</caption>
 
       <ng-container matColumnDef="name">
@@ -15,27 +19,6 @@
           <div>
             <span>{{element.name}}</span>
           </div>
-
-
-        </td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef> </th>
-        <td mat-cell *matCellDef="let element">
-          <button mat-icon-button color="warn" matTooltip="Supprimer le filtre" (click)="deleteFilter(element.uuid)">
-            <mat-icon fontIcon="delete"></mat-icon>
-          </button>
-
-          <button mat-icon-button color="primary" matTooltip="Partager le filtre">
-            <mat-icon fontIcon="share"></mat-icon>
-          </button>
-
-          <button mat-icon-button color="primary" matTooltip="appliquer le filtre"
-            (click)="applyPreference(element.uuid, element)">
-            <mat-icon fontIcon="published_with_changes"></mat-icon>
-          </button>
-
         </td>
       </ng-container>
 
@@ -64,11 +47,125 @@
         </td>
       </ng-container>
 
+      <ng-container matColumnDef="shares">
+        <th mat-header-cell *matHeaderCellDef>Partager</th>
+
+        <td mat-cell *matCellDef="let element">
+          <ul class="fr-badge-group" *ngIf="element.shares.length > 0">
+            <li class="fr-mr-3v" *ngFor="let share of element.shares">
+              <p class="fr-mr-1v fr-tag "> {{share.shared_username_email}}</p>
+            </li>
+          </ul>
+        </td>
+
+      </ng-container>
+
+      <!-- actions buttons-->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="warn" matTooltip="Supprimer le filtre" (click)="deleteFilter(element.uuid)">
+            <mat-icon fontIcon="delete"></mat-icon>
+          </button>
+
+          <button mat-icon-button color="primary" matTooltip="Partager le filtre">
+            <mat-icon fontIcon="share"></mat-icon>
+          </button>
+
+          <button mat-icon-button color="primary" matTooltip="appliquer le filtre"
+            (click)="applyPreference(element.uuid, element)">
+            <mat-icon fontIcon="published_with_changes"></mat-icon>
+          </button>
+
+        </td>
+      </ng-container>
+
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-  </mat-card-content>
-</mat-card>
+  </mat-expansion-panel>
+
+
+  <mat-expansion-panel *ngIf="dataSource.shared_with_user.length > 0">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Filtres partagé par les autres utilisateurs
+      </mat-panel-title>
+      <mat-panel-description>
+        Liste des Filtres que les utilisateurs m'ont partagés
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <table mat-table [dataSource]="dataSource.shared_with_user"
+      class="fr-table fr-table--no-caption fr-table--bordered">
+      <caption>Liste des recherches partager</caption>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Libellé de la page </th>
+        <td mat-cell *matCellDef="let element">
+          <div>
+            <span>{{element.name}}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- filters Column -->
+      <ng-container matColumnDef="filters">
+        <th mat-header-cell *matHeaderCellDef> Liste des filtres enregistrés </th>
+        <td mat-cell *matCellDef="let element">
+
+          <ul class="fr-badge-group">
+            <li class="fr-mr-3v" *ngFor="let field of objectKeys(element.filters)">
+              <p class="fr-mr-1v fr-badge fr-badge--blue-ecume">
+                <ng-container *ngIf="mappingMetadata && mappingMetadata[field] else defaultLabel">
+                  {{mappingMetadata[field].label}}
+                </ng-container>
+
+                <ng-template #defaultLabel>
+                  {{field}}
+                </ng-template>
+              </p>
+              <ng-container
+                [ngTemplateOutlet]="getTypeField(element.filters[field]) === 'array' ? badgeArray : badgeSimple"
+                [ngTemplateOutletContext]="{value: element.filters[field], metadata: mappingMetadata[field]}">
+              </ng-container>
+            </li>
+          </ul>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="shares">
+        <th mat-header-cell *matHeaderCellDef>Partager par </th>
+
+        <td mat-cell *matCellDef="let element">
+          <p class="fr-mr-1v fr-tag "> {{element.username}}</p>
+        </td>
+
+      </ng-container>
+
+      <!-- actions buttons-->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button color="primary" matTooltip="appliquer le filtre"
+            (click)="applyPreference(element.uuid, element)">
+            <mat-icon fontIcon="published_with_changes"></mat-icon>
+          </button>
+
+        </td>
+      </ng-container>
+
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+  </mat-expansion-panel>
+</mat-accordion>
+
+
+
 
 <ng-template #badgeArray let-value="value" let-metadata="metadata">
 

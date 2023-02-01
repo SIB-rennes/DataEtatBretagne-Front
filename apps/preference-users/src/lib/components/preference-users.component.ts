@@ -3,7 +3,7 @@ import {
   JSONValue,
   Preference,
   MapPreferenceFilterMetadata,
-  JSONObject,
+  PreferenceWithShared,
 } from '../models/preference.models';
 import { MatDialog } from '@angular/material/dialog';
 import { PreferenceUsersHttpService } from '../services/preference-users-http.service';
@@ -13,7 +13,11 @@ import { AlertService } from 'apps/common-lib/src/public-api';
 @Component({
   selector: 'lib-preference-users',
   templateUrl: './preference-users.component.html',
-  styles: ['.mat-column-filters { width: 75%; }'],
+  styles: [
+    '.mat-column-filters { width: 55%; } ',
+    '.mat-column-shares { width: 20% }',
+    '.mat-column-name { width: 10% }',
+  ],
 })
 export class PreferenceUsersComponent implements OnInit {
   /**
@@ -28,9 +32,9 @@ export class PreferenceUsersComponent implements OnInit {
 
   private dialog = inject(MatDialog);
 
-  public displayedColumns: string[] = ['name', 'filters', 'actions'];
+  public displayedColumns: string[] = ['name', 'filters', 'shares', 'actions'];
 
-  public dataSource: Preference[] = [];
+  public dataSource!: PreferenceWithShared;
 
   public readonly objectKeys = Object.keys;
   public readonly json = JSON;
@@ -72,9 +76,10 @@ export class PreferenceUsersComponent implements OnInit {
       if (result) {
         this.service.deletePreference(uuid).subscribe({
           next: () => {
-            this.dataSource = this.dataSource.filter(
-              (data) => data.uuid && data.uuid !== uuid
-            );
+            this.dataSource.create_by_user =
+              this.dataSource.create_by_user.filter(
+                (data) => data.uuid && data.uuid !== uuid
+              );
             this.alertService.openAlertSuccess('Suppression du filtre');
           },
         });

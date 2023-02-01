@@ -10,6 +10,11 @@ export interface Preference {
   shares?: Shared[];
 }
 
+export interface PreferenceWithShared {
+  create_by_user: Preference[];
+  shared_with_user: Preference[];
+}
+
 export type JSONValue = string | number | boolean | JSONObject | JSONArray;
 
 export interface JSONObject {
