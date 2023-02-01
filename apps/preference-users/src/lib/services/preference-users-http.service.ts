@@ -27,7 +27,16 @@ export class PreferenceUsersHttpService {
   }
 
   public savePreference(preference: Preference): Observable<any> {
-    return this.http.post(`${this.apiPath}/users/preferences`, preference);
+    if (preference.uuid) {
+      // update
+      return this.http.post(
+        `${this.apiPath}/users/preferences/${preference.uuid}`,
+        preference
+      );
+    } else {
+      // create
+      return this.http.post(`${this.apiPath}/users/preferences`, preference);
+    }
   }
 
   public deletePreference(uuid: string): Observable<any> {

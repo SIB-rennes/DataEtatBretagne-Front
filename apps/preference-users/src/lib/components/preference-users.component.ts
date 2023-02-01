@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PreferenceUsersHttpService } from '../services/preference-users-http.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { AlertService } from 'apps/common-lib/src/public-api';
+import { SavePreferenceDialogComponent } from './save-filter/save-preference-dialog.component';
 
 @Component({
   selector: 'lib-preference-users',
@@ -34,7 +35,10 @@ export class PreferenceUsersComponent implements OnInit {
 
   public displayedColumns: string[] = ['name', 'filters', 'shares', 'actions'];
 
-  public dataSource!: PreferenceWithShared;
+  public dataSource: PreferenceWithShared = {
+    create_by_user: [],
+    shared_with_user: [],
+  };
 
   public readonly objectKeys = Object.keys;
   public readonly json = JSON;
@@ -85,5 +89,21 @@ export class PreferenceUsersComponent implements OnInit {
         });
       }
     });
+  }
+
+  /**
+   * Ouvre la pop-up de partage de filtre
+   * @param uuid
+   */
+  public shareFilter(preference: Preference) {
+    const dialogRef = this.dialog.open(SavePreferenceDialogComponent, {
+      data: preference,
+      width: '40rem',
+      autoFocus: 'input',
+    });
+
+    // dialogRef.afterClosed().subscribe((result) => {
+    //   if (result) this.newFilter = undefined;
+    // });
   }
 }
