@@ -3,17 +3,22 @@ import {
   JSONValue,
   Preference,
   MapPreferenceFilterMetadata,
-  JSONObject,
+  PreferenceWithShared,
 } from '../models/preference.models';
 import { MatDialog } from '@angular/material/dialog';
 import { PreferenceUsersHttpService } from '../services/preference-users-http.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { AlertService } from 'apps/common-lib/src/public-api';
+import { SavePreferenceDialogComponent } from './save-filter/save-preference-dialog.component';
 
 @Component({
   selector: 'lib-preference-users',
   templateUrl: './preference-users.component.html',
-  styles: ['.mat-column-filters { width: 75%; }'],
+  styles: [
+    '.mat-column-filters { width: 55%; } ',
+    '.mat-column-shares { width: 20% }',
+    '.mat-column-name { width: 10% }',
+  ],
 })
 export class PreferenceUsersComponent implements OnInit {
   /**
@@ -28,9 +33,12 @@ export class PreferenceUsersComponent implements OnInit {
 
   private dialog = inject(MatDialog);
 
-  public displayedColumns: string[] = ['name', 'filters', 'actions'];
+  public displayedColumns: string[] = ['name', 'filters', 'shares', 'actions'];
 
-  public dataSource: Preference[] = [];
+  public dataSource: PreferenceWithShared = {
+    create_by_user: [],
+    shared_with_user: [],
+  };
 
   public readonly objectKeys = Object.keys;
   public readonly json = JSON;
@@ -72,13 +80,30 @@ export class PreferenceUsersComponent implements OnInit {
       if (result) {
         this.service.deletePreference(uuid).subscribe({
           next: () => {
-            this.dataSource = this.dataSource.filter(
-              (data) => data.uuid && data.uuid !== uuid
-            );
+            this.dataSource.create_by_user =
+              this.dataSource.create_by_user.filter(
+                (data) => data.uuid && data.uuid !== uuid
+              );
             this.alertService.openAlertSuccess('Suppression du filtre');
           },
         });
       }
     });
+  }
+
+  /**
+   * Ouvre la pop-up de partage de filtre
+   * @param uuid
+   */
+  public shareFilter(preference: Preference) {
+    const dialogRef = this.dialog.open(SavePreferenceDialogComponent, {
+      data: preference,
+      width: '40rem',
+      autoFocus: 'input',
+    });
+
+    // dialogRef.afterClosed().subscribe((result) => {
+    //   if (result) this.newFilter = undefined;
+    // });
   }
 }

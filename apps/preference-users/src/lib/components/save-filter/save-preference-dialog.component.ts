@@ -34,7 +34,13 @@ export class SavePreferenceDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: Preference
   ) {
     this.preference = data;
-    this.preference.shares = [];
+    // si la préférence d'origine est déjà partagé ou si elle est déjà créé sans partage,
+    // on active par défaut la checkbox de partage
+    if ((data.shares && data.shares.length > 0) || data.uuid) {
+      this.shared = true;
+    } else {
+      this.preference.shares = [];
+    }
 
     this.searchUserChanged.pipe(debounceTime(300)).subscribe(() => {
       this._searchUser();

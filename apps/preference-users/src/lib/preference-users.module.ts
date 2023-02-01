@@ -13,7 +13,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import {MatChipsModule} from '@angular/material/chips';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { SavePreferenceDialogComponent } from './components/save-filter/save-preference-dialog.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
@@ -27,6 +28,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
   imports: [
     MatCardModule,
     MatButtonModule,
+    MatExpansionModule,
     MatTooltipModule,
     MatChipsModule,
     MatSlideToggleModule,
