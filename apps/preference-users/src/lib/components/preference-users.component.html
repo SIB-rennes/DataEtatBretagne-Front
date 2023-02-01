@@ -48,7 +48,7 @@
       </ng-container>
 
       <ng-container matColumnDef="shares">
-        <th mat-header-cell *matHeaderCellDef>Partager</th>
+        <th mat-header-cell *matHeaderCellDef>Partagé</th>
 
         <td mat-cell *matCellDef="let element">
           <ul class="fr-badge-group" *ngIf="element.shares.length > 0">
@@ -90,7 +90,7 @@
   <mat-expansion-panel *ngIf="dataSource.shared_with_user.length > 0">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        Filtres partagé par les autres utilisateurs
+        Filtres partagés par les autres utilisateurs
       </mat-panel-title>
       <mat-panel-description>
         Liste des Filtres que les utilisateurs m'ont partagés
@@ -136,7 +136,7 @@
       </ng-container>
 
       <ng-container matColumnDef="shares">
-        <th mat-header-cell *matHeaderCellDef>Partager par </th>
+        <th mat-header-cell *matHeaderCellDef>Partagé par </th>
 
         <td mat-cell *matCellDef="let element">
           <p class="fr-mr-1v fr-tag "> {{element.username}}</p>
