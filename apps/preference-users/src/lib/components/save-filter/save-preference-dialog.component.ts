@@ -84,7 +84,7 @@ export class SavePreferenceDialogComponent {
   public removeUserSelected(user: Shared) {
     const index = this.preference.shares?.indexOf(user);
 
-    if (index && index >= 0) {
+    if (index !== undefined && index >= 0) {
       this.preference.shares?.splice(index, 1);
     }
   }
