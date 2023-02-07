@@ -7,14 +7,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SearchDataComponent } from './components/search-data/search-data.component';
 import { HomeComponent } from './pages/home/home.component';
-import { FooterComponent } from './components/footer/footer.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MaterialModule } from './shared/material.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { GroupingTableModule } from './components/grouping-table/grouping-table.module';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
-import { HeaderComponent } from './components/header/header.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonHttpInterceptor } from './interceptors/common-http-interceptor';
@@ -27,6 +24,7 @@ import {
   API_REF_PATH,
   API_GEO_PATH,
   CommonLibModule,
+  MaterialModule,
 } from 'apps/common-lib/src/public-api';
 import {
   SETTINGS,
@@ -42,8 +40,6 @@ registerLocaleData(localeFr);
     PreferenceComponent,
     SearchDataComponent,
     ManagementComponent,
-    FooterComponent,
-    HeaderComponent,
   ],
   providers: [
     {

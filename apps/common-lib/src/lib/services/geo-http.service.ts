@@ -44,7 +44,6 @@ export class GeoHttpService {
         params += `&nom=${search}`;
       }
     }
-    console.log(this.apiGeo);
     return this.http
       .get<GeoModel[]>(`${this.apiGeo}/departements?${params}`)
       .pipe(

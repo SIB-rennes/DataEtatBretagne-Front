@@ -6,7 +6,7 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
-import { SessionService } from '../services/session.service';
+import { SessionService } from 'apps/common-lib/src/public-api';
 
 @Injectable({
   providedIn: 'root',

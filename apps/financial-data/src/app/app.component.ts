@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GridInFullscreenStateService } from 'apps/common-lib/src/lib/services/grid-in-fullscreen-state.service';
-import { LoaderService } from './services/loader.service';
-import { SessionService } from './services/session.service';
+import { LoaderService, SessionService } from 'apps/common-lib/src/public-api';
 
 @Component({
   selector: 'financial-root',
@@ -19,7 +18,7 @@ export class AppComponent implements OnInit {
   constructor(
     private loaderService: LoaderService,
     private sessionService: SessionService,
-    private _gridFullscreen: GridInFullscreenStateService,
+    private _gridFullscreen: GridInFullscreenStateService
   ) {}
 
   ngOnInit(): void {

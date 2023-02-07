@@ -8,8 +8,7 @@ import {
   HttpErrorResponse,
 } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { LoaderService } from '@services/loader.service';
-import { AlertService } from 'apps/common-lib/src/public-api';
+import { AlertService, LoaderService } from 'apps/common-lib/src/public-api';
 
 @Injectable()
 export class CommonHttpInterceptor implements HttpInterceptor {

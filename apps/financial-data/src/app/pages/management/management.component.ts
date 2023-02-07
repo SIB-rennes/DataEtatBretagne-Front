@@ -4,11 +4,10 @@ import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 import { UserHttpService } from '@services/management/users-http.service';
 import { ActivatedRoute } from '@angular/router';
 import { User, UsersPagination } from '@models/users/user.models';
-import { getFrenchPaginatorIntl } from '../../shared/paginator/french-paginator-intl';
 import { Observable } from 'rxjs';
-import { SessionService } from '@services/session.service';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
-import { AlertService } from 'apps/common-lib/src/public-api';
+import { AlertService, SessionService } from 'apps/common-lib/src/public-api';
+import { getFrenchPaginatorIntl } from 'apps/common-lib/src/lib/shared/paginator/french-paginator-intl';
 
 @Component({
   selector: 'financial-management',

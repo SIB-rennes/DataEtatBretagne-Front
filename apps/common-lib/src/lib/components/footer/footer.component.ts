@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'financial-footer',
+  selector: 'lib-footer',
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
 })
