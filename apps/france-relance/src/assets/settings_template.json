@@ -1,0 +1,11 @@
+{
+  "keycloak": {
+    "url": "<URL KC>",
+    "realm": "realm",
+    "clientId": "client"
+  },
+  "apis": {
+    "franceRelance": "<url api franceRelance>",
+    "management": ""
+  }
+}

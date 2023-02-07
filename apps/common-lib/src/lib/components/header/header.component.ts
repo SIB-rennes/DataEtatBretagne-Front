@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { KeycloakService } from 'keycloak-angular';
 import { SessionService } from '../../services/session.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +24,9 @@ import { User } from 'apps/management/src/lib/models/users/user.models';
 export class HeaderComponent implements OnInit {
   public isLoggedIn = false;
   public user: User | null = null;
+
+  @Input()
+  title: string = '';
 
   constructor(
     protected session: SessionService,

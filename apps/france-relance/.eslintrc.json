@@ -1,26 +1,26 @@
 {
-  "extends": "../../.eslintrc.json",
-  "ignorePatterns": [
-    "!**/*"
-  ],
+  "extends": ["../../../.eslintrc.json"],
   "overrides": [
     {
       "files": [
         "*.ts"
       ],
-      "parserOptions": {
-        "project": [
-          "apps/france-relance/tsconfig.app.json",
-          "apps/france-relance/tsconfig.spec.json"
-        ],
-        "createDefaultProgram": true
-      },
+      "extends": [
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
       "rules": {
+        "@angular-eslint/no-host-metadata-property": [
+          "error",
+          {
+            "allowStatic": true
+          }
+        ],
         "@angular-eslint/directive-selector": [
           "error",
           {
             "type": "attribute",
-            "prefix": "app",
+            "prefix": "franceRelance",
             "style": "camelCase"
           }
         ],
@@ -28,17 +28,11 @@
           "error",
           {
             "type": "element",
-            "prefix": "app",
+            "prefix": "franceRelance",
             "style": "kebab-case"
           }
         ]
       }
-    },
-    {
-      "files": [
-        "*.html"
-      ],
-      "rules": {}
     }
   ]
 }
