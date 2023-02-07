@@ -316,6 +316,90 @@
           }
         }
       }
+    },
+    "management": {
+      "projectType": "library",
+      "root": "apps/management",
+      "sourceRoot": "apps/management/src",
+      "prefix": "lib-management",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "apps/management/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "apps/management/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "apps/management/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "apps/management/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/management/**/*.ts",
+              "apps/management/**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "grouping-table": {
+      "projectType": "library",
+      "root": "apps/grouping-table",
+      "sourceRoot": "apps/grouping-table/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "apps/grouping-table/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "apps/grouping-table/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "apps/grouping-table/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "apps/grouping-table/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/grouping-table/**/*.ts",
+              "apps/grouping-table/**/*.html"
+            ]
+          }
+        }
+      }
     }
   },
   "cli": {

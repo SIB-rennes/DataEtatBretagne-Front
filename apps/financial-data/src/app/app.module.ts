@@ -9,13 +9,10 @@ import { SearchDataComponent } from './components/search-data/search-data.compon
 import { HomeComponent } from './pages/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
-import { GroupingTableModule } from './components/grouping-table/grouping-table.module';
 import { DatePipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { CommonHttpInterceptor } from './interceptors/common-http-interceptor';
-import { ManagementComponent } from './pages/management/management.component';
 import { PreferenceUsersModule } from 'apps/preference-users/src/lib/preference-users.module';
 import { API_PREFERENCE_PATH } from 'apps/preference-users/src/public-api';
 import { SettingsService } from '../environments/settings.service';
@@ -25,11 +22,15 @@ import {
   API_GEO_PATH,
   CommonLibModule,
   MaterialModule,
+  CommonHttpInterceptor,
 } from 'apps/common-lib/src/public-api';
 import {
   SETTINGS,
   SettingsHttpService,
 } from 'apps/common-lib/src/lib/environments/settings.http.service';
+import { ManagementModule } from 'apps/management/src/public-api';
+import { API_MANAGEMENT_PATH } from 'apps/management/src/lib/services/users-http.service';
+import { GroupingTableModule } from 'apps/grouping-table/src/public-api';
 
 registerLocaleData(localeFr);
 
@@ -39,7 +40,6 @@ registerLocaleData(localeFr);
     HomeComponent,
     PreferenceComponent,
     SearchDataComponent,
-    ManagementComponent,
   ],
   providers: [
     {
@@ -83,6 +83,13 @@ registerLocaleData(localeFr);
       },
       deps: [SETTINGS],
     },
+    {
+      provide: API_MANAGEMENT_PATH,
+      useFactory: (settings: SettingsService) => {
+        return settings.apiManagement;
+      },
+      deps: [SETTINGS],
+    },
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -98,6 +105,7 @@ registerLocaleData(localeFr);
     MatButtonModule,
     PreferenceUsersModule,
     CommonLibModule,
+    ManagementModule,
   ],
 })
 export class AppModule {}

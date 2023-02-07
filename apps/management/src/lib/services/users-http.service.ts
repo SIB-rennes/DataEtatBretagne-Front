@@ -1,9 +1,11 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject, InjectionToken } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { SettingsService } from '../../../environments/settings.service';
 import { Observable } from 'rxjs';
-import { UsersPagination } from '../../models/users/user.models';
-import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
+import { UsersPagination } from '../models/users/user.models';
+
+export const API_MANAGEMENT_PATH = new InjectionToken<string>(
+  'Api management path'
+);
 
 /**
  * Service for user-related HTTP requests
@@ -19,7 +21,7 @@ export class UserHttpService {
    */
   constructor(
     private http: HttpClient,
-    @Inject(SETTINGS) readonly settings: SettingsService
+    @Inject(API_MANAGEMENT_PATH) private readonly apiPath: string
   ) {}
 
   /**
@@ -34,11 +36,9 @@ export class UserHttpService {
     pageNumber: number = 1,
     limit: number = 10
   ): Observable<UsersPagination> {
-    const apiManagement = this.settings.apiManagement;
-
     const params = `pageNumber=${pageNumber}&limit=${limit}&only_disable=${only_disable}`;
 
-    return this.http.get<UsersPagination>(`${apiManagement}/users?${params}`);
+    return this.http.get<UsersPagination>(`${this.apiPath}/users?${params}`);
   }
 
   /**
@@ -47,10 +47,8 @@ export class UserHttpService {
    * @returns Observable containing a confirmation message
    */
   public disableUser(uuid: string): Observable<string> {
-    const apiManagement = this.settings.apiManagement;
-
     return this.http.patch<string>(
-      `${apiManagement}/users/disable/${uuid}`,
+      `${this.apiPath}/users/disable/${uuid}`,
       null
     );
   }
@@ -61,10 +59,8 @@ export class UserHttpService {
    * @returns Observable containing a confirmation message
    */
   public enableUser(uuid: string): Observable<string> {
-    const apiManagement = this.settings.apiManagement;
-
     return this.http.patch<string>(
-      `${apiManagement}/users/enable/${uuid}`,
+      `${this.apiPath}/users/enable/${uuid}`,
       null
     );
   }

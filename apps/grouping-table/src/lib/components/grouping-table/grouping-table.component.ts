@@ -11,7 +11,6 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { SafeHtml } from '@angular/platform-browser';
 import {
   ColumnsMetaData,
   GroupingColumn,
@@ -21,7 +20,7 @@ import {
 import { GroupingTableContextService } from './grouping-table-context.service';
 
 @Component({
-  selector: 'financial-grouping-table',
+  selector: 'lib-grouping-table',
   templateUrl: './grouping-table.component.html',
   encapsulation: ViewEncapsulation.None,
   providers: [GroupingTableContextService],

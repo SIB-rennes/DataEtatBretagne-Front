@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { User } from '@models/users/user.models';
 import { Profil } from '@models/profil.enum.model';
+import { User } from 'apps/management/src/lib/models/users/user.models';
 
 @Injectable({
   providedIn: 'root',

@@ -40,6 +40,15 @@
       ],
       "common-lib/*": [
         "dist/common-lib/*"
+      ],
+      "grouping-table": [
+        "dist/grouping-table"
+      ],
+      "management": [
+        "dist/management"
+      ],
+      "management/*": [
+        "dist/management/*"
       ]
      }
   },

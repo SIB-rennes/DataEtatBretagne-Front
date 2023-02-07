@@ -1,12 +1,12 @@
-import { Component, HostBinding, inject, Input } from "@angular/core";
-import { Group } from "./group-utils";
-import { GroupingTableContextService } from "./grouping-table-context.service";
+import { Component, HostBinding, inject, Input } from '@angular/core';
+import { Group } from './group-utils';
+import { GroupingTableContextService } from './grouping-table-context.service';
 
 @Component({
-  selector: 'financial-table-body',
+  selector: 'lib-table-body',
   templateUrl: './table-body.component.html',
   host: {
-    class: 'table-body'
+    class: 'table-body',
   },
 })
 export class TableBodyComponent {

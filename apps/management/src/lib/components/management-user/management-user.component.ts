@@ -1,23 +1,23 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginatorIntl, PageEvent } from '@angular/material/paginator';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { UserHttpService } from '@services/management/users-http.service';
 import { ActivatedRoute } from '@angular/router';
-import { User, UsersPagination } from '@models/users/user.models';
 import { Observable } from 'rxjs';
 import { MatCheckbox, MatCheckboxChange } from '@angular/material/checkbox';
 import { AlertService, SessionService } from 'apps/common-lib/src/public-api';
-import { getFrenchPaginatorIntl } from 'apps/common-lib/src/lib/shared/paginator/french-paginator-intl';
+import { getFrenchPaginatorIntl } from '../../shared/paginator/french-paginator-intl';
+import { User, UsersPagination } from '../../models/users/user.models';
+import { UserHttpService } from '../../services/users-http.service';
 
 @Component({
-  selector: 'financial-management',
+  selector: 'lib-management-user',
   styleUrls: [],
-  templateUrl: './management.component.html',
+  templateUrl: './management-user.component.html',
   providers: [
     { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() },
   ],
 })
-export class ManagementComponent implements OnInit {
+export class ManagementUserComponent implements OnInit {
   public displayedColumns: string[] = [
     'firstName',
     'lastName',

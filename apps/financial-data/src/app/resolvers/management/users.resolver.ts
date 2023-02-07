@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
+import { UsersPagination } from 'apps/management/src/lib/models/users/user.models';
+import { UserHttpService } from 'apps/management/src/lib/services/users-http.service';
 import { catchError, Observable, of } from 'rxjs';
-import { UsersPagination } from '@models/users/user.models';
-import { UserHttpService } from '@services/management/users-http.service';
 
 @Injectable({ providedIn: 'root' })
 export class UsersResolver implements Resolve<UsersPagination | Error> {

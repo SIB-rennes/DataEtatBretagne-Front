@@ -1,12 +1,12 @@
-import { Component, inject, Input } from "@angular/core";
-import { Group } from "./group-utils";
-import { GroupingTableContextService } from "./grouping-table-context.service";
+import { Component, inject, Input } from '@angular/core';
+import { Group } from './group-utils';
+import { GroupingTableContextService } from './grouping-table-context.service';
 
 @Component({
-  selector: 'financial-table-group-header',
+  selector: 'lib-table-group-header',
   templateUrl: './table-group-header.component.html',
   host: {
-    class: 'header clickable'
+    class: 'header clickable',
   },
 })
 export class TableGroupHeaderComponent {
