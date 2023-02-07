@@ -7,7 +7,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SearchDataComponent } from './components/search-data/search-data.component';
 import { HomeComponent } from './pages/home/home.component';
-import { SettingsHttpService } from '../environments/settings.http.service';
 import { FooterComponent } from './components/footer/footer.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './shared/material.module';
@@ -29,6 +28,10 @@ import {
   API_GEO_PATH,
   CommonLibModule,
 } from 'apps/common-lib/src/public-api';
+import {
+  SETTINGS,
+  SettingsHttpService,
+} from 'apps/common-lib/src/lib/environments/settings.http.service';
 
 registerLocaleData(localeFr);
 
@@ -44,10 +47,14 @@ registerLocaleData(localeFr);
   ],
   providers: [
     {
+      provide: SETTINGS,
+      useClass: SettingsService,
+    },
+    {
       provide: APP_INITIALIZER,
       useFactory: app_Init,
       multi: true,
-      deps: [SettingsHttpService, KeycloakService],
+      deps: [SettingsHttpService, KeycloakService, SettingsService],
     },
     {
       provide: HTTP_INTERCEPTORS,
@@ -64,21 +71,21 @@ registerLocaleData(localeFr);
       useFactory: (settings: SettingsService) => {
         return settings.apiManagement;
       },
-      deps: [SettingsService],
+      deps: [SETTINGS],
     },
     {
       provide: API_GEO_PATH,
       useFactory: (settings: SettingsService) => {
         return settings.apiGeo;
       },
-      deps: [SettingsService],
+      deps: [SETTINGS],
     },
     {
       provide: API_REF_PATH,
       useFactory: (settings: SettingsService) => {
         return settings.apiReferentiel;
       },
-      deps: [SettingsService],
+      deps: [SETTINGS],
     },
   ],
   bootstrap: [AppComponent],

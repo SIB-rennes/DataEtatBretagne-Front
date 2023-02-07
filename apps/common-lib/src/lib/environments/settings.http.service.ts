@@ -1,15 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { SettingsService } from './settings.service';
-import { Settings } from './settings';
 import { KeycloakService } from 'keycloak-angular';
 import { firstValueFrom } from 'rxjs';
+import { Settings } from 'apps/common-lib/src/public-api';
+import { ISettingsService } from './interface-settings.service';
+
+export const SETTINGS = new InjectionToken<ISettingsService>('SETTINGS');
 
 @Injectable({ providedIn: 'root' })
 export class SettingsHttpService {
   constructor(
     private http: HttpClient,
-    private settingsService: SettingsService,
+    @Inject(SETTINGS) private settingsService: ISettingsService,
     private keycloak: KeycloakService
   ) {}
 
@@ -17,7 +19,7 @@ export class SettingsHttpService {
     return new Promise((resolve, reject) => {
       firstValueFrom(this.http.get('assets/settings.json'))
         .then((response) => {
-          this.settingsService.settings = response as Settings;
+          this.settingsService.setSettings(response as Settings);
           resolve(true);
         })
         .catch((error) => {
@@ -27,9 +29,9 @@ export class SettingsHttpService {
       try {
         await this.keycloak.init({
           config: {
-            url: this.settingsService.settings.keycloak.url,
-            realm: this.settingsService.settings.keycloak.realm,
-            clientId: this.settingsService.settings.keycloak.clientId,
+            url: this.settingsService.getKeycloakSettings().url,
+            realm: this.settingsService.getKeycloakSettings().realm,
+            clientId: this.settingsService.getKeycloakSettings().clientId,
           },
           initOptions: {
             checkLoginIframe: false,

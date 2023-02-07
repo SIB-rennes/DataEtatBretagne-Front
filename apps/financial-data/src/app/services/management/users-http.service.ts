@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { SettingsService } from '../../../environments/settings.service';
 import { Observable } from 'rxjs';
 import { UsersPagination } from '../../models/users/user.models';
+import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 
 /**
  * Service for user-related HTTP requests
@@ -16,7 +17,10 @@ export class UserHttpService {
    * @param http HttpClient object for making HTTP requests
    * @param settings Settings service for retrieving API URL information
    */
-  constructor(private http: HttpClient, private settings: SettingsService) {}
+  constructor(
+    private http: HttpClient,
+    @Inject(SETTINGS) readonly settings: SettingsService
+  ) {}
 
   /**
    * Gets a list of users

@@ -1,9 +1,5 @@
-export class Api {
-  financial = '';
-  management = '';
-  geo = '';
-  referentiel = '';
-}
+export interface IApi {}
+
 export class Keycloak {
   url = '';
   realm = '';
@@ -12,6 +8,6 @@ export class Keycloak {
 
 export class Settings {
   production = false;
-  apis: Api = new Api();
+  apis: IApi | undefined = undefined;
   keycloak: Keycloak = new Keycloak();
 }
