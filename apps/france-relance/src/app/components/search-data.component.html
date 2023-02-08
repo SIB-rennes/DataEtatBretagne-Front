@@ -1,1 +1,39 @@
-formulaire
+<form [formGroup]="searchForm" autocomplete="off">
+  <div class="box">
+
+    <mat-form-field class="field-20-width" appearance="fill">
+      <mat-label>Axe du plan de relance</mat-label>
+      <mat-select formControlName="axe_plan_relance" multiple>
+        <mat-option *ngFor="let axe of axe_plan_relance" [value]="axe">
+          {{axe.axe}} - {{axe.label}}
+        </mat-option>
+        <mat-select-trigger>
+          {{axePlanDeRelanceControls.value ? axePlanDeRelanceControls.value[0].label : ''}}
+          <span *ngIf="axePlanDeRelanceControls.value?.length > 1" class="example-additional-selection">
+            (+{{axePlanDeRelanceControls.value.length - 1}} {{axePlanDeRelanceControls.value?.length === 2 ? 'autre' :
+            'autres'}})
+          </span>
+        </mat-select-trigger>
+      </mat-select>
+      <button *ngIf="axePlanDeRelanceControls.value !== null" matSuffix mat-icon-button (click)="cancelAxe()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <div class="spacer"></div>
+
+    <button mat-fab color="primary" (click)="doSearch()">
+      <mat-icon fontIcon="search"></mat-icon>
+    </button>
+
+    <button mat-fab color="secondary" matTooltip="Télécharger les données" (click)="downloadCsv()"
+      *ngIf="searchFinish === true" (disabled)="searchInProgress.value === true">
+      <mat-icon fontIcon="download"></mat-icon>
+    </button>
+
+    <button mat-fab color="warn" matTooltip="Reset le formulaire" (click)="reset()" *ngIf="searchFinish === true">
+      <mat-icon fontIcon="disabled_by_default"></mat-icon>
+    </button>
+
+  </div>
+</form>

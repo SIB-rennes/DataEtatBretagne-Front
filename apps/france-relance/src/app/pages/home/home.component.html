@@ -4,10 +4,8 @@
   </mat-card-header>
 
   <mat-card-content class="content-column">
-    <franceRelance-search-data></franceRelance-search-data>
-    <!-- <financial-search-data (searchResults)="tableData = $event" (currentFilter)="newFilter = $event"
-      [preFilter]="preFilter" [ngClass]="{ 'hidden': grid_fullscreen }">
-    </financial-search-data> -->
+    <france-relance-search-data (searchResults)="tableData = $event" (currentFilter)="newFilter = $event"
+      [ngClass]="{ 'hidden': grid_fullscreen }"></france-relance-search-data>
 
     <div class="main-content overlay-container">
       <ng-container *ngIf="tableData && tableData.length === 0 else groupingTable">
