@@ -29,6 +29,11 @@
                 "glob": "**/*",
                 "input": "./node_modules/@gouvfr/dsfr/dist",
                 "output": "/@gouvfr"
+              },
+              {
+                "glob": "**/*",
+                "input": "./apps/shared-assets/img",
+                "output": "assets/img"
               }
             ],
             "styles": [
@@ -201,6 +206,209 @@
             "lintFilePatterns": [
               "apps/common-lib/**/*.ts",
               "apps/common-lib/**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "france-relance": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "apps/france-relance",
+      "sourceRoot": "apps/france-relance/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/france-relance",
+            "index": "apps/france-relance/src/index.html",
+            "main": "apps/france-relance/src/main.ts",
+            "polyfills": "apps/france-relance/src/polyfills.ts",
+            "tsConfig": "apps/france-relance/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "apps/france-relance/src/favicon.ico",
+              "apps/france-relance/src/assets",
+              {
+                "glob": "**/*",
+                "input": "./node_modules/@gouvfr/dsfr/dist",
+                "output": "/@gouvfr"
+              },
+              {
+                "glob": "**/*",
+                "input": "./apps/shared-assets/img",
+                "output": "assets/img"
+              }
+            ],
+            "styles": [
+              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "apps/france-relance/src/styles.scss"
+            ],
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "js-sha256",
+              "base64-js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "browserTarget": "france-relance:build:production"
+            },
+            "development": {
+              "browserTarget": "france-relance:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "france-relance:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "apps/france-relance/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "apps/france-relance/src/favicon.ico",
+              "apps/france-relance/src/assets"
+            ],
+            "styles": [
+              "apps/france-relance/src/styles.scss"
+            ],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/france-relance/**/*.ts",
+              "apps/france-relance/**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "management": {
+      "projectType": "library",
+      "root": "apps/management",
+      "sourceRoot": "apps/management/src",
+      "prefix": "lib-management",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "apps/management/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "apps/management/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "apps/management/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "apps/management/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/management/**/*.ts",
+              "apps/management/**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "grouping-table": {
+      "projectType": "library",
+      "root": "apps/grouping-table",
+      "sourceRoot": "apps/grouping-table/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "apps/grouping-table/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "apps/grouping-table/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "apps/grouping-table/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "tsConfig": "apps/grouping-table/tsconfig.spec.json",
+            "polyfills": [
+              "zone.js",
+              "zone.js/testing"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/grouping-table/**/*.ts",
+              "apps/grouping-table/**/*.html"
             ]
           }
         }

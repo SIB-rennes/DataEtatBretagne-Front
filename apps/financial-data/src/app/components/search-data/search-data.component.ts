@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   Component,
   EventEmitter,
   Input,
@@ -7,7 +6,6 @@ import {
   OnInit,
   Output,
   SimpleChanges,
-  ViewChild,
 } from '@angular/core';
 import {
   FormControl,
@@ -15,14 +13,12 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { ActivatedRoute } from '@angular/router';
 import {
   switchMap,
   of,
   startWith,
   Observable,
-  map,
   finalize,
   BehaviorSubject,
   debounceTime,
@@ -42,13 +38,15 @@ import {
   JSONObject,
   Preference,
 } from 'apps/preference-users/src/lib/models/preference.models';
+import { TypeLocalisation } from 'apps/common-lib/src/public-api';
 
 @Component({
   selector: 'financial-search-data',
   templateUrl: './search-data.component.html',
   styleUrls: ['./search-data.component.scss'],
 })
-export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
+export class SearchDataComponent implements OnInit, OnChanges {
+  public readonly TypeLocalisation = TypeLocalisation;
   public searchForm!: FormGroup;
 
   public errorMatcher = new CrossFieldErrorMatcher();
@@ -56,15 +54,8 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
   public bop: BopModel[] = [];
   public themes: RefTheme[] = [];
 
-  public filteredTheme: Observable<RefTheme[]> | null | undefined = null;
   public filteredBeneficiaire: Observable<RefSiret[]> | null | undefined = null;
   public filteredBop: BopModel[] | undefined = undefined;
-
-  @ViewChild('autoCompleteThemeInput', {
-    static: false,
-    read: MatAutocompleteTrigger,
-  })
-  public triggerTheme: MatAutocompleteTrigger | undefined;
 
   /**
    * Indique si la recherche a été effectué
@@ -108,12 +99,27 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
   ngOnChanges(_changes: SimpleChanges): void {
     if (this.preFilter !== null) {
       this.searchForm.controls['location'].setValue(this.preFilter['location']);
-      // si on enable pas le controls, la recherche sur les territoires ne sera pas prise en compte
-      this.searchForm.controls['location'].enable();
-      this.searchForm.controls['year'].setValue(this.preFilter['year']);
-      this.searchForm.controls['theme'].setValue(
-        this.preFilter['theme'] ?? null
-      );
+      if (this.preFilter['year']) {
+        this.searchForm.controls['year'].setValue(
+          Array.isArray(this.preFilter['year'])
+            ? this.preFilter['year']
+            : [this.preFilter['year']]
+        );
+      }
+
+      if (this.preFilter['theme']) {
+        const preFilterTheme = Array.isArray(this.preFilter['theme'])
+          ? (this.preFilter['theme'] as unknown as RefTheme[])
+          : ([this.preFilter['theme']] as unknown as RefTheme[]);
+        const themeSelected = this.themes?.filter(
+          (theme) =>
+            preFilterTheme.findIndex(
+              (themeFilter) => themeFilter.Id === theme.Id
+            ) !== -1
+        );
+        this.searchForm.controls['theme'].setValue(themeSelected);
+      }
+
       this.searchForm.controls['beneficiaire'].setValue(
         this.preFilter['beneficiaire'] ?? null
       );
@@ -135,15 +141,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
-  ngAfterViewInit() {
-    if (this.triggerTheme) {
-      this.triggerTheme.panelClosingActions.subscribe((e) => {
-        this.searchForm.controls['theme'].setValue(null);
-        this.searchForm.controls['filterBop'].setValue('');
-      });
-    }
-  }
-
   ngOnInit(): void {
     // récupération des themes dans le resolver
     this.route.data.subscribe(
@@ -153,7 +150,6 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
           this.themes = response.financial.themes;
           this.bop = response.financial.bop;
 
-          this.filteredTheme = of(this.themes);
           this.filteredBop = this.bop;
         } else {
           this.displayError = true;
@@ -165,12 +161,18 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   /**
-   * Set la valeur au bon formControl pour les mat autocomplete
-   * @param value
-   * @param controls
+   * Change la valeur du bop pour déclencher une nouvelle recherche de BOP associé aux themes
    */
-  public onSelectTheme(theme: RefTheme): void {
-    this.searchForm.controls['theme'].setValue(theme);
+  public onSelectTheme(_event: any): void {
+    this.searchForm.controls['filterBop'].setValue('');
+    this.searchForm.controls['bops'].setValue(null);
+  }
+
+  /**
+   * Action déclenché quand on annule le theme
+   */
+  public cancelTheme(): void {
+    this.searchForm.controls['theme'].setValue(null);
     this.searchForm.controls['filterBop'].setValue('');
     this.searchForm.controls['bops'].setValue(null);
   }
@@ -353,23 +355,11 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
         theme: new FormControl(null),
         beneficiaire: new FormControl(null),
         filterBop: new FormControl(null), // controls pour le filtre des bops
-        location: new FormControl({ value: null, disabled: true }, [
+        location: new FormControl({ value: null, disabled: false }, [
           Validators.required,
         ]),
       },
       financialDataFormValidators()
-    );
-
-    // Filtre sur le theme
-    this.filteredTheme = this.searchForm.controls['theme'].valueChanges.pipe(
-      startWith(''),
-      map((value) => {
-        if (typeof value === 'string') {
-          return this._filterTheme(value ? value : '');
-        } else {
-          return this._filterTheme(value ? value?.Label : '');
-        }
-      })
     );
 
     this.searchForm.controls['filterBop'].valueChanges.subscribe((value) => {
@@ -395,20 +385,15 @@ export class SearchDataComponent implements OnInit, AfterViewInit, OnChanges {
     );
   }
 
-  private _filterTheme(value: string): RefTheme[] {
-    const filterValue = value.toLowerCase();
-    return this.themes.filter((option) =>
-      option.Label.toLowerCase().includes(filterValue)
-    );
-  }
-
   private _filterBop(value: string): BopModel[] {
     const filterValue = value ? value.toLowerCase() : '';
-    const theme = this.searchForm.controls['theme'].value as RefTheme;
+    const themes = this.searchForm.controls['theme'].value as RefTheme[];
+    const themesId = themes ? themes.map((t) => t.Id) : null;
+
     return this.bop.filter((option) => {
-      if (theme && option.RefTheme) {
+      if (themesId && option.RefTheme) {
         return (
-          option.RefTheme.Id === theme.Id &&
+          themesId.includes(option.RefTheme.Id) &&
           option.Label?.toLowerCase().includes(filterValue)
         );
       }

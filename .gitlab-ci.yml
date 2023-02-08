@@ -52,7 +52,7 @@ workflow:
     - echo ${VERSION_IMAGE}
     - echo $IMAGE
     - docker build -f ${DOCKERFILE} -t ${IMAGE} .
-    - echo ${REGISTRY_DOCKER_PWD} | docker login ${REGISTRY_DOCKER} -u ${REGISTRY_DOCKER_USER} --password-stdin
+    - echo ${REGISTRY_PASSWORD} | docker login ${REGISTRY} -u ${REGISTRY_USER} --password-stdin
     - docker tag ${IMAGE} ${IMAGE}:${VERSION_IMAGE}
     - echo "push ${IMAGE}:${VERSION_IMAGE}" && docker push ${IMAGE}:${VERSION_IMAGE}
 
@@ -82,8 +82,8 @@ build angular app:
 docker-image-snapshot:
   extends: .build-docker
   variables:
-    IMAGE: "${REGISTRY_DOCKER}nocode/financial-data/${CI_COMMIT_REF_NAME}"
-    DOCKERFILE: "apps/financial-data/DockerFile"
+    IMAGE: "${REGISTRY}nocode/financial-data/${CI_COMMIT_REF_NAME}"
+    DOCKERFILE: "apps/financial-data/Dockerfile"
   needs:
     - job: build angular app
   before_script:
@@ -101,8 +101,8 @@ docker-build-tags:
   only:
     - tags
   variables:
-    IMAGE: "${REGISTRY_DOCKER}nocode/financial-data"
-    DOCKERFILE: "apps/financial-data/DockerFile"
+    IMAGE: "${REGISTRY}nocode/financial-data"
+    DOCKERFILE: "Dockerfile"
   before_script:
     - export VERSION_IMAGE="${CI_COMMIT_REF_NAME}"
 

@@ -1,20 +1,24 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 import { BopModel } from '@models/bop.models';
 import { map, Observable, of } from 'rxjs';
-import { NocoDbResponse } from '@models/nocodb-response';
 import { SettingsService } from '../../environments/settings.service';
 import { RefTheme } from '@models/theme.models';
 import { FinancialDataModel } from '@models/financial-data.models';
 import { RefSiret } from '@models/RefSiret';
 import { GeoModel, TypeLocalisation } from 'apps/common-lib/src/public-api';
+import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
+import { NocoDbResponse } from 'apps/common-lib/src/lib/models/nocodb-response';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FinancialDataHttpService {
-  constructor(private http: HttpClient, private settings: SettingsService) {}
+  constructor(
+    private http: HttpClient,
+    @Inject(SETTINGS) readonly settings: SettingsService
+  ) {}
 
   public getBop(): Observable<BopModel[]> {
     const apiFinancial = this.settings.apiFinancial;
@@ -72,16 +76,22 @@ export class FinancialDataHttpService {
   public search(
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
-    theme: RefTheme | null,
-    year: number | null,
+    themes: RefTheme[] | null,
+    year: number[] | null,
     location: GeoModel[] | null
   ): Observable<FinancialDataModel[]> {
-    if (bops == null && theme == null && year == null && location == null)
+    if (bops == null && themes == null && year == null && location == null)
       return of();
 
     const apiFinancial = this.settings.apiFinancial;
 
-    const params = this._buildparams(beneficiaire, bops, theme, year, location);
+    const params = this._buildparams(
+      beneficiaire,
+      bops,
+      themes,
+      year,
+      location
+    );
     return this.http
       .get<NocoDbResponse<FinancialDataModel>>(
         `${apiFinancial}/DataChorus/Chorus-front?${params}`
@@ -92,15 +102,21 @@ export class FinancialDataHttpService {
   public getCsv(
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
-    theme: RefTheme | null,
-    year: number | null,
+    themes: RefTheme[] | null,
+    year: number[] | null,
     location: GeoModel[] | null
   ): Observable<Blob> {
-    if (bops == null && theme == null && year == null && location == null)
+    if (bops == null && themes == null && year == null && location == null)
       return of();
 
     const apiFinancial = this.settings.apiFinancial;
-    const params = this._buildparams(beneficiaire, bops, theme, year, location);
+    const params = this._buildparams(
+      beneficiaire,
+      bops,
+      themes,
+      year,
+      location
+    );
     return this.http.get(
       `${apiFinancial}/DataChorus/Chorus-front/csv?${params}`,
       { responseType: 'blob' }
@@ -110,8 +126,8 @@ export class FinancialDataHttpService {
   private _buildparams(
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
-    theme: RefTheme | null,
-    year: number | null,
+    themes: RefTheme[] | null,
+    year: number[] | null,
     location: GeoModel[] | null
   ): string {
     let params =
@@ -124,8 +140,10 @@ export class FinancialDataHttpService {
         .filter((bop) => bop.Code)
         .map((bop) => bop.Code)
         .join(',')})`;
-    } else if (theme) {
-      params += `~and(Theme,eq,${theme.Label})`;
+    } else if (themes) {
+      params += `~and(Theme,in,${themes
+        .map((theme) => theme.Label)
+        .join(',')})`;
     }
 
     if (location && location.length > 0) {
@@ -148,8 +166,12 @@ export class FinancialDataHttpService {
       }
     }
 
-    if (year) {
-      params += `~and(DateModificationEj,like,${year})`;
+    if (year && year.length > 0) {
+      params += `~and(`;
+      year.forEach((value) => {
+        params += `~or(DateModificationEj,like,${value})`;
+      });
+      params += `)`;
     }
     return params;
   }

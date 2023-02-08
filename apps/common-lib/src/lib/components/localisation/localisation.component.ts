@@ -1,4 +1,19 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
+import { MatSelectModule } from '@angular/material/select';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+
 import { FormControl } from '@angular/forms';
 import { debounceTime, Observable, Subject } from 'rxjs';
 import { GeoModel, TypeLocalisation } from '../../models/geo.models';
@@ -6,7 +21,17 @@ import { GeoHttpService } from '../../services/geo-http.service';
 
 @Component({
   selector: 'lib-localisation',
+  standalone: true,
   templateUrl: './localisation.component.html',
+  imports: [
+    MatSelectModule,
+    CommonModule,
+    MatIconModule,
+    FormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+  ],
   styles: [
     `
       .location {
@@ -20,7 +45,7 @@ import { GeoHttpService } from '../../services/geo-http.service';
     `,
   ],
 })
-export class LocalisationComponent implements OnChanges {
+export class LocalisationComponent implements OnChanges, OnInit {
   public category: TypeLocalisation | undefined;
 
   public readonly TypeLocalisation = Object.values(TypeLocalisation);
@@ -43,9 +68,15 @@ export class LocalisationComponent implements OnChanges {
     });
   }
 
+  ngOnInit(): void {
+    if (this.categorySelected === null) {
+      this.categorySelected = TypeLocalisation.DEPARTEMENT;
+    }
+    this._search();
+  }
+
   ngOnChanges(_changes: SimpleChanges): void {
     if (this.control.value) {
-      this.control.enable();
       this._search();
     }
   }
@@ -62,7 +93,6 @@ export class LocalisationComponent implements OnChanges {
     this.categorySelected = event.value;
 
     if (this.categorySelected != null) {
-      this.control.enable();
       this.control.setValue(null);
       this.searchGeo = '';
       this._filterGeo(null, this.categorySelected).subscribe(

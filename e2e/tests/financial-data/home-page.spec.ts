@@ -6,8 +6,8 @@ test.describe("Page d'accueil", () => {
     const navigationPromise = page.waitForNavigation({
       waitUntil: 'networkidle',
     });
-    await page.goto('./');
     await mockRefApi(page);
+    await page.goto('./');
     await navigationPromise;
   });
 
@@ -26,17 +26,30 @@ test.describe("Page d'accueil", () => {
       page
         .getByRole('listbox', { name: 'Theme' })
         .locator('.mdc-list-item__primary-text')
-    ).toHaveCount(19);
+    ).toHaveCount(18);
 
-    await page.getByLabel('Programme').click();
+    await page.getByLabel('Programme').click({ force: true });
+    await page.getByLabel('Programme').click({ force: true });
     await expect(
       page
         .getByRole('listbox', { name: 'Programme' })
         .locator('.mdc-list-item__primary-text')
-    ).toHaveCount(133);
+    ).toHaveCount(132);
 
-    await page.getByLabel('Département').isVisible();
+    // vérification des niveaux de localisation
+    await expect(page.locator('data-test-id=category-localisation')).toHaveText(
+      'Département'
+    );
+    await page.getByTestId('niveau-localisation').click({ force: true });
+    await page.getByTestId('niveau-localisation').click({ force: true });
+    await expect(
+      page
+        .getByRole('listbox', { name: 'Niveau de localisation' })
+        .locator('.mdc-list-item__primary-text')
+    ).toHaveCount(4);
+
     await page.getByLabel('Année').isVisible();
+    await page.getByLabel('Bénéficiaire').isVisible();
     expect((await page.locator('form').getByRole('button').count()) == 1);
   });
 });

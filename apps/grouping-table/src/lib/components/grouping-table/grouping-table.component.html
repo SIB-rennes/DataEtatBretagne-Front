@@ -1,0 +1,8 @@
+<div hidden #outerHtmlElement></div>
+
+
+<div class="grouping-table level-{{groupLevel}}" [class.has-group]="rootGroup && rootGroup.groups.length > 0">
+  <lib-grouping-table-header></lib-grouping-table-header>
+
+  <lib-table-body *ngIf="rootGroup" [group]="rootGroup" [groupLevel]="groupLevel"></lib-table-body>
+</div>
