@@ -1,12 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import {
-  AggregatorFns,
-  ColumnsMetaData,
-  GroupingColumn,
-  TableData,
-} from '../../components/grouping-table/group-utils';
+
 import { DatePipe } from '@angular/common';
-import { GroupingConfigDialogComponent } from '../../components/grouping-config-dialog/grouping-config-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import {
   PreferenceUsersHttpService,
@@ -19,6 +13,13 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { AlertService } from 'apps/common-lib/src/public-api';
 import { GridInFullscreenStateService } from 'apps/common-lib/src/lib/services/grid-in-fullscreen-state.service';
+import {
+  AggregatorFns,
+  ColumnsMetaData,
+  GroupingColumn,
+  TableData,
+} from 'apps/grouping-table/src/lib/components/grouping-table/group-utils';
+import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
 
 @Component({
   selector: 'financial-home',

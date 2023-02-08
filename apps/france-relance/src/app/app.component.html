@@ -1,0 +1,9 @@
+<lib-header [ngClass]="{'hidden': grid_fullscreen }" [title]="'France Relance en Bretagne'"></lib-header>
+
+<div *ngIf="progressBarVisible === true">
+  <mat-progress-bar mode="query"></mat-progress-bar>
+</div>
+
+<router-outlet class="page-content-outlet"></router-outlet>
+
+<lib-footer *ngIf="isAuthenticated" [ngClass]="{'hidden': grid_fullscreen }"></lib-footer>

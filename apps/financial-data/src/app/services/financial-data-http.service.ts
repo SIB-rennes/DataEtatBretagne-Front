@@ -1,20 +1,24 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 import { BopModel } from '@models/bop.models';
 import { map, Observable, of } from 'rxjs';
-import { NocoDbResponse } from '@models/nocodb-response';
 import { SettingsService } from '../../environments/settings.service';
 import { RefTheme } from '@models/theme.models';
 import { FinancialDataModel } from '@models/financial-data.models';
 import { RefSiret } from '@models/RefSiret';
 import { GeoModel, TypeLocalisation } from 'apps/common-lib/src/public-api';
+import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
+import { NocoDbResponse } from 'apps/common-lib/src/lib/models/nocodb-response';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FinancialDataHttpService {
-  constructor(private http: HttpClient, private settings: SettingsService) {}
+  constructor(
+    private http: HttpClient,
+    @Inject(SETTINGS) readonly settings: SettingsService
+  ) {}
 
   public getBop(): Observable<BopModel[]> {
     const apiFinancial = this.settings.apiFinancial;

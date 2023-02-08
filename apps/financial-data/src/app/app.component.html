@@ -1,6 +1,4 @@
-<financial-header 
-  [ngClass]="{'hidden': grid_fullscreen }"
-></financial-header>
+<lib-header [ngClass]="{'hidden': grid_fullscreen }" [title]="'Budget Data état Bretagne'"></lib-header>
 
 <div *ngIf="progressBarVisible === true">
   <mat-progress-bar mode="query"></mat-progress-bar>
@@ -8,7 +6,4 @@
 
 <router-outlet class="page-content-outlet"></router-outlet>
 
-<financial-footer 
-  *ngIf="isAuthenticated"
-  [ngClass]="{'hidden': grid_fullscreen }"
-></financial-footer>
+<lib-footer *ngIf="isAuthenticated" [ngClass]="{'hidden': grid_fullscreen }"></lib-footer>
