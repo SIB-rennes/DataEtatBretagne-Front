@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { Profil } from 'apps/common-lib/src/lib/models/profil.enum.model';
 import { AuthGuard } from 'apps/common-lib/src/public-api';
 import { ManagementUserComponent } from 'apps/management/src/lib/components/management-user/management-user.component';
-import { Profil } from './models/profil.enum.model';
 import { HomeComponent } from './pages/home/home.component';
 import { PreferenceComponent } from './pages/preference/preference.component';
 import { RegisterComponent } from './pages/register/register.component';

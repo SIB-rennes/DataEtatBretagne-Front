@@ -3,7 +3,7 @@ import { GridInFullscreenStateService } from 'apps/common-lib/src/lib/services/g
 import { LoaderService, SessionService } from 'apps/common-lib/src/public-api';
 
 @Component({
-  selector: 'franceRelance-root',
+  selector: 'france-relance-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })

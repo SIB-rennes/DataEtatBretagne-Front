@@ -22,7 +22,7 @@ import {
 import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
 
 @Component({
-  selector: 'franceRelance-home',
+  selector: 'france-relance-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })

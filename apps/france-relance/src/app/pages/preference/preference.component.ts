@@ -7,7 +7,7 @@ import {
 } from 'apps/preference-users/src/lib/models/preference.models';
 
 @Component({
-  selector: 'franceRelance-preference',
+  selector: 'france-relance-preference',
   templateUrl: './preference.component.html',
 })
 export class PreferenceComponent {

@@ -1,5 +1,8 @@
 {
-  "extends": ["../../../.eslintrc.json"],
+  "extends": ["../../.eslintrc.json"],
+  "ignorePatterns": [
+    "!**/*"
+  ],
   "overrides": [
     {
       "files": [
@@ -20,7 +23,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "franceRelance",
+            "prefix": "france-relance",
             "style": "camelCase"
           }
         ],
@@ -28,7 +31,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "franceRelance",
+            "prefix": "france-relance",
             "style": "kebab-case"
           }
         ]
