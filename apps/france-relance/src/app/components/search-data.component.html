@@ -20,6 +20,28 @@
       </button>
     </mat-form-field>
 
+    <mat-form-field class="field-30-width" appearance="fill">
+      <mat-label>Territoire</mat-label>
+      <div class="box">
+        <mat-chip-grid #chipGrid aria-label="Sélection des territoire" formArrayName="territoire">
+          <mat-chip-row *ngFor="let loc of territoireControls.value" (removed)="removeTerritoire(loc)">
+            {{loc.Commune}}
+            <button matChipRemove>
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+        </mat-chip-grid>
+        <input placeholder="Territoire ..." #filterTerritoireInput formControlName="filterTerritoire"
+          [matChipInputFor]="chipGrid" [matAutocomplete]="auto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" />
+      </div>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addTerritoire($event)">
+        <mat-option *ngFor="let territoire of filteredTerritoire | async" [value]="territoire">
+          {{territoire.Commune}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+
+
     <div class="spacer"></div>
 
     <button mat-fab color="primary" (click)="doSearch()">
