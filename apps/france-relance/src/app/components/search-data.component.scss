@@ -1,9 +1,4 @@
 
-.box .mat-mdc-form-field + .mat-mdc-form-field, .box .field-localisation + .mat-mdc-form-field, .box .field-localisation {
-  margin-left: 8px;
-}
-
-
 .box button {
   margin-left: 15px
 }
@@ -19,10 +14,19 @@ form .mat-fab {
 
 .box {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  flex-direction: row;
+  align-items: flex-start;
+
+  .element {
+    display: block;
+    margin-left: 8px;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+
 }
+
 
 .spacer {
   flex-grow: 1;
@@ -56,8 +60,3 @@ form .mat-fab {
   width: 9%;
 }
 
-@media (max-width: 800px) {
-  .box {
-    flex-direction: column;
-  }
-}

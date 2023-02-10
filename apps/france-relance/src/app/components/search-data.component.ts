@@ -24,6 +24,7 @@ import {
   switchMap,
 } from 'rxjs';
 import { SousAxePlanRelance } from '../models/axe.models';
+import { Structure } from '../models/structure.models';
 import { Territoire } from '../models/territoire.models';
 import { FranceRelanceHttpService } from '../services/france-relance.http.service';
 
@@ -51,6 +52,8 @@ export class SearchDataComponent implements OnInit {
   public searchForm!: FormGroup;
 
   public filteredTerritoire: Observable<Territoire[]> | null | undefined;
+
+  public filteredLaureat: Observable<Structure[]> | null | undefined;
 
   /**
    * Indique si la recherche est en cours
@@ -129,6 +132,13 @@ export class SearchDataComponent implements OnInit {
     }
   }
 
+  public onSelectLaureat(event: Structure): void {}
+
+  public displayLaureat(laureat: Structure): string {
+    if (laureat) return laureat.label + ' - ' + laureat.siret;
+    return '';
+  }
+
   private _initForm(): void {
     this.searchForm = new FormGroup({
       territoire: new FormArray([]),
@@ -146,6 +156,20 @@ export class SearchDataComponent implements OnInit {
       switchMap((value) => {
         if (value && value.length > 3) {
           return this.service.searchTerritoire(value);
+        }
+        return of([]);
+      })
+    );
+
+    // filtre laureat
+    this.filteredLaureat = this.searchForm.controls[
+      'structure'
+    ].valueChanges.pipe(
+      startWith(''),
+      debounceTime(300),
+      switchMap((value) => {
+        if (value && value.length > 3) {
+          return this.service.searchStructure(value);
         }
         return of([]);
       })

@@ -5,6 +5,7 @@ import { NocoDbResponse } from 'apps/common-lib/src/public-api';
 import { map, Observable } from 'rxjs';
 import { SettingsService } from '../../environments/settings.service';
 import { SousAxePlanRelance } from '../models/axe.models';
+import { Structure } from '../models/structure.models';
 import { Territoire } from '../models/territoire.models';
 
 @Injectable({
@@ -47,6 +48,43 @@ export class FranceRelanceHttpService {
       );
   }
 
+  public searchStructure(search: string): Observable<Structure[]> {
+    const apiFr = this.settings.apiFranceRelance;
+
+    const fields = 'Structure,NuméroDeSiretSiConnu';
+    const sort = 'Structure';
+    const where = `where=(Structure,like,${search}%)`;
+    const params = `fields=${fields}&limit=50&sort=${sort}&${where}`;
+
+    return this.http
+      .get<NocoDbResponse<Structure[]>>(
+        `${apiFr}/Laureats/Laureats-front?${params}`
+      )
+      .pipe(
+        map((response: NocoDbResponse<any>) =>
+          response.list.reduce((uniqueArray, current) => {
+            const itemExists = uniqueArray.find(
+              (item: { label: any; siret: any }) =>
+                item.label === current['Structure'] &&
+                item.siret === current['NuméroDeSiretSiConnu']
+            );
+            if (!itemExists) {
+              uniqueArray.push({
+                label: current['Structure'],
+                siret: current['NuméroDeSiretSiConnu'],
+              });
+            }
+            return uniqueArray;
+          }, [])
+        )
+      );
+  }
+
+  /**
+   * Lance la rechercher d'un territoire
+   * @param search
+   * @returns
+   */
   public searchTerritoire(search: string): Observable<Territoire[]> {
     const apiFr = this.settings.apiFranceRelance;
     const fields = 'Commune,CodeInsee';
@@ -61,6 +99,11 @@ export class FranceRelanceHttpService {
       .pipe(map((response) => response.list));
   }
 
+  /**
+   * Lance la recherche des laureats sur la base France relance
+   * @param axe
+   * @returns
+   */
   public searchFranceRelance(axe: SousAxePlanRelance[]): Observable<any> {
     const apiFr = this.settings.apiFranceRelance;
 
