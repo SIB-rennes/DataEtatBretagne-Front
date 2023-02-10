@@ -18,12 +18,14 @@ import {
 import {
   BehaviorSubject,
   debounceTime,
+  finalize,
   Observable,
   of,
   startWith,
   switchMap,
 } from 'rxjs';
 import { SousAxePlanRelance } from '../models/axe.models';
+import { Laureats } from '../models/laureat.models';
 import { Structure } from '../models/structure.models';
 import { Territoire } from '../models/territoire.models';
 import { FranceRelanceHttpService } from '../services/france-relance.http.service';
@@ -97,17 +99,72 @@ export class SearchDataComponent implements OnInit {
     this.searchForm.markAllAsTouched(); // pour notifier les erreurs sur le formulaire
     if (this.searchForm.valid && !this.searchInProgress.value) {
       const formValue = this.searchForm.value;
-      console.log(formValue);
-      //this.searchInProgress.next(true);
+      this.searchInProgress.next(true);
       this.service
-        .searchFranceRelance(formValue.axe_plan_relance)
-        .subscribe((response) => {
+        .searchFranceRelance(
+          formValue.axe_plan_relance,
+          formValue.structure,
+          formValue.territoire
+        )
+        .pipe(
+          finalize(() => {
+            this.searchInProgress.next(false);
+          })
+        )
+        .subscribe((response: Laureats[]) => {
+          this.searchFinish = true;
           console.log(response);
+          this.currentFilter.next(this._buildPreference(formValue));
+          this.searchResults.next(response);
         });
     }
   }
 
-  public downloadCsv(): void {}
+  /**
+   * Clean les donners undefined, null et vide pour enregistrer en tant que preference
+   * @param object
+   * @returns
+   */
+  private _buildPreference(object: JSONObject): Preference {
+    const preference: Preference = { filters: {} };
+
+    Object.keys(object).forEach((key) => {
+      if (
+        object[key] !== null &&
+        object[key] !== undefined &&
+        object[key] !== ''
+      ) {
+        preference.filters[key] = object[key];
+      }
+    });
+    return preference;
+  }
+
+  public downloadCsv(): void {
+    if (this.searchForm.valid && !this.searchInProgress.value) {
+      const formValue = this.searchForm.value;
+      this.searchInProgress.next(true);
+      this.service
+        .getCsv(
+          formValue.axe_plan_relance,
+          formValue.structure,
+          formValue.territoire
+        )
+        .pipe(
+          finalize(() => {
+            this.searchInProgress.next(false);
+          })
+        )
+        .subscribe((response: Blob) => {
+          var url = URL.createObjectURL(response);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'export_csv.csv';
+          document.body.appendChild(a);
+          a.click();
+        });
+    }
+  }
 
   public reset(): void {
     this.searchFinish = false;

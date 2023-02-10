@@ -48,6 +48,11 @@ export class FranceRelanceHttpService {
       );
   }
 
+  /**
+   * Recherche de strucutre dans la base lauréat
+   * @param search
+   * @returns
+   */
   public searchStructure(search: string): Observable<Structure[]> {
     const apiFr = this.settings.apiFranceRelance;
 
@@ -104,19 +109,67 @@ export class FranceRelanceHttpService {
    * @param axe
    * @returns
    */
-  public searchFranceRelance(axe: SousAxePlanRelance[]): Observable<any> {
+  public searchFranceRelance(
+    axes: SousAxePlanRelance[],
+    structure: Structure,
+    territoires: Territoire[]
+  ): Observable<any> {
     const apiFr = this.settings.apiFranceRelance;
-
-    if (axe && axe.length > 0) {
-    }
 
     const fields =
       'Structure,NuméroDeSiretSiConnu,SubventionAccordée,Synthèse,axe,sous-axe,dispositif,territoire,code_insee';
-    const sort = 'Structure,axe';
-    const params = `fields=${fields}&limit=5000&sort=${sort}`;
+    const params = `fields=${fields}&${this._buildparams(
+      axes,
+      structure,
+      territoires
+    )}`;
 
     return this.http
       .get<NocoDbResponse<any>>(`${apiFr}/Laureats/Laureats-front?${params}`)
       .pipe(map((response) => response.list));
+  }
+
+  public getCsv(
+    axes: SousAxePlanRelance[],
+    structure: Structure,
+    territoires: Territoire[]
+  ): Observable<Blob> {
+    const apiFr = this.settings.apiFranceRelance;
+
+    const fields =
+      'Structure,NuméroDeSiretSiConnu,SubventionAccordée,Synthèse,axe,sous-axe,dispositif,territoire,code_insee';
+    const params = `fields=${fields}&${this._buildparams(
+      axes,
+      structure,
+      territoires
+    )}`;
+    return this.http.get(`${apiFr}/Laureats/Laureats-front/csv?${params}`, {
+      responseType: 'blob',
+    });
+  }
+
+  private _buildparams(
+    axes: SousAxePlanRelance[] | null,
+    structure: Structure | null,
+    territoires: Territoire[] | null
+  ): string {
+    let params =
+      'sort=Structure,axe,dispositif&limit=5000&where=(Montant,gt,0)';
+    if (structure) {
+      params += `~and(Structure,eq,${structure.label})`;
+    }
+
+    if (axes && axes.length > 0) {
+      params += `~and(sous-axe,in,${axes.map((axe) => axe.label).join(',')})`;
+    }
+
+    if (territoires && territoires.length > 0) {
+      // on est toujours sur le même type
+      params += `~and(territoire,in,${territoires
+        .map((t) => t.Commune)
+        .join(',')})`;
+    }
+
+    return params;
   }
 }
