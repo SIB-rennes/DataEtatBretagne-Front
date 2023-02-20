@@ -4,8 +4,10 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
@@ -35,7 +37,7 @@ import { FranceRelanceHttpService } from '../services/france-relance.http.servic
   templateUrl: './search-data.component.html',
   styleUrls: ['./search-data.component.scss'],
 })
-export class SearchDataComponent implements OnInit {
+export class SearchDataComponent implements OnInit, OnChanges {
   public separatorKeysCodes: number[] = [ENTER, COMMA];
 
   /**
@@ -77,6 +79,47 @@ export class SearchDataComponent implements OnInit {
     private service: FranceRelanceHttpService
   ) {}
 
+  /**
+   * Applique le filtre par défaut
+   * @param _changes
+   */
+  ngOnChanges(_changes: SimpleChanges): void {
+    if (this.preFilter !== null) {
+      if (this.preFilter['territoire']) {
+        (this.preFilter['territoire'] as Array<unknown>).forEach(
+          (territoire) => {
+            this.territoireControls.push(new FormControl(territoire));
+          }
+        );
+      }
+
+      if (this.preFilter['axe_plan_relance']) {
+        const preFilterAxe = Array.isArray(this.preFilter['axe_plan_relance'])
+          ? (this.preFilter[
+              'axe_plan_relance'
+            ] as unknown as SousAxePlanRelance[])
+          : ([
+              this.preFilter['axe_plan_relance'],
+            ] as unknown as SousAxePlanRelance[]);
+        const axeSelected = this.axe_plan_relance.filter(
+          (axe) =>
+            preFilterAxe.findIndex(
+              (preFilterAxe) =>
+                preFilterAxe.axe === axe.axe && preFilterAxe.label === axe.label
+            ) !== -1
+        );
+        this.searchForm.controls['axe_plan_relance'].setValue(axeSelected);
+      }
+
+      this.searchForm.controls['structure'].setValue(
+        this.preFilter['structure'] ?? null
+      );
+
+      // lance la recherche pour afficher les resultats
+      this.doSearch();
+    }
+  }
+
   ngOnInit(): void {
     // récupération des themes dans le resolver
     this.route.data.subscribe(
@@ -113,7 +156,6 @@ export class SearchDataComponent implements OnInit {
         )
         .subscribe((response: Laureats[]) => {
           this.searchFinish = true;
-          console.log(response);
           this.currentFilter.next(this._buildPreference(formValue));
           this.searchResults.next(response);
         });
@@ -130,9 +172,12 @@ export class SearchDataComponent implements OnInit {
 
     Object.keys(object).forEach((key) => {
       if (
-        object[key] !== null &&
-        object[key] !== undefined &&
-        object[key] !== ''
+        (object[key] !== null &&
+          object[key] !== undefined &&
+          object[key] !== '' &&
+          !Array.isArray(object[key])) ||
+        (Array.isArray(object[key]) &&
+          (object[key] as Array<unknown>).length > 0)
       ) {
         preference.filters[key] = object[key];
       }
