@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { RegisterComponent } from 'apps/common-lib/src/lib/components/register/register.component';
 import { Profil } from 'apps/common-lib/src/lib/models/profil.enum.model';
 import { AuthGuard } from 'apps/common-lib/src/public-api';
 import { ManagementUserComponent } from 'apps/management/src/public-api';
@@ -35,6 +36,10 @@ const routes: Routes = [
     component: PreferenceComponent,
     canActivate: [AuthGuard],
     runGuardsAndResolvers: 'always',
+  },
+  {
+    path: 'register',
+    component: RegisterComponent,
   },
 ];
 
