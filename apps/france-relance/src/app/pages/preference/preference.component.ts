@@ -14,31 +14,9 @@ export class PreferenceComponent {
   constructor(private router: Router) {}
 
   public mappingValueFilter: MapPreferenceFilterMetadata = {
-    bops: {
-      label: 'Programmes',
-      renderFn: (row: JSONObject) => row['Code'] + ' - ' + row['Label'],
-    },
-    year: {
-      label: 'Année',
-    },
-    theme: {
-      label: 'Thème',
-      renderFn: (row: JSONObject) => row['Label'],
-    },
-    beneficiaire: {
-      label: 'Bénéficiare',
-      renderFn: (row: JSONObject) => {
-        if (row['Denomination']) {
-          return `${row['Denomination']} (${row['Code']})`;
-        }
-        return `Siret : (${row['Code']})`;
-      },
-    },
-    location: {
-      label: 'Territoire',
-      renderFn: (row: JSONObject) => {
-        return `${row['type']} : ${row['nom']} (${row['code']})`;
-      },
+    structure: {
+      label: 'Lauréat',
+      renderFn: (row: JSONObject) => row['label'],
     },
   };
 

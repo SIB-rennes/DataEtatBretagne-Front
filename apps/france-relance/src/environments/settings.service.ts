@@ -31,4 +31,8 @@ export class SettingsService implements ISettingsService {
   public get apiManagement(): string {
     return (this.settings.apis as Api).management;
   }
+
+  public get apiFranceRelance(): string {
+    return (this.settings.apis as Api).franceRelance;
+  }
 }

@@ -5,6 +5,7 @@ import { AuthGuard } from 'apps/common-lib/src/public-api';
 import { ManagementUserComponent } from 'apps/management/src/public-api';
 import { HomeComponent } from './pages/home/home.component';
 import { PreferenceComponent } from './pages/preference/preference.component';
+import { FranceRelanceResolvers } from './resolvers/france-relance.resolvers';
 import { UsersResolver } from './resolvers/management/users.resolver';
 
 const routes: Routes = [
@@ -13,6 +14,9 @@ const routes: Routes = [
     component: HomeComponent,
     canActivate: [AuthGuard],
     runGuardsAndResolvers: 'always',
+    resolve: {
+      axes: FranceRelanceResolvers,
+    },
   },
   {
     path: 'management',

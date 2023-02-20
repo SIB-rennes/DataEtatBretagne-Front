@@ -6,7 +6,7 @@
     "start:financial": "ng serve --project=financial-data",
     "start:financial-dev": "ng serve --project=financial-data --proxy-config proxy.conf.json",
     "start:france-relance": "ng serve --project=france-relance",
-    "start:france-relance-dev": "ng serve --project=france-relance --proxy-config proxy.conf.json",
+    "start:france-relance-dev": "ng serve --project=france-relance --proxy-config proxy.conf.json --port=5006",
     "build:financial-data": "ng build --project=financial-data",
     "build:france-relance": "ng build --project=france-relance",
     "build:lib-preference-users": "ng build --project=preference-users",
