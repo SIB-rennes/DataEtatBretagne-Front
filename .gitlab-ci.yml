@@ -32,9 +32,9 @@ workflow:
         DO_E2E: "true"
     - if: '$CI_PIPELINE_SOURCE == "push" &&  $CI_COMMIT_REF_NAME =~ "/^feature\//"'
       variables:
-        DO_BUILD: "true"
-        DO_DEPLOY: "true"
-        DO_E2E: "true"
+        DO_BUILD: "if_changed"
+        DO_DEPLOY: "if_changed"
+        DO_E2E: "manual"
     - if: '$CI_PIPELINE_SOURCE == "push"'
       variables:
         DO_BUILD: "true"
@@ -56,7 +56,7 @@ workflow:
     - docker tag ${IMAGE} ${IMAGE}:${VERSION_IMAGE}
     - echo "push ${IMAGE}:${VERSION_IMAGE}" && docker push ${IMAGE}:${VERSION_IMAGE}
 
-build angular app:
+build angular financial data app:
   image: node:16
   stage: build-angular
   script:
@@ -77,15 +77,38 @@ build angular app:
       when: manual
     - if: '$DO_BUILD == "if_changed"'
       changes:
-        - "apps/**/*"
+        - "apps/financial-data/**/*"
 
-docker-image-snapshot:
+build angular francerelance app:
+  image: node:16
+  stage: build-angular
+  script:
+    - npm ci --cache ${CI_PROJECT_DIR}/.npm --prefer-offline --quiet --force
+    - npm run lint
+    - npm run build:france-relance
+  cache:
+    key: ${CI_PROJECT_ID}-npm
+    paths:
+      - ${CI_PROJECT_DIR}/.npm/
+  artifacts:
+    expire_in: 15 mins
+    paths:
+      - dist/
+  rules:
+    - if: '$DO_BUILD == "true"'
+    - if: '$DO_BUILD == "manual"'
+      when: manual
+    - if: '$DO_BUILD == "if_changed"'
+      changes:
+        - "apps/france-relance/**/*"
+
+docker-image-financial-snapshot:
   extends: .build-docker
   variables:
     IMAGE: "${REGISTRY}nocode/financial-data/${CI_COMMIT_REF_NAME}"
     DOCKERFILE: "apps/financial-data/Dockerfile"
   needs:
-    - job: build angular app
+    - job: build angular financial data app
   before_script:
     - export VERSION_IMAGE="${CI_COMMIT_SHA:0:8}-snapshot"
   rules:
@@ -94,9 +117,26 @@ docker-image-snapshot:
       when: manual
     - if: '$DO_DEPLOY == "if_changed"'
       changes:
-        - "apps/**/*"
+        - "apps/financial-data/**/*"
 
-docker-build-tags:
+docker-image-francerelance-snapshot:
+  extends: .build-docker
+  variables:
+    IMAGE: "${REGISTRY}nocode/france-relance/${CI_COMMIT_REF_NAME}"
+    DOCKERFILE: "apps/france-relance/Dockerfile"
+  needs:
+    - job: build angular francerelance app
+  before_script:
+    - export VERSION_IMAGE="${CI_COMMIT_SHA:0:8}-snapshot"
+  rules:
+    - if: '$DO_BUILD == "true" && $DO_DEPLOY == "true"'
+    - if: '$DO_DEPLOY == "manual"'
+      when: manual
+    - if: '$DO_DEPLOY == "if_changed"'
+      changes:
+        - "apps/france-relance/**/*"
+
+docker-build-financial-tags:
   extends: .build-docker
   only:
     - tags
@@ -106,29 +146,77 @@ docker-build-tags:
   before_script:
     - export VERSION_IMAGE="${CI_COMMIT_REF_NAME}"
 
+docker-build-france-relance-tags:
+  extends: .build-docker
+  only:
+    - tags
+  variables:
+    IMAGE: "${REGISTRY}nocode/france-relance"
+    DOCKERFILE: "apps/france-relance/Dockerfile"
+  before_script:
+    - export VERSION_IMAGE="${CI_COMMIT_REF_NAME}"
+
+# DEPLOY
 .deploy-integ:
   stage: 🐣 deploy
+  variables:
+    COMPOSE: ""
+    SERVICE: ""
   script:
     - echo ${VERSION}
     - ssh ${USER_INTEG}@${SERVER_INTEG} "docker network create -d overlay --attachable app_network || true"
-    - ssh ${USER_INTEG}@${SERVER_INTEG} "export VERSION=${VERSION};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file ~/stack-nocode/compose/integ/front.yml '"${STACK_NAME}"
-    - ssh ${USER_INTEG}@${SERVER_INTEG} "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait -n financial-data ${STACK_NAME}"
+    - ssh ${USER_INTEG}@${SERVER_INTEG} "export VERSION=${VERSION};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file '" ${COMPOSE} ${STACK_NAME}"
+    - ssh ${USER_INTEG}@${SERVER_INTEG} "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait -n ${SERVICE} ${STACK_NAME}"
 
-deploy-integ-tag:
+deploy-integ-financial-tag:
   extends: .deploy-integ
   only:
     - tags
+  variables:
+    COMPOSE: "~/stack-nocode/compose/integ/front-financial.yml"
+    SERVICE: "financial-data"
   before_script:
     - export VERSION=":${CI_COMMIT_REF_NAME}"
 
-deploy-integ-snapshot:
+deploy-integ-financial-snapshot:
   extends: .deploy-integ
+  variables:
+    COMPOSE: "~/stack-nocode/compose/integ/front-financial.yml"
+    SERVICE: "financial-data"
   before_script:
     - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"
   rules:
     - if: '$DO_DEPLOY == "true" && $DO_BUILD == "true"'
     - if: '$DO_DEPLOY == "manual"'
       when: manual
+    - if: '$DO_DEPLOY == "if_changed"'
+      changes:
+        - "apps/financial-data/**/*"
+
+deploy-integ-francerelance-tag:
+  extends: .deploy-integ
+  only:
+    - tags
+  variables:
+    COMPOSE: "~/stack-nocode/compose/integ/front-france-relance.yml"
+    SERVICE: "france-relance"
+  before_script:
+    - export VERSION=":${CI_COMMIT_REF_NAME}"
+
+deploy-integ-francerelance-snapshot:
+  extends: .deploy-integ
+  variables:
+    COMPOSE: "~/stack-nocode/compose/integ/front-france-relance.yml"
+    SERVICE: "france-relance"
+  before_script:
+    - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"
+  rules:
+    - if: '$DO_DEPLOY == "true" && $DO_BUILD == "true"'
+    - if: '$DO_DEPLOY == "manual"'
+      when: manual
+    - if: '$DO_DEPLOY == "if_changed"'
+      changes:
+        - "apps/france-relance/**/*"
 
 run-tests-e2e:
   stage: test-e2e
@@ -153,3 +241,6 @@ run-tests-e2e:
     - if: '$DO_E2E == "true"'
     - if: '$DO_E2E == "manual"'
       when: manual
+    - if: '$DO_E2E == "if_changed"'
+      changes:
+        - "apps/e2e/**/*"

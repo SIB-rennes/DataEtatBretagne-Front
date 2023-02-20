@@ -9,7 +9,7 @@
     "start:france-relance-dev": "ng serve --project=france-relance --proxy-config proxy.conf.json --port=5006",
     "build:financial-data": "ng build --project=financial-data",
     "build:france-relance": "ng build --project=france-relance",
-    "build:lib-preference-users": "ng build --project=preference-users",
+    "build:all": "ng build --project=france-relance && ng build --project=financial-data",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"
