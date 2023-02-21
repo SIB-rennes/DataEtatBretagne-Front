@@ -163,7 +163,10 @@ export class SearchDataComponent implements OnInit, OnChanges {
             this.searchResults.next(response);
           },
           error: (err: Error) => {
-            this.alertService.openAlertError(err.message);
+            this.searchFinish = true;
+            this.currentFilter.next(this._buildPreference(formValue));
+            this.searchResults.next([]);
+            this.alertService.openAlertError(err.message, 8);
           },
         });
     }
