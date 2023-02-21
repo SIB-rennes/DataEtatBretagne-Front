@@ -13,6 +13,7 @@ import {
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { ActivatedRoute } from '@angular/router';
+import { AlertService } from 'apps/common-lib/src/public-api';
 import {
   JSONObject,
   Preference,
@@ -76,6 +77,7 @@ export class SearchDataComponent implements OnInit, OnChanges {
 
   public constructor(
     private route: ActivatedRoute,
+    private alertService: AlertService,
     private service: FranceRelanceHttpService
   ) {}
 
@@ -154,10 +156,15 @@ export class SearchDataComponent implements OnInit, OnChanges {
             this.searchInProgress.next(false);
           })
         )
-        .subscribe((response: Laureats[]) => {
-          this.searchFinish = true;
-          this.currentFilter.next(this._buildPreference(formValue));
-          this.searchResults.next(response);
+        .subscribe({
+          next: (response: Laureats[] | Error) => {
+            this.searchFinish = true;
+            this.currentFilter.next(this._buildPreference(formValue));
+            this.searchResults.next(response);
+          },
+          error: (err: Error) => {
+            this.alertService.openAlertError(err.message);
+          },
         });
     }
   }

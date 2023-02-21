@@ -121,7 +121,7 @@ export class HomeComponent implements OnInit {
                 'grouping'
               ] as GroupingColumn[];
             }
-            this.alertService.openAlertSuccess(
+            this.alertService.openInfo(
               `Application du filtre ${preference.name}`
             );
           });

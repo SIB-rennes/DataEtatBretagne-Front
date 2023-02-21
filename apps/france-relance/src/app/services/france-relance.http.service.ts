@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Inject } from '@angular/core';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
-import { NocoDbResponse } from 'apps/common-lib/src/public-api';
+import {
+  NocodbHttpService,
+  NocoDbResponse,
+} from 'apps/common-lib/src/public-api';
 import { map, Observable } from 'rxjs';
 import { SettingsService } from '../../environments/settings.service';
 import { SousAxePlanRelance } from '../models/axe.models';
@@ -11,11 +14,13 @@ import { Territoire } from '../models/territoire.models';
 @Injectable({
   providedIn: 'root',
 })
-export class FranceRelanceHttpService {
+export class FranceRelanceHttpService extends NocodbHttpService {
   constructor(
     private http: HttpClient,
     @Inject(SETTINGS) readonly settings: SettingsService
-  ) {}
+  ) {
+    super();
+  }
 
   /**
    * Récupère les Axe du plan de relance
@@ -95,7 +100,7 @@ export class FranceRelanceHttpService {
     const fields = 'Commune,CodeInsee';
     const where = `where=(Commune,like,${search}%)`;
 
-    const params = `fields=${fields}&limit=5000&${where}&sort=Commune`;
+    const params = `fields=${fields}&limit=500&${where}&sort=Commune`;
 
     return this.http
       .get<NocoDbResponse<Territoire>>(
@@ -124,9 +129,11 @@ export class FranceRelanceHttpService {
       territoires
     )}`;
 
-    return this.http
-      .get<NocoDbResponse<any>>(`${apiFr}/Laureats/Laureats-front?${params}`)
-      .pipe(map((response) => response.list));
+    return this.mapNocoDbReponse(
+      this.http.get<NocoDbResponse<any>>(
+        `${apiFr}/Laureats/Laureats-front?${params}`
+      )
+    );
   }
 
   public getCsv(

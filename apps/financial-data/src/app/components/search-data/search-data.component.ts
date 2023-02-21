@@ -38,7 +38,7 @@ import {
   JSONObject,
   Preference,
 } from 'apps/preference-users/src/lib/models/preference.models';
-import { TypeLocalisation } from 'apps/common-lib/src/public-api';
+import { AlertService, TypeLocalisation } from 'apps/common-lib/src/public-api';
 
 @Component({
   selector: 'financial-search-data',
@@ -89,6 +89,7 @@ export class SearchDataComponent implements OnInit, OnChanges {
   constructor(
     private route: ActivatedRoute,
     private datePipe: DatePipe,
+    private alertService: AlertService,
     private service: FinancialDataHttpService
   ) {}
 
@@ -250,10 +251,15 @@ export class SearchDataComponent implements OnInit, OnChanges {
             this.searchInProgress.next(false);
           })
         )
-        .subscribe((response: FinancialDataModel[]) => {
-          this.searchFinish = true;
-          this.currentFilter.next(this._buildPreference(formValue));
-          this.searchResults.next(response);
+        .subscribe({
+          next: (response: FinancialDataModel[] | Error) => {
+            this.searchFinish = true;
+            this.currentFilter.next(this._buildPreference(formValue));
+            this.searchResults.next(response as FinancialDataModel[]);
+          },
+          error: (err: Error) => {
+            this.alertService.openAlertError(err.message);
+          },
         });
     }
   }
