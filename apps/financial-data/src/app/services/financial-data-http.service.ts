@@ -46,7 +46,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
 
     return this.http
       .get<NocoDbResponse<RefTheme>>(
-        `${apiFinancial}/RefTheme/RefTheme?fields=Id,Label&sort=Label`
+        `${apiFinancial}/RefTheme/RefTheme?fields=Id,Label&sort=Label&limit=500`
       )
       .pipe(map((response) => response.list));
   }
