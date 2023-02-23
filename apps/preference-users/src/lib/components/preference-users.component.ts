@@ -22,7 +22,8 @@ import { SavePreferenceDialogComponent } from './save-filter/save-preference-dia
 })
 export class PreferenceUsersComponent implements OnInit {
   /**
-   * Object pour mapper le nom du filtre avec une String affichable. Par défaut on affiche le nom du filtre
+   * Object pour mapper le nom du filtre avec une String affichable.
+   * Uniquement les filtres présent dans l'attribut seront affichés
    */
   @Input() mappingMetadata!: MapPreferenceFilterMetadata;
 

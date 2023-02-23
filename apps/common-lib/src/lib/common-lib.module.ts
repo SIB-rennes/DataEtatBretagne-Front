@@ -7,9 +7,15 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { RegisterComponent } from './components/register/register.component';
+import { TermOfUseComponent } from './components/term-of-use/term-of-use.component';
 
 @NgModule({
-  declarations: [AlertSnackBarComponent, FooterComponent, RegisterComponent],
+  declarations: [
+    AlertSnackBarComponent,
+    FooterComponent,
+    RegisterComponent,
+    TermOfUseComponent,
+  ],
   imports: [
     CommonModule,
     LocalisationComponent,
@@ -22,6 +28,7 @@ import { RegisterComponent } from './components/register/register.component';
     LocalisationComponent,
     HeaderComponent,
     FooterComponent,
+    TermOfUseComponent,
     RegisterComponent,
   ],
 })
