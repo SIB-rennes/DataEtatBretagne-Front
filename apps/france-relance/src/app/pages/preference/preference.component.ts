@@ -18,6 +18,14 @@ export class PreferenceComponent {
       label: 'Lauréat',
       renderFn: (row: JSONObject) => row['label'],
     },
+    territoire: {
+      label: 'Territoire',
+      renderFn: (row: JSONObject) => row['Commune'],
+    },
+    axe_plan_relance: {
+      label: 'Axe du plan de relance',
+      renderFn: (row: JSONObject) => row['axe'] + ' - ' + row['label'],
+    },
   };
 
   /**

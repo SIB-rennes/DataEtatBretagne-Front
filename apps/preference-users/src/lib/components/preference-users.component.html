@@ -29,16 +29,11 @@
 
           <ul class="fr-badge-group">
             <li class="fr-mr-3v" *ngFor="let field of objectKeys(element.filters)">
-              <p class="fr-mr-1v fr-badge fr-badge--blue-ecume">
-                <ng-container *ngIf="mappingMetadata && mappingMetadata[field] else defaultLabel">
-                  {{mappingMetadata[field].label}}
-                </ng-container>
 
-                <ng-template #defaultLabel>
-                  {{field}}
-                </ng-template>
+              <p class="fr-mr-1v fr-badge fr-badge--blue-ecume" *ngIf="mappingMetadata[field]">
+                {{mappingMetadata[field].label}}
               </p>
-              <ng-container
+              <ng-container *ngIf="mappingMetadata[field]"
                 [ngTemplateOutlet]="getTypeField(element.filters[field]) === 'array' ? badgeArray : badgeSimple"
                 [ngTemplateOutletContext]="{value: element.filters[field], metadata: mappingMetadata[field]}">
               </ng-container>
@@ -117,16 +112,10 @@
 
           <ul class="fr-badge-group">
             <li class="fr-mr-3v" *ngFor="let field of objectKeys(element.filters)">
-              <p class="fr-mr-1v fr-badge fr-badge--blue-ecume">
-                <ng-container *ngIf="mappingMetadata && mappingMetadata[field] else defaultLabel">
-                  {{mappingMetadata[field].label}}
-                </ng-container>
-
-                <ng-template #defaultLabel>
-                  {{field}}
-                </ng-template>
+              <p class="fr-mr-1v fr-badge fr-badge--blue-ecume" *ngIf="mappingMetadata[field]">
+                {{mappingMetadata[field].label}}
               </p>
-              <ng-container
+              <ng-container *ngIf="mappingMetadata[field]"
                 [ngTemplateOutlet]="getTypeField(element.filters[field]) === 'array' ? badgeArray : badgeSimple"
                 [ngTemplateOutletContext]="{value: element.filters[field], metadata: mappingMetadata[field]}">
               </ng-container>
