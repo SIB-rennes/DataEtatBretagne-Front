@@ -27,14 +27,14 @@ export class UserHttpService {
   /**
    * Gets a list of users
    * @param pageNumber Page number to retrieve (default: 1)
-   * @param limit Maximum number of users to retrieve per page (default: 2)
+   * @param limit Maximum number of users to retrieve per page (default: 100)
    * @param only_disbale Ony disable users is return
    * @returns Observable containing user pagination data
    */
   public getUsers(
     only_disable: boolean = false,
     pageNumber: number = 1,
-    limit: number = 10
+    limit: number = 100
   ): Observable<UsersPagination> {
     const params = `pageNumber=${pageNumber}&limit=${limit}&only_disable=${only_disable}`;
 

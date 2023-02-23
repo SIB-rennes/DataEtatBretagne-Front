@@ -5,8 +5,8 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ReactiveFormsModule } from '@angular/forms';
-import { DatePipe, registerLocaleData } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, DatePipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -81,9 +81,12 @@ registerLocaleData(localeFr);
     AppRoutingModule,
     KeycloakAngularModule,
     HttpClientModule,
+    ReactiveFormsModule,
+    CommonModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
     MaterialModule,
+    FormsModule,
     MatDialogModule,
     MatButtonModule,
     PreferenceUsersModule,

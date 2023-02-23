@@ -22,12 +22,23 @@ export class AlertService {
     });
   }
 
-  public openAlertError(message: string): void {
+  public openAlertError(message: string, duration = 5): void {
+    this._snackBar.openFromComponent(AlertSnackBarComponent, {
+      duration: duration * 1000,
+      panelClass: 'toaster',
+      data: {
+        type: AlertType.Error,
+        message: message,
+      },
+    });
+  }
+
+  public openInfo(message: string): void {
     this._snackBar.openFromComponent(AlertSnackBarComponent, {
       duration: 5 * 1000,
       panelClass: 'toaster',
       data: {
-        type: AlertType.Error,
+        type: AlertType.Info,
         message: message,
       },
     });

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { KeycloakService } from 'keycloak-angular';
 
 @Component({
-  selector: 'financial-preference',
+  selector: 'lib-register',
   template: '',
 })
 export class RegisterComponent {

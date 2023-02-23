@@ -7,18 +7,24 @@ import { SettingsService } from '../../environments/settings.service';
 import { RefTheme } from '@models/theme.models';
 import { FinancialDataModel } from '@models/financial-data.models';
 import { RefSiret } from '@models/RefSiret';
-import { GeoModel, TypeLocalisation } from 'apps/common-lib/src/public-api';
+import {
+  GeoModel,
+  NocodbHttpService,
+  TypeLocalisation,
+} from 'apps/common-lib/src/public-api';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { NocoDbResponse } from 'apps/common-lib/src/lib/models/nocodb-response';
 
 @Injectable({
   providedIn: 'root',
 })
-export class FinancialDataHttpService {
+export class FinancialDataHttpService extends NocodbHttpService {
   constructor(
     private http: HttpClient,
     @Inject(SETTINGS) readonly settings: SettingsService
-  ) {}
+  ) {
+    super();
+  }
 
   public getBop(): Observable<BopModel[]> {
     const apiFinancial = this.settings.apiFinancial;
@@ -40,7 +46,7 @@ export class FinancialDataHttpService {
 
     return this.http
       .get<NocoDbResponse<RefTheme>>(
-        `${apiFinancial}/RefTheme/RefTheme?fields=Id,Label&sort=Label`
+        `${apiFinancial}/RefTheme/RefTheme?fields=Id,Label&sort=Label&limit=500`
       )
       .pipe(map((response) => response.list));
   }
@@ -57,7 +63,7 @@ export class FinancialDataHttpService {
       .pipe(map((response) => response.list));
   }
 
-  public _filterRefSiretWhereClause(nomOuSiret: string): string {
+  private _filterRefSiretWhereClause(nomOuSiret: string): string {
     let is_number = /^\d+$/.test(nomOuSiret);
 
     if (is_number) return `where=(Code,like,${nomOuSiret}%)`;
@@ -92,11 +98,11 @@ export class FinancialDataHttpService {
       year,
       location
     );
-    return this.http
-      .get<NocoDbResponse<FinancialDataModel>>(
+    return this.mapNocoDbReponse(
+      this.http.get<NocoDbResponse<FinancialDataModel>>(
         `${apiFinancial}/DataChorus/Chorus-front?${params}`
       )
-      .pipe(map((response) => response.list));
+    );
   }
 
   public getCsv(
@@ -131,7 +137,7 @@ export class FinancialDataHttpService {
     location: GeoModel[] | null
   ): string {
     let params =
-      'sort=code_programme,label_commune&limit=4000&where=(Montant,gt,0)';
+      'sort=code_programme,label_commune&limit=5000&where=(Montant,gt,0)';
     if (beneficiaire) {
       params += `~and(code_siret,eq,${beneficiaire.Code})`;
     }

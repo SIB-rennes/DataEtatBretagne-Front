@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
+import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { GridInFullscreenStateService } from 'apps/common-lib/src/lib/services/grid-in-fullscreen-state.service';
 import { LoaderService, SessionService } from 'apps/common-lib/src/public-api';
+import { SettingsService } from '../environments/settings.service';
 
 @Component({
   selector: 'financial-root',
@@ -18,7 +20,8 @@ export class AppComponent implements OnInit {
   constructor(
     private loaderService: LoaderService,
     private sessionService: SessionService,
-    private _gridFullscreen: GridInFullscreenStateService
+    private _gridFullscreen: GridInFullscreenStateService,
+    @Inject(SETTINGS) public readonly settings: SettingsService
   ) {}
 
   ngOnInit(): void {
@@ -29,5 +32,9 @@ export class AppComponent implements OnInit {
     this.sessionService.getUser().subscribe((user) => {
       this.isAuthenticated = user !== null;
     });
+  }
+
+  public get contact(): string | undefined {
+    return this.settings.getSetting().contact;
   }
 }

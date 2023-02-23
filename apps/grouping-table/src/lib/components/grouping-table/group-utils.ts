@@ -1,9 +1,13 @@
 export type AggregateReducerContext = {
   row: RowData;
   group: Group;
-}
+};
 
-type AggregateReducer<T> = (currentValue: any, context: AggregateReducerContext, accumulator?: T) => T;
+type AggregateReducer<T> = (
+  currentValue: any,
+  context: AggregateReducerContext,
+  accumulator?: T
+) => T;
 
 /**
  * Méta-données d'une colonne. Contient les informations pour l'affichage de la colonne.
@@ -37,7 +41,11 @@ export type ColumnMetaDataDef = {
    * @param row ligne de données
    * @param col colonne
    */
-  aggregateRenderFn?: (aggregateValue: any, group: Group, col: ColumnMetaDataDef) => string | undefined;
+  aggregateRenderFn?: (
+    aggregateValue: any,
+    group: Group,
+    col: ColumnMetaDataDef
+  ) => string | undefined;
 
   /**
    * Styles css à appliquer sur les cellules de la colonne.
@@ -50,14 +58,22 @@ export type ColumnMetaDataDef = {
 };
 
 export class AggregatorFns {
-  static sum(currentValue: any, context: AggregateReducerContext, accumulator?: number): number | undefined {
+  static sum(
+    currentValue: any,
+    context: AggregateReducerContext,
+    accumulator?: number
+  ): number | undefined {
     if (!currentValue) {
       return accumulator;
     }
-    return (accumulator || 0) + currentValue;
+    return (accumulator || 0) + Number(currentValue);
   }
 
-  static average(currentValue: number | undefined, context: AggregateReducerContext, accumulator?: number): number {
+  static average(
+    currentValue: number | undefined,
+    context: AggregateReducerContext,
+    accumulator?: number
+  ): number {
     let nbRows = context.group.rows?.length || 0;
     if (nbRows <= 1) {
       return currentValue || 0;
@@ -65,7 +81,11 @@ export class AggregatorFns {
     return ((accumulator || 0) * (nbRows - 1) + (currentValue || 0)) / nbRows;
   }
 
-  static count(currentValue: any, context: AggregateReducerContext, accumulator?: number): number {
+  static count(
+    currentValue: any,
+    context: AggregateReducerContext,
+    accumulator?: number
+  ): number {
     return (accumulator || 0) + 1;
   }
 }
@@ -85,7 +105,7 @@ export class ColumnsMetaData {
   getByColumnName(name: string): ColumnMetaDataDef {
     let metaDataDef = this.metaDataMap.get(name);
     if (!metaDataDef) {
-      throw new Error(`Pas de meta-données pour la colonne "${name}"`)
+      throw new Error(`Pas de meta-données pour la colonne "${name}"`);
     }
     return metaDataDef;
   }
@@ -105,7 +125,7 @@ export type TableData = RowData[];
 
 export type GroupingColumn = {
   columnName: string;
-}
+};
 
 /**
  * Un groupe, qui peut contenir soit des groupes enfants, soit des lignes de données.
@@ -132,9 +152,8 @@ export class Group {
     public readonly column?: ColumnMetaDataDef,
     public readonly columnValue?: any,
     public readonly parent?: Group,
-    private columnsAggregateFns?: Record<string, AggregateReducer<any>>,
-  ) {
-  }
+    private columnsAggregateFns?: Record<string, AggregateReducer<any>>
+  ) {}
 
   getOrCreateGroup(column: ColumnMetaDataDef, groupColumnValue: any): Group {
     if (!this.groupsMap) {
@@ -142,7 +161,12 @@ export class Group {
     }
     let group = this.groupsMap.get(groupColumnValue);
     if (!group) {
-      group = new Group(column, groupColumnValue, this, this.columnsAggregateFns);
+      group = new Group(
+        column,
+        groupColumnValue,
+        this,
+        this.columnsAggregateFns
+      );
       this.groupsMap.set(groupColumnValue, group);
     }
     return group;
@@ -167,7 +191,11 @@ export class Group {
     // On met à jour les aggrégats pour chacune des colonnes.
     for (const columnName in this.columnsAggregateFns) {
       const aggregateFn = this.columnsAggregateFns[columnName];
-      this.aggregates[columnName] = aggregateFn(row[columnName], {row, group: this}, this.aggregates[columnName]);
+      this.aggregates[columnName] = aggregateFn(
+        row[columnName],
+        { row, group: this },
+        this.aggregates[columnName]
+      );
     }
     // On les met à jour pour les groupes parents également.
     this.parent?.aggregateColumnValues(row);
@@ -190,7 +218,11 @@ export class RootGroup extends Group {
  * @param groupings
  * @param columnsMetaData
  */
-export const groupByColumns = (table: TableData, groupings: GroupingColumn[], columnsMetaData: ColumnsMetaData): RootGroup => {
+export const groupByColumns = (
+  table: TableData,
+  groupings: GroupingColumn[],
+  columnsMetaData: ColumnsMetaData
+): RootGroup => {
   // On construit l'ensemble des fonctions d'aggrégation.
   const aggregateFns: Record<string, AggregateReducer<any>> = {};
   // ... Cet ensemble reprend les fonctions d'aggrégation définies sur chacune des colonnes
@@ -206,7 +238,9 @@ export const groupByColumns = (table: TableData, groupings: GroupingColumn[], co
     // tant qu'on n'a pas trouvé le niveau le plus profond où ranger la ligne, on descend
     for (const grouping of groupings) {
       const column = columnsMetaData.getByColumnName(grouping.columnName);
-      const groupKey = column.renderFn ? column.renderFn(row, column) : row[column.name];
+      const groupKey = column.renderFn
+        ? column.renderFn(row, column)
+        : row[column.name];
       currentGroup = currentGroup.getOrCreateGroup(column, groupKey);
     }
     currentGroup.addRow(row);

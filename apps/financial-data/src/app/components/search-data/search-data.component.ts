@@ -38,7 +38,7 @@ import {
   JSONObject,
   Preference,
 } from 'apps/preference-users/src/lib/models/preference.models';
-import { TypeLocalisation } from 'apps/common-lib/src/public-api';
+import { AlertService, TypeLocalisation } from 'apps/common-lib/src/public-api';
 
 @Component({
   selector: 'financial-search-data',
@@ -89,6 +89,7 @@ export class SearchDataComponent implements OnInit, OnChanges {
   constructor(
     private route: ActivatedRoute,
     private datePipe: DatePipe,
+    private alertService: AlertService,
     private service: FinancialDataHttpService
   ) {}
 
@@ -250,10 +251,18 @@ export class SearchDataComponent implements OnInit, OnChanges {
             this.searchInProgress.next(false);
           })
         )
-        .subscribe((response: FinancialDataModel[]) => {
-          this.searchFinish = true;
-          this.currentFilter.next(this._buildPreference(formValue));
-          this.searchResults.next(response);
+        .subscribe({
+          next: (response: FinancialDataModel[] | Error) => {
+            this.searchFinish = true;
+            this.currentFilter.next(this._buildPreference(formValue));
+            this.searchResults.next(response as FinancialDataModel[]);
+          },
+          error: (err: Error) => {
+            this.searchFinish = true;
+            this.currentFilter.next(this._buildPreference(formValue));
+            this.searchResults.next([]);
+            this.alertService.openAlertError(err.message, 8);
+          },
         });
     }
   }
@@ -355,11 +364,17 @@ export class SearchDataComponent implements OnInit, OnChanges {
         theme: new FormControl(null),
         beneficiaire: new FormControl(null),
         filterBop: new FormControl(null), // controls pour le filtre des bops
-        location: new FormControl({ value: null, disabled: false }, [
-          Validators.required,
-        ]),
+        location: new FormControl({ value: null, disabled: false }, []),
       },
       financialDataFormValidators()
+    );
+
+    this.searchForm.controls['theme'].valueChanges.subscribe((val) =>
+      this._makeLocationRequired(val)
+    );
+
+    this.searchForm.controls['bops'].valueChanges.subscribe((val) =>
+      this._makeLocationRequired(val)
     );
 
     this.searchForm.controls['filterBop'].valueChanges.subscribe((value) => {
@@ -383,6 +398,15 @@ export class SearchDataComponent implements OnInit, OnChanges {
         return of([]);
       })
     );
+  }
+
+  private _makeLocationRequired(bopOrTheme: any): void {
+    if (bopOrTheme) {
+      this.searchForm.controls['location'].setValidators([Validators.required]);
+    } else {
+      this.searchForm.controls['location'].clearValidators();
+    }
+    this.searchForm.controls['location'].updateValueAndValidity();
   }
 
   private _filterBop(value: string): BopModel[] {

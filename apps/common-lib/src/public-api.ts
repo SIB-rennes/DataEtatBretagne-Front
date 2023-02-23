@@ -14,3 +14,4 @@ export * from './lib/environments/settings';
 export * from './lib/shared/material.module';
 export * from './lib/guards/auth-guard.service';
 export * from './lib/interceptors/common-http-interceptor';
+export * from './lib/services/abstract-nocodb.service';

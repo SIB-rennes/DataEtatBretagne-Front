@@ -6,6 +6,7 @@ import {
   HttpEvent,
   HttpResponse,
   HttpErrorResponse,
+  HttpHeaders,
 } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { AlertService, LoaderService } from 'apps/common-lib/src/public-api';

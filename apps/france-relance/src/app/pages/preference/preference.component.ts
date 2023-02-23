@@ -14,31 +14,17 @@ export class PreferenceComponent {
   constructor(private router: Router) {}
 
   public mappingValueFilter: MapPreferenceFilterMetadata = {
-    bops: {
-      label: 'Programmes',
-      renderFn: (row: JSONObject) => row['Code'] + ' - ' + row['Label'],
+    structure: {
+      label: 'Lauréat',
+      renderFn: (row: JSONObject) => row['label'],
     },
-    year: {
-      label: 'Année',
-    },
-    theme: {
-      label: 'Thème',
-      renderFn: (row: JSONObject) => row['Label'],
-    },
-    beneficiaire: {
-      label: 'Bénéficiare',
-      renderFn: (row: JSONObject) => {
-        if (row['Denomination']) {
-          return `${row['Denomination']} (${row['Code']})`;
-        }
-        return `Siret : (${row['Code']})`;
-      },
-    },
-    location: {
+    territoire: {
       label: 'Territoire',
-      renderFn: (row: JSONObject) => {
-        return `${row['type']} : ${row['nom']} (${row['code']})`;
-      },
+      renderFn: (row: JSONObject) => row['Commune'],
+    },
+    axe_plan_relance: {
+      label: 'Axe du plan de relance',
+      renderFn: (row: JSONObject) => row['axe'] + ' - ' + row['label'],
     },
   };
 

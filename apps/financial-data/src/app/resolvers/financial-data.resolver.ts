@@ -16,7 +16,6 @@ export class FinancialDataResolver
       bop: this.service.getBop(),
     }).pipe(
       catchError((error) => {
-        console.error(error);
         return of({
           name: 'Erreur',
           message: 'Erreurs lors de la récupération des données.',

@@ -1,6 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
 
-import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import {
   PreferenceUsersHttpService,
@@ -27,7 +26,6 @@ import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/compo
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  private datePipe = inject(DatePipe);
   private dialog = inject(MatDialog);
 
   columnsMetaData: ColumnsMetaData;
@@ -45,9 +43,8 @@ export class HomeComponent implements OnInit {
   preFilter: JSONObject | null;
 
   groupingColumns: GroupingColumn[] = [
-    { columnName: 'nom_programme' },
-    { columnName: 'type_etablissement' },
-    { columnName: 'label_commune' },
+    { columnName: 'axe' },
+    { columnName: 'sous-axe' },
   ];
 
   get grid_fullscreen() {
@@ -71,14 +68,12 @@ export class HomeComponent implements OnInit {
       style: 'currency',
       currency: 'EUR',
     });
-    const dateFormat = (dateStr: string) =>
-      dateStr ? this.datePipe.transform(dateStr, 'shortDate') : '';
 
     this.columnsMetaData = new ColumnsMetaData([
-      { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
+      { name: 'Structure', label: 'Lauréat' },
       {
-        name: 'Montant',
-        label: 'Montant',
+        name: 'SubventionAccordée',
+        label: 'Montant (Subvention accordée)',
         renderFn: (row, col) =>
           row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
         aggregateReducer: AggregatorFns.sum,
@@ -90,52 +85,25 @@ export class HomeComponent implements OnInit {
           'flex-grow': '0',
         },
       },
-      { name: 'Theme', label: 'Thème' },
       {
-        name: 'nom_programme',
-        label: 'Programme',
-        renderFn: (row, _col) =>
-          row['code_programme'] + ' - ' + row['nom_programme'],
+        name: 'axe',
+        label: 'Axe',
       },
       {
-        name: 'domaine',
-        label: 'Domaine fonctionnel',
-        renderFn: (row, _col) => row['code_domaine'] + ' - ' + row['domaine'],
+        name: 'sous-axe',
+        label: 'Sous Axe',
       },
       {
-        name: 'ref_programmation',
-        label: 'Ref Programmation',
-        renderFn: (row, _col) =>
-          row['code_ref_programmation'] + ' - ' + row['ref_programmation'],
+        name: 'dispositif',
+        label: 'Dispositif',
       },
       {
-        name: 'label_commune',
-        label: 'Commune',
-        renderFn: (row, _col) => row['label_commune'],
+        name: 'territoire',
+        label: 'Territoire',
       },
       {
-        name: 'code_siret',
-        label: 'Siret',
-        columnStyle: {
-          'min-width': '16ex',
-          'flex-grow': '0',
-        },
-      },
-      {
-        name: 'type_etablissement',
-        label: `Type d'établissement`,
-        renderFn: (row, col) =>
-          row[col.name] !== null ? row[col.name] : 'Non renseigné',
-      },
-      {
-        name: 'DateModificationEj',
-        label: "Date d'actualisation",
-        renderFn: (row, col) =>
-          row[col.name] ? dateFormat(row[col.name]) : row[col.name],
-        columnStyle: {
-          'min-width': '18ex',
-          'flex-grow': '0',
-        },
+        name: 'Synthèse',
+        label: 'Synthèse',
       },
     ]);
 
@@ -155,7 +123,7 @@ export class HomeComponent implements OnInit {
                 'grouping'
               ] as GroupingColumn[];
             }
-            this.alertService.openAlertSuccess(
+            this.alertService.openInfo(
               `Application du filtre ${preference.name}`
             );
           });

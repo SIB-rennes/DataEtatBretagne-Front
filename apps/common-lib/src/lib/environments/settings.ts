@@ -10,4 +10,5 @@ export class Settings {
   production = false;
   apis: IApi | undefined = undefined;
   keycloak: Keycloak = new Keycloak();
+  contact: string | undefined = undefined;
 }
