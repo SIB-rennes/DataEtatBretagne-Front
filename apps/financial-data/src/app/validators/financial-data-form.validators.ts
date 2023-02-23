@@ -1,9 +1,11 @@
 import {
   AbstractControl,
   FormControl,
+  FormGroup,
   FormGroupDirective,
   ValidationErrors,
   ValidatorFn,
+  Validators,
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 
@@ -24,7 +26,10 @@ export function financialDataFormValidators(): ValidatorFn {
     const bops = value.bops;
 
     if (beneficiaire == null && theme == null && bops == null) {
-      return { benefOrBopRequired: 'Renseignez un Bénéficiaire, un Thème ou un Programme' };
+      return {
+        benefOrBopRequired:
+          'Renseignez un Bénéficiaire, un Thème ou un Programme',
+      };
     }
 
     return null;
