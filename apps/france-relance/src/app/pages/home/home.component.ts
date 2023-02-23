@@ -1,6 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
 
-import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import {
   PreferenceUsersHttpService,
@@ -27,7 +26,6 @@ import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/compo
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  private datePipe = inject(DatePipe);
   private dialog = inject(MatDialog);
 
   columnsMetaData: ColumnsMetaData;
@@ -102,6 +100,10 @@ export class HomeComponent implements OnInit {
       {
         name: 'territoire',
         label: 'Territoire',
+      },
+      {
+        name: 'Synthèse',
+        label: 'Synthèse',
       },
     ]);
 
