@@ -7,6 +7,7 @@ class Api implements IApi {
   management = '';
   geo = '';
   referentiel = '';
+  data_subventions = '';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -36,6 +37,10 @@ export class SettingsService implements ISettingsService {
 
   public get apiReferentiel(): string {
     return (this.settings.apis as Api).referentiel;
+  }
+
+  public get apiDataSubventions(): string {
+    return (this.settings.apis as Api).data_subventions;
   }
 
   public get apiFinancial(): string {
