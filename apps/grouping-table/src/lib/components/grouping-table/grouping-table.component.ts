@@ -3,10 +3,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  EventEmitter,
   HostListener,
   inject,
   Input,
   OnChanges,
+  Output,
   SimpleChanges,
   ViewChild,
   ViewEncapsulation,
@@ -18,6 +20,7 @@ import {
   TableData,
 } from './group-utils';
 import { GroupingTableContextService } from './grouping-table-context.service';
+import { OutputEvents } from './output-events';
 
 @Component({
   selector: 'lib-grouping-table',
@@ -34,6 +37,9 @@ export class GroupingTableComponent implements OnChanges, AfterViewInit {
   @Input() columnsMetaData!: ColumnsMetaData;
   @Input() groupingColumns: GroupingColumn[] = [];
 
+  private _outputEvents: OutputEvents;
+  @Output() rowClick;
+
   rootGroup?: RootGroup;
   context = inject(GroupingTableContextService);
   groupLevel = 0;
@@ -41,6 +47,16 @@ export class GroupingTableComponent implements OnChanges, AfterViewInit {
 
   @ViewChild('outerHtmlElement')
   public columnCssStyle: ElementRef | undefined;
+
+  constructor() {
+    this._outputEvents = {
+      'click-on-row': new EventEmitter()
+    }
+
+    this.rowClick = this._outputEvents['click-on-row'];
+
+    this.context.outputEvents = this._outputEvents;
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (
@@ -53,7 +69,7 @@ export class GroupingTableComponent implements OnChanges, AfterViewInit {
       this.context.initContext(
         this.tableData,
         this.columnsMetaData,
-        this.groupingColumns
+        this.groupingColumns,
       );
 
       this.rootGroup = this.context.rootGroup;
