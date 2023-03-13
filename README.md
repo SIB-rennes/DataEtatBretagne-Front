@@ -40,3 +40,20 @@ Pour lancer les tests depuis votre environnement locale
 npx playwright test --config=playwright.dev.config.ts
 ```
 
+# Clients générés automatiquement
+
+Le dossier [apps/clients](./apps/clients/) contient des clients d'api, ces derniers peuvent être générées automatiquement.
+
+**Les exemples sont données avec les URL de l'environnement d'intégration**
+
+## Data subventions
+
+ - url api: [https://api.nocode.csm.ovh/data_subventions/swagger.json](https://api.nocode.csm.ovh/data_subventions/swagger.json)
+ - Commande de génération:
+```
+docker run --rm -v "<PRJ_FOLDER>/apps/clients:/local" openapitools/openapi-generator-cli generate \        
+  -i https://api.nocode.csm.ovh/data_subventions/swagger.json \
+  -g typescript-angular \
+  -o /local/ds-client \
+  --additional-properties npmName=ds-client,npmVersion=1.0.0,snapshot=false,ngVersion="15.0.1",apiModulePrefix=ds,configurationPrefix=ds
+```
