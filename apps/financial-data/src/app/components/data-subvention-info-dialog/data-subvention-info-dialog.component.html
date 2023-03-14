@@ -1,0 +1,81 @@
+<div mat-dialog-content>
+
+    <h4>Demande de subventions associée</h4>
+
+    <ng-container *ngIf="isLoading || isError; else subventionTemplate">
+        <mat-spinner></mat-spinner>
+    </ng-container>
+
+    <ng-template #subventionTemplate>
+
+        <ng-container *ngIf="!subvention">
+            Aucune information sur la demande de subvention
+        </ng-container>
+
+        <table *ngIf="subvention" class="fr-table">
+            <thead>
+                <tr>
+                    <th *ngFor="let col of subvention_props" scope="col">
+                        {{ pretty(col) }}
+                    </th>
+
+                    <th>
+                        Plus d'informations
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td *ngFor="let key of subvention_props">
+                        {{ get_subvention_prop(key) }}
+                    </td>
+
+                    <td>
+                        <button [disabled]="!hasPlusDinfo" class="fr-icon-info-fill" (click)="onPlusDinfoClic()">
+                            Voir
+                        </button>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </ng-template>
+
+    <h4>Président de l'association {{data.row['nom_beneficiaire']}}</h4>
+
+    <ng-container *ngIf="isLoading || isError; else presidentTemplate">
+        <mat-spinner></mat-spinner>
+    </ng-container>
+
+    <ng-template #presidentTemplate>
+
+        <ng-container *ngIf="!president">
+            Aucune information sur le président de l'association.
+        </ng-container>
+
+        <table *ngIf="president" class="fr-table">
+            <thead>
+                <tr>
+                    <th *ngFor="let col of president_props" scope="col">
+                        {{pretty(col)}}
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td *ngFor="let key of president_props">
+                        {{ get_president_prop(key) }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </ng-template>
+</div>
+
+<div mat-dialog-actions>
+    <button mat-button mat-dialog-close>Fermer</button>
+</div>

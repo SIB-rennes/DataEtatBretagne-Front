@@ -37,7 +37,13 @@
         {{fullscreen_label}}
       </button>
     </mat-toolbar>
-    <lib-grouping-table class="h-100" [tableData]="tableData" [columnsMetaData]="columnsMetaData"
-      [groupingColumns]="groupingColumns"></lib-grouping-table>
+
+    <lib-grouping-table class="h-100" 
+      [tableData]="tableData" 
+      [columnsMetaData]="columnsMetaData"
+      [groupingColumns]="groupingColumns"
+      (rowClick)="onRowClick($event)"
+    ></lib-grouping-table>
+
   </ng-container>
 </ng-template>

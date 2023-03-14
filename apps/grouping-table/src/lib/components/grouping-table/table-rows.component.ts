@@ -9,4 +9,8 @@ import { GroupingTableContextService } from './grouping-table-context.service';
 export class TableRowsComponent {
   @Input() rows!: RowData[];
   context = inject(GroupingTableContextService);
+
+  onclick(row: RowData) {
+    this.context.clickOnRow(row)
+  }
 }

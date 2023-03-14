@@ -1,6 +1,7 @@
 <div
   class="grouping-table-row"
   *ngFor="let row of rows"
+  (click)="onclick(row)"
 >
   <div
     *ngFor="let col of context.displayedColumns; index as i; first as isFirst"

@@ -6,9 +6,11 @@ import {
   groupByColumns,
   GroupingColumn,
   RootGroup,
+  RowData,
   TableData
 } from "./group-utils";
 import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
+import { OutputEvents } from "./output-events";
 
 @Injectable()
 export class GroupingTableContextService {
@@ -103,5 +105,17 @@ export class GroupingTableContextService {
       this.fold(group);
       return true;
     }
+  }
+
+  /*
+   * Gestion des evenements pour le composant
+   */
+  private _outputEvents: OutputEvents | null = null;
+  set outputEvents(outputEvents: OutputEvents) {
+    this._outputEvents = outputEvents;
+  }
+ 
+  clickOnRow(row: RowData) {
+    this._outputEvents?.["click-on-row"].emit(row);
   }
 }
