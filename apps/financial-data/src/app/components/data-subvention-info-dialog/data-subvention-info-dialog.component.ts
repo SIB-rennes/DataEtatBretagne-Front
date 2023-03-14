@@ -4,6 +4,7 @@ import { DataSubventionInfoDialogData } from './data-subvention-info-dialog-data
 import { RepresentantLegal, Subvention } from 'apps/clients/ds-client';
 import { DataSubventionObjectifsDialogComponent } from '../data-subvention-objectifs-dialog/data-subvention-objectifs-dialog.component';
 import { DataSubventionInfoDialogService } from './data-subvention-info-dialog.service';
+import { AlertService } from 'apps/common-lib/src/public-api';
 
 const InformationsSubventionPropPP: { [index: string]: string } = {
   'ej': 'Numéro EJ',
@@ -34,6 +35,7 @@ export class DataSubventionInfoDialogComponent {
 
   private dialog = inject(MatDialog);
   private service = inject(DataSubventionInfoDialogService);
+  private alertService = inject(AlertService);
 
   isLoading = true;
   isError = false;
@@ -60,7 +62,7 @@ export class DataSubventionInfoDialogComponent {
       this.isLoading = false;
       this.isError = false;
     }, err => {
-      console.error(err);
+      this.alertService.openAlertError(`Une erreur est survenue lors de notre communication avec data subventions.`)
       this.isLoading = false;
       this.isError = true;
     })
@@ -103,10 +105,6 @@ export class DataSubventionInfoDialogComponent {
 
   pretty(prop: string) {
     return InformationsSubventionPropPP[prop] || InformationPresidentPP[prop] || prop;
-  }
-
-  source(siret: string) {
-    return `https://datasubvention.beta.gouv.fr/etablissement/${siret}`
   }
 
   public get hasPlusDinfo() {
