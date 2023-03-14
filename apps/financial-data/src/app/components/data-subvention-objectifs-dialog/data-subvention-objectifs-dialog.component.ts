@@ -12,7 +12,6 @@ export class DataSubventionObjectifsDialogComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
-    // console.debug(data);
     this.actions_proposees = data.actions_proposees;
   }
 }
