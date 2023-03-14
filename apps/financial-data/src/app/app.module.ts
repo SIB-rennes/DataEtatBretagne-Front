@@ -13,6 +13,7 @@ import { DatePipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { PreferenceUsersModule } from 'apps/preference-users/src/lib/preference-users.module';
 import { API_PREFERENCE_PATH } from 'apps/preference-users/src/public-api';
 import { SettingsService } from '../environments/settings.service';
@@ -103,6 +104,7 @@ registerLocaleData(localeFr);
     GroupingTableModule,
     MatDialogModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
     PreferenceUsersModule,
     CommonLibModule,
     ManagementModule,
