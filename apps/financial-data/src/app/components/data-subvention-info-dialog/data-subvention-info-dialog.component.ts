@@ -39,7 +39,9 @@ export class DataSubventionInfoDialogComponent {
   isError = false;
 
   public president: RepresentantLegal | null = null;
+  public president_props: string[] = [];
   public subvention: Subvention | null = null;
+  public subvention_props: string[] = [];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: DataSubventionInfoDialogData) {
     let siret = data.row['code_siret'];
@@ -50,7 +52,11 @@ export class DataSubventionInfoDialogComponent {
 
     this.service.load_informations(siret, ej).subscribe(data => {
       this.subvention = data.subvention;
+      this.subvention_props = this._subventionDisplayedColumns();
+
       this.president = data.president;
+      this.president_props = this._presidentDisplayedColumns();
+
       this.isLoading = false;
       this.isError = false;
     }, err => {
@@ -70,7 +76,7 @@ export class DataSubventionInfoDialogComponent {
     return subvention[key];
   }
 
-  presidentDisplayedColumns() {
+  _presidentDisplayedColumns() {
     let props = []
     for( let prop in this.president) {
       props.push(prop)
@@ -78,7 +84,7 @@ export class DataSubventionInfoDialogComponent {
     return props;
   }
 
-  subventionDisplayedColumns() {
+  _subventionDisplayedColumns() {
 
     let excl = ['actions_proposees'];
 
