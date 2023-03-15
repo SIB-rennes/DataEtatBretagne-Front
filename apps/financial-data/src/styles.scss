@@ -20,6 +20,17 @@ html, body {
   --mdc-typography-body1-font-size : 14px
 }
 
+.test-logo img{
+  max-width: 100%; /* définir la largeur maximale à 100% */
+  height: auto;
+  // display: flex; /* afficher l'élément comme une boîte flexible */
+  // justify-content: center; /* centrer l'élément horizontalement */
+  // background-image: url('assets/img/BudgetEtat.svg');
+  // background-repeat: no-repeat;
+  // background-size: contain;
+  // background-position: center;
+}
+
 .hidden {
   display: none !important;
 }

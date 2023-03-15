@@ -1,4 +1,5 @@
-<lib-header [ngClass]="{'hidden': grid_fullscreen }" [title]="'France Relance en Bretagne'"></lib-header>
+<lib-header [ngClass]="{'hidden': grid_fullscreen }" [title]="'France Relance en Bretagne'"
+  [logo]="'FranceRelance.svg'"></lib-header>
 
 <div *ngIf="progressBarVisible === true">
   <mat-progress-bar mode="query"></mat-progress-bar>
@@ -6,4 +7,5 @@
 
 <router-outlet class="page-content-outlet"></router-outlet>
 
-<lib-footer *ngIf="isAuthenticated" [ngClass]="{'hidden': grid_fullscreen }" [contact]="contact"></lib-footer>
+<lib-footer *ngIf="isAuthenticated" [ngClass]="{'hidden': grid_fullscreen }" [contact]="contact"
+  [logo]="'FranceRelance.svg'"></lib-footer>
