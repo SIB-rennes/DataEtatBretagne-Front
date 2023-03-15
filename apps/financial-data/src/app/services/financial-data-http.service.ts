@@ -175,7 +175,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
     if (year && year.length > 0) {
       params += `~and(`;
       year.forEach((value) => {
-        params += `~or(DateModificationEj,like,${value})`;
+        params += `~or(Annee,eq,${value})`;
       });
       params += `)`;
     }
