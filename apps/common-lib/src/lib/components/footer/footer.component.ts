@@ -8,4 +8,7 @@ import { Component, Input, Output } from '@angular/core';
 export class FooterComponent {
   @Input()
   contact: string | undefined;
+
+  @Input()
+  logo: string = 'Infradonnee.svg';
 }
