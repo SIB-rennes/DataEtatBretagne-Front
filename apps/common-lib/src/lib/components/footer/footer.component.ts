@@ -10,5 +10,5 @@ export class FooterComponent {
   contact: string | undefined;
 
   @Input()
-  logo: string = 'DataEtat.svg';
+  logo: string = 'Infradonnee.svg';
 }
