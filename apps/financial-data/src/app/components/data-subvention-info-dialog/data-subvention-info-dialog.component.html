@@ -13,7 +13,7 @@
         </ng-container>
     </ng-container>
 
-    <h4>Demande de subventions associée</h4>
+    <h4>Demande de subvention associée</h4>
 
     <ng-container *ngIf="isLoading || isError; else subventionTemplate">
         <mat-spinner></mat-spinner>
@@ -43,7 +43,7 @@
         </table>
     </ng-template>
 
-    <h4>Président de l'association {{data.row['nom_beneficiaire']}}</h4>
+    <h4>Contact de l'établissement {{data.row['nom_beneficiaire']}}</h4>
 
     <ng-container *ngIf="isLoading || isError; else presidentTemplate">
         <mat-spinner></mat-spinner>
@@ -52,7 +52,7 @@
     <ng-template #presidentTemplate>
 
         <ng-container *ngIf="!president">
-            Aucune information sur le président de l'association.
+            Aucune information sur le contact de l'établissement.
         </ng-container>
 
         <table *ngIf="president" class="fr-table">
