@@ -107,6 +107,10 @@ export class DataSubventionInfoDialogComponent {
     return InformationsSubventionPropPP[prop] || InformationPresidentPP[prop] || prop;
   }
 
+  public get actions_proposees() {
+    return this.subvention?.actions_proposees;
+  }
+
   public get hasPlusDinfo() {
 
     if (!this.subvention?.actions_proposees)
