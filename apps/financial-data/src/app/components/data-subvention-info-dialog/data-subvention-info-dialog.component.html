@@ -1,5 +1,18 @@
 <div mat-dialog-content>
 
+    <h3>Descriptif du projet</h3>
+
+    <ng-container *ngIf="!isLoading && !isError">
+        <ng-container *ngIf="hasPlusDinfo">
+            <ng-container *ngFor="let action of actions_proposees">
+
+                <h4>{{ action['intitule'] }}</h4>
+                <div>{{ action['objectifs'] }}</div>
+
+            </ng-container>
+        </ng-container>
+    </ng-container>
+
     <h4>Demande de subventions associée</h4>
 
     <ng-container *ngIf="isLoading || isError; else subventionTemplate">
@@ -18,26 +31,13 @@
                     <th *ngFor="let col of subvention_props" scope="col">
                         {{ pretty(col) }}
                     </th>
-
-                    <th>
-                        Plus d'informations
-                    </th>
-
                 </tr>
             </thead>
             <tbody>
-
                 <tr>
                     <td *ngFor="let key of subvention_props">
                         {{ get_subvention_prop(key) }}
                     </td>
-
-                    <td>
-                        <button [disabled]="!hasPlusDinfo" class="fr-icon-info-fill" (click)="onPlusDinfoClic()">
-                            Voir
-                        </button>
-                    </td>
-
                 </tr>
             </tbody>
         </table>
