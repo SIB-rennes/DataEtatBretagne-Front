@@ -13,6 +13,7 @@ import { DatePipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
 import { PreferenceUsersModule } from 'apps/preference-users/src/lib/preference-users.module';
 import { API_PREFERENCE_PATH } from 'apps/preference-users/src/public-api';
 import { SettingsService } from '../environments/settings.service';
@@ -31,6 +32,19 @@ import {
 import { ManagementModule } from 'apps/management/src/public-api';
 import { API_MANAGEMENT_PATH } from 'apps/management/src/lib/services/users-http.service';
 import { GroupingTableModule } from 'apps/grouping-table/src/public-api';
+import { DataSubventionInfoDialogComponent } from './components/data-subvention-info-dialog/data-subvention-info-dialog.component';
+
+import { dsApiModule, dsConfiguration, dsConfigurationParameters } from 'apps/clients/ds-client';
+import { DataSubventionObjectifsDialogComponent } from './components/data-subvention-objectifs-dialog/data-subvention-objectifs-dialog.component';
+
+export function apiConfigFactory (settingsService: SettingsService) : dsConfiguration {
+  const params: dsConfigurationParameters = {
+    withCredentials: false,
+    basePath: settingsService.apiDataSubventions,
+  };
+
+  return new dsConfiguration(params);
+}
 
 registerLocaleData(localeFr);
 
@@ -40,6 +54,8 @@ registerLocaleData(localeFr);
     HomeComponent,
     PreferenceComponent,
     SearchDataComponent,
+    DataSubventionInfoDialogComponent,
+    DataSubventionObjectifsDialogComponent,
   ],
   providers: [
     {
@@ -90,6 +106,12 @@ registerLocaleData(localeFr);
       },
       deps: [SETTINGS],
     },
+    {
+      provide: dsConfiguration,
+      useFactory: apiConfigFactory,
+      deps: [SETTINGS],
+      multi: false,
+    },
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -103,9 +125,11 @@ registerLocaleData(localeFr);
     GroupingTableModule,
     MatDialogModule,
     MatButtonModule,
+    MatProgressSpinnerModule,
     PreferenceUsersModule,
     CommonLibModule,
     ManagementModule,
+    dsApiModule,
   ],
 })
 export class AppModule {}

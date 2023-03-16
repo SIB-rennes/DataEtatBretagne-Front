@@ -33,7 +33,8 @@ export class CommonHttpInterceptor implements HttpInterceptor {
         },
         error: (_error: HttpErrorResponse) => {
           this.loader.endLoader();
-          this.alertService.openAlertError('Une erreur est survenue');
+          if (_error?.status >= 500)
+            this.alertService.openAlertError('Une erreur est survenue');
         },
       })
     );

@@ -8,6 +8,7 @@
     "financial": "<url api financial>",
     "magagement": "<url api management>",
     "geo": "url api geo",
-    "referentiel": "url api referentiel"
+    "referentiel": "url api referentiel",
+    "data_subventions": "url api data_subventions"
   }
 }

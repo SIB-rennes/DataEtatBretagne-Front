@@ -17,9 +17,11 @@ import {
   AggregatorFns,
   ColumnsMetaData,
   GroupingColumn,
+  RowData,
   TableData,
 } from 'apps/grouping-table/src/lib/components/grouping-table/group-utils';
 import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
+import { DataSubventionInfoDialogComponent } from '../../components/data-subvention-info-dialog/data-subvention-info-dialog.component';
 
 @Component({
   selector: 'financial-home',
@@ -128,10 +130,10 @@ export class HomeComponent implements OnInit {
           row[col.name] !== null ? row[col.name] : 'Non renseigné',
       },
       {
-        name: 'DateModificationEj',
-        label: "Date d'actualisation",
-        renderFn: (row, col) =>
-          row[col.name] ? dateFormat(row[col.name]) : row[col.name],
+        name: 'Annee',
+        label: 'Année',
+        // renderFn: (row, col) =>
+        //   row[col.name] ? dateFormat(row[col.name]) : row[col.name],
         columnStyle: {
           'min-width': '18ex',
           'flex-grow': '0',
@@ -194,6 +196,13 @@ export class HomeComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) this.newFilter = undefined;
+    });
+  }
+
+  onRowClick(row: RowData) {
+    this.dialog.open(DataSubventionInfoDialogComponent, {
+      width: '100%',
+      data: { row },
     });
   }
 }
