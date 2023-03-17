@@ -170,6 +170,8 @@ docker-build-france-relance-tags:
 
 deploy-integ-financial-tag:
   extends: .deploy-integ
+  needs:
+    - job: docker-build-financial-tags
   only:
     - tags
   variables:
@@ -195,6 +197,8 @@ deploy-integ-financial-snapshot:
 
 deploy-integ-francerelance-tag:
   extends: .deploy-integ
+  needs:
+    - job: docker-build-france-relance-tags
   only:
     - tags
   variables:
