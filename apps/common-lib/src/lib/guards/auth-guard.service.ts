@@ -2,16 +2,20 @@ import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import {
   ActivatedRouteSnapshot,
+  CanLoad,
+  Route,
   Router,
   RouterStateSnapshot,
+  UrlSegment,
 } from '@angular/router';
 import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
 import { SessionService } from 'apps/common-lib/src/public-api';
+import { F } from '@angular/cdk/keycodes';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard extends KeycloakAuthGuard {
+export class AuthGuard extends KeycloakAuthGuard implements CanLoad {
   constructor(
     protected override readonly router: Router,
     protected readonly keycloak: KeycloakService,
@@ -19,6 +23,15 @@ export class AuthGuard extends KeycloakAuthGuard {
     protected sessionService: SessionService
   ) {
     super(router, keycloak);
+  }
+
+  canLoad(route: Route, _segments: UrlSegment[]) {
+    const canLoad = this._checkRoles(route);
+
+    if (!canLoad) {
+      this.router.navigate(['']);
+    }
+    return canLoad;
   }
 
   public async isAccessAllowed(
@@ -47,13 +60,22 @@ export class AuthGuard extends KeycloakAuthGuard {
       return this.authenticated;
     }
 
-    // Allow the user to proceed if all the required roles are present.
-
-    if (!requiredRoles.every((role) => this.roles.includes(role))) {
+    // Allow the user to proceed if one role is present
+    if (!this._checkRoles(route)) {
       this.router.navigate(['']);
       return false;
     }
-
     return this.authenticated;
+  }
+
+  private _checkRoles(route: ActivatedRouteSnapshot | Route): boolean {
+    if (route.data) {
+      if (!this.roles) return false;
+
+      const requiredRoles = route.data['roles'] as string[];
+      return requiredRoles.some((role) => this.roles.includes(role));
+    }
+
+    return true;
   }
 }
