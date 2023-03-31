@@ -4,7 +4,7 @@ import { Profil } from 'apps/common-lib/src/lib/models/profil.enum.model';
 import { AuthGuard } from 'apps/common-lib/src/public-api';
 import { ManagementUserComponent } from 'apps/management/src/lib/components/management-user/management-user.component';
 import { UsersResolver } from '../../resolvers/management/users.resolver';
-import { AdministrationComponent } from './administration.component';
+import { UploadFinancialComponent } from './upload-financial.component';
 
 const routes: Routes = [
   {
@@ -17,16 +17,14 @@ const routes: Routes = [
     resolve: {
       usersPagination: UsersResolver,
     },
-    runGuardsAndResolvers: 'always',
   },
   {
-    path: 'loading',
-    component: AdministrationComponent,
+    path: 'upload',
+    component: UploadFinancialComponent,
     canActivate: [AuthGuard],
     data: {
       roles: [Profil.ADMIN, Profil.COMPTABLE],
     },
-    runGuardsAndResolvers: 'always',
   },
 ];
 

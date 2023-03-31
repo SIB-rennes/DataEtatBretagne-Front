@@ -45,8 +45,6 @@ export class SessionService {
     if (this._userInfo === null) return false;
 
     const roles = profiles.map((p) => p.toString());
-    console.log(roles);
-    console.log(this._userInfo.roles);
     const isIncluded = this._userInfo.roles.some((element) =>
       roles.includes(element)
     );

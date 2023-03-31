@@ -182,8 +182,19 @@ export class FinancialDataHttpService extends NocodbHttpService {
     return params;
   }
 
-  public loadFileChorus(): void {
+  public loadFileChorus(
+    file: any,
+    annee: string,
+    code_region = 53
+  ): Observable<any> {
     const apiData = this.settings.apiFinancialata;
+
+    const formData = new FormData();
+    formData.append('fichier', file);
+    formData.append('annee', annee);
+    formData.append('code_region', annee);
+
+    return this.http.post(`${apiData}/chorus/import/ae`, formData);
   }
 
   public getLastDateUpdateData(): void {

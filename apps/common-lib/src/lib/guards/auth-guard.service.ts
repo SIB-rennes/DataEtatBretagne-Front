@@ -10,7 +10,6 @@ import {
 } from '@angular/router';
 import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
 import { SessionService } from 'apps/common-lib/src/public-api';
-import { F } from '@angular/cdk/keycodes';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +25,8 @@ export class AuthGuard extends KeycloakAuthGuard implements CanLoad {
   }
 
   canLoad(route: Route, _segments: UrlSegment[]) {
+    if (!this.roles) return true;
+
     const canLoad = this._checkRoles(route);
 
     if (!canLoad) {
