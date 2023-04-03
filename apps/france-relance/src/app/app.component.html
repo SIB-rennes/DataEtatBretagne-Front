@@ -1,5 +1,11 @@
 <lib-header [ngClass]="{'hidden': grid_fullscreen }" [title]="'France Relance en Bretagne'"
-  [logo]="'FranceRelance.svg'"></lib-header>
+  [logo]="'FranceRelance.svg'">
+  <li administration *ngIf="displayAdmin">
+    <button mat-icon-button routerLink='management' matTooltip="Administration" class="fr-btn" id="administration">
+      <mat-icon aria-hidden="false" aria-label="Administration" fontIcon="settings"></mat-icon>
+    </button>
+  </li>
+</lib-header>
 
 <div *ngIf="progressBarVisible === true">
   <mat-progress-bar mode="query"></mat-progress-bar>

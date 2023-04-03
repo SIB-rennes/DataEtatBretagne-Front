@@ -3,7 +3,8 @@ import { ISettingsService } from 'apps/common-lib/src/lib/environments/interface
 import { IApi, Settings, Keycloak } from 'apps/common-lib/src/public-api';
 
 class Api implements IApi {
-  financial = '';
+  financial_data = '';
+  nocodb_proxy = '';
   management = '';
   geo = '';
   referentiel = '';
@@ -43,8 +44,12 @@ export class SettingsService implements ISettingsService {
     return (this.settings.apis as Api).data_subventions;
   }
 
-  public get apiFinancial(): string {
-    return (this.settings.apis as Api).financial;
+  public get apiNocodb(): string {
+    return (this.settings.apis as Api).nocodb_proxy;
+  }
+
+  public get apiFinancialata(): string {
+    return (this.settings.apis as Api).financial_data;
   }
 
   public get apiManagement(): string {

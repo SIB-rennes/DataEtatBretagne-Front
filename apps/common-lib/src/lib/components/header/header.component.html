@@ -40,13 +40,8 @@
                 </mat-menu>
               </li>
 
-
-              <li *ngIf="session.isAdmin()">
-                <button mat-icon-button routerLink="/management" matTooltip="Administration" class="fr-btn"
-                  id="administration">
-                  <mat-icon aria-hidden="false" aria-label="Administration" fontIcon="settings"></mat-icon>
-                </button>
-              </li>
+              <!-- projection pour l'administration -->
+              <ng-content select="[administration]"></ng-content>
 
               <li>
                 <button mat-icon-button (click)="logout()" matTooltip="Se déconnecter" class="fr-btn">

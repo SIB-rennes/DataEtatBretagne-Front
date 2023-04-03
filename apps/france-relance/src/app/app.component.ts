@@ -13,6 +13,8 @@ export class AppComponent implements OnInit {
   public progressBarVisible: boolean = false;
   public isAuthenticated: boolean = false;
 
+  public displayAdmin = false;
+
   get grid_fullscreen() {
     return this._gridFullscreen.fullscreen;
   }
@@ -31,6 +33,7 @@ export class AppComponent implements OnInit {
 
     this.sessionService.getUser().subscribe((user) => {
       this.isAuthenticated = user !== null;
+      this.displayAdmin = this.sessionService.isAdmin();
     });
   }
 

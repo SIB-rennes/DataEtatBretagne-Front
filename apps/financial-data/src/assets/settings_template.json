@@ -5,10 +5,12 @@
     "clientId": "client"
   },
   "apis": {
-    "financial": "<url api financial>",
+    "financial_data": "<url api financial pour import>",
+    "nocodb_proxy": "<url api proxy>",
     "magagement": "<url api management>",
     "geo": "url api geo",
     "referentiel": "url api referentiel",
     "data_subventions": "url api data_subventions"
-  }
+  },
+  "contact": "http://contact.fr"
 }
