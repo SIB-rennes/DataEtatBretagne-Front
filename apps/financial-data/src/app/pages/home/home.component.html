@@ -14,6 +14,11 @@
       </ng-container>
     </div>
   </mat-card-content>
+
+  <div class="last-import" *ngIf="lastImportDate">
+    <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="info"></mat-icon>
+    <span>Le dernier chargement des données financières date du {{lastImportDate}} </span>
+  </div>
 </mat-card>
 
 <ng-template #groupingTable>
@@ -38,12 +43,8 @@
       </button>
     </mat-toolbar>
 
-    <lib-grouping-table class="h-100" 
-      [tableData]="tableData" 
-      [columnsMetaData]="columnsMetaData"
-      [groupingColumns]="groupingColumns"
-      (rowClick)="onRowClick($event)"
-    ></lib-grouping-table>
+    <lib-grouping-table class="h-100" [tableData]="tableData" [columnsMetaData]="columnsMetaData"
+      [groupingColumns]="groupingColumns" (rowClick)="onRowClick($event)"></lib-grouping-table>
 
   </ng-container>
 </ng-template>

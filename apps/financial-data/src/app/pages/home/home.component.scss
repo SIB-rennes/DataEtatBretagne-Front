@@ -35,3 +35,19 @@ grid-buttons {
   display: flex;
   justify-content: center;
 }
+
+
+.last-import {
+  display: flex;
+  justify-content: flex-start;
+  align-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+
+  margin: auto;
+
+  color: var(--text-mention-grey);
+  font-size: .75rem;
+  line-height: 1.25rem;
+  font-style: italic;
+}
