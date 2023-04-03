@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { FinancialDataModel } from "@models/financial-data.models";
 import { FinancialDataHttpService } from "@services/financial-data-http.service"
-import { ExternalAPIsService, InfoApiEntreprise, ModelError, RepresentantLegal, Subvention } from "apps/clients/apis-externes";
+import { ExternalAPIsService, InfoApiEntreprise, InfoApiSubvention, ModelError, RepresentantLegal, Subvention } from "apps/clients/apis-externes";
 import { forkJoin, Observable } from "rxjs";
 import { catchError, map, mergeMap, shareReplay } from 'rxjs/operators';
 import { _path_full } from "./routes";
@@ -63,8 +63,7 @@ function fromInfoApiEntreprise(info: InfoApiEntreprise): EntrepriseFull {
 export class InformationSupplementairesViewService {
 
   private _ligne_chorus$: Observable<FinancialDataModel | undefined> | undefined
-  private _api_subvention_subvention$: Observable<Subvention | null> | undefined
-  private _api_subvention_representants_legaux: Observable<RepresentantLegal[]> | undefined;
+  private _api_subvention$: Observable<InfoApiSubvention | undefined> | undefined;
   private _api_entreprise_info$: Observable<InfoApiEntreprise> | undefined;
 
   constructor(
@@ -138,12 +137,12 @@ export class InformationSupplementairesViewService {
       subvention: this.api_subvention_subvention$,
       contact: this.api_subvention_president$,
     })
-    .pipe(
-      catchError(err => {
-        this.api_subvention_full_error = err;
-        throw err
-      })
-    );
+      .pipe(
+        catchError(err => {
+          this.api_subvention_full_error = err;
+          throw err
+        })
+      );
     return full;
   }
 
@@ -168,24 +167,6 @@ export class InformationSupplementairesViewService {
     return president;
   }
 
-  private get api_subvention_representants_legaux$() {
-    if (this._api_subvention_representants_legaux == undefined) {
-      this._api_subvention_representants_legaux = this.ligne_chorus$
-        .pipe(
-          mergeMap((ligne) => {
-            let siret = ligne?.code_siret;
-            let subventionInfo = this.ae.getInfoSubventionCtrl(siret!)
-              .pipe(
-                map(subventionInfo => subventionInfo.contacts)
-              )
-            return subventionInfo;
-          })
-        )
-    }
-
-    return this._api_subvention_representants_legaux;
-  }
-
   private get api_entreprise_info$() {
     if (this._api_entreprise_info$ == undefined) {
 
@@ -204,30 +185,53 @@ export class InformationSupplementairesViewService {
   }
 
   private get api_subvention_subvention$() {
-    if (this._api_subvention_subvention$ == undefined) {
-      this._api_subvention_subvention$ = this.ligne_chorus$
-        .pipe(
-          mergeMap((ligne) => {
-            let siret = ligne?.code_siret;
-            let ej = ligne?.NEj;
 
-            return this.ae.getInfoSubventionCtrl(siret!)
-              .pipe(
-                map(subventionInfo => {
-                  let filtered = subventionInfo.subventions.filter(subvention => subvention?.ej === ej);
-                  if (filtered.length >= 1) {
-                    let subvention = filtered[0];
-                    return subvention;
-                  }
-                  else
-                    return null;
-                })
-              )
-          }),
+    return forkJoin({
+      ligne_chorus: this.ligne_chorus$,
+      subvention: this.api_subvention$,
+    })
+      .pipe(
+        map((joined) => {
+          let ej = joined.ligne_chorus?.NEj;
+
+          let filtered = joined.subvention?.subventions.filter(s => s?.ej === ej) || []
+          if (filtered.length >= 1) {
+            let subvention = filtered[0];
+            return subvention;
+          }
+          else
+            return null;
+        })
+      );
+  }
+
+  private get api_subvention_representants_legaux$() {
+    return forkJoin({
+      ligne_chorus: this.ligne_chorus$,
+      subvention: this.api_subvention$,
+    })
+      .pipe(
+        map((joined) => {
+          return joined.subvention?.contacts || []
+        })
+      )
+  }
+
+  private get api_subvention$() {
+
+    if (this._api_subvention$ == undefined) {
+      this._api_subvention$ = this.ligne_chorus$
+        .pipe(
+          mergeMap(
+            (ligne) => {
+              let siret = ligne?.code_siret;
+              return this.ae.getInfoSubventionCtrl(siret!)
+            }
+          ),
           shareReplay(1),
         )
     }
-    return this._api_subvention_subvention$
+    return this._api_subvention$;
   }
 
   private get ligne_chorus$() {
