@@ -132,14 +132,14 @@
 </ng-template>
 
 <ng-template #loading_entreprise_light>
-    <financial-informations-supplementaires-chargement-ou-erreur [erreur]="vmService.api_entreprise_light_error">
+    <financial-informations-supplementaires-chargement-ou-erreur [erreur]="vService.api_entreprise_light_error">
         <span class="message-erreur"> Une erreur est survenue lors du chargement des informations de l'etablissement.
         </span>
     </financial-informations-supplementaires-chargement-ou-erreur>
 </ng-template>
 
 <ng-template #loading_subvention_light>
-    <financial-informations-supplementaires-chargement-ou-erreur [erreur]="vmService.api_subvention_light_error">
+    <financial-informations-supplementaires-chargement-ou-erreur [erreur]="vService.api_subvention_light_error">
         <span class="message-erreur">Une erreur est survenue lors du chargement des informations de subvention.</span>
     </financial-informations-supplementaires-chargement-ou-erreur>
 </ng-template>

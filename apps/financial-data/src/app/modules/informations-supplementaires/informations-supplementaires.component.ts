@@ -65,7 +65,7 @@ export class InformationsSupplementairesComponent implements OnInit {
     return Boolean(this.ej) && Boolean(this.poste_ej);
   }
 
-  get vmService() {
+  get vService() {
     return this.service.viewService;
   }
 
@@ -74,8 +74,8 @@ export class InformationsSupplementairesComponent implements OnInit {
       return
 
     this.service.setupViewModelService(this.ej, this.poste_ej);
-    this.api_entreprise_light$ = this.vmService.api_entreprise_light$()
-    this.api_subvention_light$ = this.vmService.api_subvention_light$()
+    this.api_entreprise_light$ = this.vService.api_entreprise_light$()
+    this.api_subvention_light$ = this.vService.api_subvention_light$()
   }
 
   _init_from_resolver_model(data: InformationsSupplementairesResolverModel) {

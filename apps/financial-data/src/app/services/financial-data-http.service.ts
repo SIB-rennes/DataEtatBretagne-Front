@@ -75,7 +75,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
 
     let apiFinancial = this.settings.apiNocodb;
 
-    let params = `&limit=1&where=(Nej,eq,${ej})~and(NPosteEj,eq,${poste_ej})`
+    let params = `&limit=1&where=(NEj,eq,${ej})~and(NPosteEj,eq,${poste_ej})`
 
     let answer$ = this.mapNocoDbReponse(
       this.http.get<NocoDbResponse<FinancialDataModel>>(

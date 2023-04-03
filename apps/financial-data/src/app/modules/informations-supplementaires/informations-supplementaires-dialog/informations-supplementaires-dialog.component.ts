@@ -27,7 +27,7 @@ export class InformationsSupplementairesDialogComponent {
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: InformationsSupplementairesDialogData) {
 
-    this.ej = data.row['Nej']
+    this.ej = data.row['NEj']
     this.poste_ej = parseInt(data.row['NPosteEj'])
   }
 }

@@ -209,7 +209,7 @@ export class InformationSupplementairesViewService {
         .pipe(
           mergeMap((ligne) => {
             let siret = ligne?.code_siret;
-            let ej = ligne?.Nej;
+            let ej = ligne?.NEj;
 
             return this.ae.getInfoSubventionCtrl(siret!)
               .pipe(
