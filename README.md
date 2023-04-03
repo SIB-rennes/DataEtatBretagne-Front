@@ -50,8 +50,10 @@ Le dossier [apps/clients](./apps/clients/) contient des clients d'api, ces derni
 
  - url api: [https://api.nocode.csm.ovh/apis_externes/swagger.json](https://api.nocode.csm.ovh/apis_externes/swagger.json)
  - Commande de génération:
+
+Depuis la racine du projet: 
 ```
-docker run --rm -v (pwd)"/apps/clients:/local" openapitools/openapi-generator-cli generate \
+docker run --rm -v "$(pwd)/apps/clients:/local" openapitools/openapi-generator-cli generate \
               -i "https://api.nocode.csm.ovh/apis_externes/swagger.json" \
               -g typescript-angular \
               -o /local/apis-externes \
