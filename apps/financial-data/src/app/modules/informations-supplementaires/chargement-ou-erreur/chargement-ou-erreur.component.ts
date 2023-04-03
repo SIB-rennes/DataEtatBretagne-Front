@@ -12,4 +12,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 export class ChargementOuErreurComponent {
   @Input() erreur: ModelError | null = null
+
+  @Input() nom_service_distant: string = 'Inconnu';
 }

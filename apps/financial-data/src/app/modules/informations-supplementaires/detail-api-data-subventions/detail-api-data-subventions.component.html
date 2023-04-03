@@ -7,11 +7,10 @@
 </ng-container>
 
 <ng-template #chargement>
-    <financial-informations-supplementaires-chargement-ou-erreur [erreur]="vService.api_subvention_full_error">
-        <span class="message-erreur">
-            Une erreur est survenue lors du chargement des informations de la demande de subvention.
-        </span>
-    </financial-informations-supplementaires-chargement-ou-erreur>
+    <financial-informations-supplementaires-chargement-ou-erreur 
+        nom_service_distant="API subvention"
+        [erreur]="vService.api_subvention_full_error">
+        </financial-informations-supplementaires-chargement-ou-erreur>
 </ng-template>
 
 <ng-template #contenu>
