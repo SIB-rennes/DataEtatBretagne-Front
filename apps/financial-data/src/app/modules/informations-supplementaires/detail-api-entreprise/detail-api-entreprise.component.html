@@ -46,8 +46,9 @@
                 <strong>Libellé NAF :</strong> {{info.quick.activite_principale.libelle | ouNonRenseigne}} <br>
                 <strong>Code NAF :</strong> {{info.quick.activite_principale.code | ouNonRenseigne}} <br>
 
-                <strong>Date de création :</strong> {{info.donnees_etablissement.date_creation * 1000 | date: 'dd MMMM
-                yyyy' | ouNonRenseigne}} <br>
+                <strong>Date de création :</strong>
+                {{info.donnees_etablissement.date_creation * 1000 | date: 'dd MMMM yyyy' | ouNonRenseigne}}
+                <br>
 
                 <strong>Effectif de l'organisation (INSEE) :</strong> {{info.quick.tranche_effectif.intitule |
                 ouNonRenseigne}} <br>
@@ -61,7 +62,9 @@
                     {{ligne}}<br>
                 </ng-container>
                 <br>
-                <strong>Capital social:</strong><br>
+                <!-- XXX: pas les droits de consultation avec notre compte API entreprise
+                A réactiver lorsqu'on les aura -->
+                <!-- <strong>Capital social:</strong><br>
                 <div class="ligne">
                     <div class="colonne">
                         <strong>Chiffre d'affaires : </strong>
@@ -74,7 +77,7 @@
                             ({{ca.data.date_fin_exercice | date: 'yyyy'}}) <br>
                         </ng-container>
                     </div>
-                </div>
+                </div> -->
 
                 <strong>ESS (Économie Sociale et Solidaire):</strong> {{label_ess}}<br>
                 <strong>Certification RGE:</strong> {{label_rge}}<br>
