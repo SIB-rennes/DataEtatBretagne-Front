@@ -6,8 +6,10 @@ import { Observable } from 'rxjs';
 import { ChargementOuErreurComponent } from './chargement-ou-erreur/chargement-ou-erreur.component';
 import { DetailApiDataSubventionsComponent } from './detail-api-data-subventions/detail-api-data-subventions.component';
 import { DetailApiEntrepriseComponent } from './detail-api-entreprise/detail-api-entreprise.component';
-import { EtablissementLight, InformationsSupplementairesService, SubventionLight } from './informations-supplementaires.service';
-import { OuNonRenseignePipe } from '../../../../../common-lib/src/lib/pipes/ou-non-renseigne.pipe';
+import { InformationsSupplementairesService } from './informations-supplementaires.service';
+import { OuNonRenseignePipe } from 'apps/common-lib/src/public-api';
+import { EtablissementLight } from './models/EtablissementLight';
+import { SubventionLight } from './models/SubventionLight';
 
 export enum View {
   light = 'light',

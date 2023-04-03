@@ -5,48 +5,14 @@ import { ExternalAPIsService, InfoApiEntreprise, InfoApiSubvention, ModelError, 
 import { forkJoin, Observable } from "rxjs";
 import { catchError, map, mergeMap, shareReplay } from 'rxjs/operators';
 import { _path_full } from "./routes";
+import { SubventionFull } from "./models/SubventionFull";
+import { EntrepriseFull } from "./models/EntrepriseFull";
+import { PersonneMoraleAttributsCorrige } from "./models/correction-api-externes/PersonneMoraleAttributsCorrige";
+import { ActivitePrincipaleCorrige } from "./models/correction-api-externes/ActivitePrincipaleCorrige";
+import { TrancheEffectifCorrige } from "./models/correction-api-externes/TrancheEffectifCorrige";
+import { EtablissementLight } from "./models/EtablissementLight";
+import { SubventionLight } from "./models/SubventionLight";
 
-
-export interface EtablissementLight {
-  siret: string
-  nom: string
-}
-
-export interface SubventionLight {
-  objectifs: string | null
-}
-
-export interface SubventionFull {
-  subvention: Subvention | null,
-  contact: RepresentantLegal | null,
-}
-
-//
-// XXX: On redéfinit des types que l'API devrait fournir mais 
-// le code généré a des ratés
-//
-type PersonneMoraleAttributsCorrige = {
-  raison_sociale: string | null
-  sigle: string | null
-}
-type ActivitePrincipaleCorrige = {
-  code: string
-  nomenclature: string
-  libelle: string | null
-}
-type TrancheEffectifCorrige = {
-  code: string | null
-  intitule: string | null
-}
-
-export interface EntrepriseFull extends InfoApiEntreprise {
-  quick: {
-    personne_morale: PersonneMoraleAttributsCorrige
-    activite_principale: ActivitePrincipaleCorrige
-    tranche_effectif: TrancheEffectifCorrige
-    ess: boolean
-  }
-}
 
 function fromInfoApiEntreprise(info: InfoApiEntreprise): EntrepriseFull {
   return {

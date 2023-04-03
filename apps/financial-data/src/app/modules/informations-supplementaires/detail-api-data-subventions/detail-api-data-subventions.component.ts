@@ -1,7 +1,8 @@
 import { AsyncPipe, CurrencyPipe, NgIf, NgTemplateOutlet } from '@angular/common';
 import { Component } from '@angular/core';
 import { ChargementOuErreurComponent } from '../chargement-ou-erreur/chargement-ou-erreur.component';
-import { InformationsSupplementairesService, SubventionFull } from '../informations-supplementaires.service';
+import { InformationsSupplementairesService } from '../informations-supplementaires.service';
+import { SubventionFull } from "../models/SubventionFull";
 import { OuNonRenseignePipe } from 'apps/common-lib/src/public-api';
 
 @Component({
