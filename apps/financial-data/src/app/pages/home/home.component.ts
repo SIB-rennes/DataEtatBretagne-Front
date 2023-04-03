@@ -21,7 +21,7 @@ import {
   TableData,
 } from 'apps/grouping-table/src/lib/components/grouping-table/group-utils';
 import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
-import { DataSubventionInfoDialogComponent } from '../../components/data-subvention-info-dialog/data-subvention-info-dialog.component';
+import { InformationsSupplementairesDialogComponent } from '../../modules/informations-supplementaires/informations-supplementaires-dialog/informations-supplementaires-dialog.component';
 import { FinancialDataHttpService } from '@services/financial-data-http.service';
 
 @Component({
@@ -208,7 +208,7 @@ export class HomeComponent implements OnInit {
   }
 
   onRowClick(row: RowData) {
-    this.dialog.open(DataSubventionInfoDialogComponent, {
+    this.dialog.open(InformationsSupplementairesDialogComponent, {
       width: '100%',
       data: { row },
     });

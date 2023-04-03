@@ -32,18 +32,16 @@ import {
 import { ManagementModule } from 'apps/management/src/public-api';
 import { API_MANAGEMENT_PATH } from 'apps/management/src/lib/services/users-http.service';
 import { GroupingTableModule } from 'apps/grouping-table/src/public-api';
-import { DataSubventionInfoDialogComponent } from './components/data-subvention-info-dialog/data-subvention-info-dialog.component';
 
-import { dsApiModule, dsConfiguration, dsConfigurationParameters } from 'apps/clients/ds-client';
-import { DataSubventionObjectifsDialogComponent } from './components/data-subvention-objectifs-dialog/data-subvention-objectifs-dialog.component';
+import { aeApiModule, aeConfiguration, aeConfigurationParameters } from 'apps/clients/apis-externes';
 
-export function apiConfigFactory (settingsService: SettingsService) : dsConfiguration {
-  const params: dsConfigurationParameters = {
+export function apiConfigFactory (settingsService: SettingsService) : aeConfiguration {
+  const params: aeConfigurationParameters = {
     withCredentials: false,
-    basePath: settingsService.apiDataSubventions,
+    basePath: settingsService.apiExternes,
   };
 
-  return new dsConfiguration(params);
+  return new aeConfiguration(params);
 }
 
 registerLocaleData(localeFr);
@@ -54,8 +52,6 @@ registerLocaleData(localeFr);
     HomeComponent,
     PreferenceComponent,
     SearchDataComponent,
-    DataSubventionInfoDialogComponent,
-    DataSubventionObjectifsDialogComponent,
   ],
   providers: [
     {
@@ -107,7 +103,7 @@ registerLocaleData(localeFr);
       deps: [SETTINGS],
     },
     {
-      provide: dsConfiguration,
+      provide: aeConfiguration,
       useFactory: apiConfigFactory,
       deps: [SETTINGS],
       multi: false,
@@ -129,7 +125,7 @@ registerLocaleData(localeFr);
     PreferenceUsersModule,
     CommonLibModule,
     ManagementModule,
-    dsApiModule,
+    aeApiModule,
   ],
 })
 export class AppModule {}

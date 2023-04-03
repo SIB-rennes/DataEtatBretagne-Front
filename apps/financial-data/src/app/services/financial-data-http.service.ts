@@ -2,7 +2,8 @@ import { Injectable, Inject } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 import { BopModel } from '@models/bop.models';
-import { map, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { SettingsService } from '../../environments/settings.service';
 import { RefTheme } from '@models/theme.models';
 import { FinancialDataModel } from '@models/financial-data.models';
@@ -68,6 +69,23 @@ export class FinancialDataHttpService extends NocodbHttpService {
 
     if (is_number) return `where=(Code,like,${nomOuSiret}%)`;
     else return `where=(Denomination,like,${nomOuSiret})`;
+  }
+
+  public get(ej: string, poste_ej: string | number): Observable<FinancialDataModel|undefined> {
+
+    let apiFinancial = this.settings.apiNocodb;
+
+    let params = `&limit=1&where=(Nej,eq,${ej})~and(NPosteEj,eq,${poste_ej})`
+
+    let answer$ = this.mapNocoDbReponse(
+      this.http.get<NocoDbResponse<FinancialDataModel>>(
+        `${apiFinancial}/DataChorus/Chorus-front?${params}`
+      )
+    ).pipe(
+      map((lignes) => lignes[0])
+    );
+
+    return answer$;
   }
 
   /**

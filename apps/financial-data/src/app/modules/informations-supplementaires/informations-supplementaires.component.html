@@ -1,0 +1,145 @@
+<ng-container [ngSwitch]="view">
+    <ng-container *ngSwitchCase="'light'">
+
+        <ng-container *ngTemplateOutlet="titre; context:{ libelle: 'Informations supplémentaires' }"></ng-container>
+
+        <div>
+            <ng-container
+                *ngTemplateOutlet="entrepriseLight; context:{ info: api_entreprise_light$ | async }"></ng-container>
+            <hr>
+            <ng-container
+                *ngTemplateOutlet="subventionLight; context:{ info: api_subvention_light$ | async }"></ng-container>
+        </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'full_api_entreprise'">
+
+        <ng-container
+            *ngTemplateOutlet="titre; context:{ libelle: 'Informations supplémentaires sur l\'établissement' }"></ng-container>
+
+        <financial-informations-supplementaires-detail-entreprise></financial-informations-supplementaires-detail-entreprise>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'full_api_data_subventions'">
+
+        <ng-container
+            *ngTemplateOutlet="titre; context:{ libelle: 'Informations supplémentaires sur la subvention' }"></ng-container>
+
+        <financial-informations-supplementaires-detail-subventions></financial-informations-supplementaires-detail-subventions>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'full'">
+
+        <ng-container *ngTemplateOutlet="titre; context:{ libelle: '' }"></ng-container>
+
+        <div class="conteneur-full">
+            <div class="conteneur-section">
+                <ng-container
+                    *ngTemplateOutlet="titre; context:{ libelle: 'Informations supplémentaires sur l\'établissement' }"></ng-container>
+                <financial-informations-supplementaires-detail-entreprise></financial-informations-supplementaires-detail-entreprise>
+            </div>
+            <div class="conteneur-section">
+                <ng-container
+                    *ngTemplateOutlet="titre; context:{ libelle: 'Informations supplémentaires sur la subvention' }"></ng-container>
+                <financial-informations-supplementaires-detail-subventions></financial-informations-supplementaires-detail-subventions>
+            </div>
+        </div>
+    </ng-container>
+</ng-container>
+
+<ng-template #entrepriseLight let-info="info">
+    <ng-container *ngIf="info; else loading_entreprise_light">
+
+        <div class="ligne">
+            <div class="colonne" style="flex-grow: 2;">
+                <strong class="titre">Sur l'établissement</strong> <br>
+                <span>
+                    <strong> Siret: </strong>
+                    {{ info?.siret | ouNonRenseigne }}
+                </span> <br>
+                <span>
+                    <strong>Nom: </strong>
+                    {{ info?.nom | ouNonRenseigne }}
+                </span> <br>
+            </div>
+
+            <div class="colonne colonne-logo">
+                <span class="ligne">
+                    <i>Source: API entreprise</i>
+                </span>
+                <div class="ligne">
+                    <img class="logo-api-entreprise" src="assets/img/api-entreprise.custom.png" alt="Logo API entreprise">
+                </div>
+            </div>
+
+            <div class="colonne colonne-plus-info">
+                <button class="fr-btn" (click)="on_click_full_api_entreprise()">
+                    Information disponible
+                    <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </ng-container>
+</ng-template>
+
+<ng-template #subventionLight let-info="info">
+
+    <ng-container *ngIf="info; else loading_subvention_light">
+
+        <div class="ligne">
+
+            <div class="colonne" style="flex-grow: 2;">
+                <strong class="titre">Sur la subvention associative</strong> <br>
+                <span>
+                    <strong>Objectif de la subvention:</strong>
+                    {{info?.objectifs | ouNonRenseigne}}
+                </span> <br>
+            </div>
+
+            <div class="colonne colonne-logo">
+                <span class="ligne">
+                    <i>Source: Data Subvention</i>
+                </span>
+                <div class="ligne">
+                    <img class="logo-data-subvention" src="assets/img/data-subvention.custom.png" alt="Logo data subvention">
+                </div>
+            </div>
+
+            <div class="colonne colonne-plus-info">
+                <button class="fr-btn" (click)="on_click_full_api_data_subventions()">
+                    Information disponible
+                    <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
+                </button>
+            </div>
+
+        </div>
+
+    </ng-container>
+</ng-template>
+
+<ng-template #titre let-libelle="libelle">
+    <div class="ligne">
+        <div class="colonne">
+            <h2>{{libelle}}</h2>
+        </div>
+        <div class="colonne" style="flex-grow: 3;"></div>
+        <div class="colonne" *ngIf="view !== 'full'">
+            <button (click)="open_in_newtab()"
+                class="newtab fr-btn fr-btn--tertiary-no-outline fr-icon-external-link-line">
+            </button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #loading_entreprise_light>
+    <financial-informations-supplementaires-chargement-ou-erreur [erreur]="vmService.api_entreprise_light_error">
+        <span class="message-erreur"> Une erreur est survenue lors du chargement des informations de l'etablissement.
+        </span>
+    </financial-informations-supplementaires-chargement-ou-erreur>
+</ng-template>
+
+<ng-template #loading_subvention_light>
+    <financial-informations-supplementaires-chargement-ou-erreur [erreur]="vmService.api_subvention_light_error">
+        <span class="message-erreur">Une erreur est survenue lors du chargement des informations de subvention.</span>
+    </financial-informations-supplementaires-chargement-ou-erreur>
+</ng-template>
