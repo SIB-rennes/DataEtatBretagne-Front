@@ -62,22 +62,6 @@
                     {{ligne}}<br>
                 </ng-container>
                 <br>
-                <!-- XXX: pas les droits de consultation avec notre compte API entreprise
-                A réactiver lorsqu'on les aura -->
-                <!-- <strong>Capital social:</strong><br>
-                <div class="ligne">
-                    <div class="colonne">
-                        <strong>Chiffre d'affaires : </strong>
-                        <span *ngIf="!has_chiffre_d_affaires">Non renseigné</span>
-                    </div>
-
-                    <div class="colonne" *ngIf="has_chiffre_d_affaires">
-                        <ng-container *ngFor="let ca of info.chiffre_d_affaires">
-                            {{ca.data.chiffre_affaires | currency:"EUR":"symbol":"1.0-0"}}
-                            ({{ca.data.date_fin_exercice | date: 'yyyy'}}) <br>
-                        </ng-container>
-                    </div>
-                </div> -->
 
                 <strong>ESS (Économie Sociale et Solidaire):</strong> {{label_ess}}<br>
                 <strong>Certification RGE:</strong> {{label_rge}}<br>
