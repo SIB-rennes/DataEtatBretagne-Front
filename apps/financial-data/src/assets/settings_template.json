@@ -10,7 +10,7 @@
     "magagement": "<url api management>",
     "geo": "url api geo",
     "referentiel": "url api referentiel",
-    "data_subventions": "url api data_subventions"
+    "apis_externes": "url api externes"
   },
   "contact": "http://contact.fr"
 }

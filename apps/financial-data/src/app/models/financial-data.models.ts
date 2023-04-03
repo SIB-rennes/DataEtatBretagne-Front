@@ -1,5 +1,5 @@
 export interface FinancialDataModel {
-  Nej: string;
+  NEj: string;
   NPosteEj: number;
 
   DateModificationEj: Date;

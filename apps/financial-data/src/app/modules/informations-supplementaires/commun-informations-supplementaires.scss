@@ -1,0 +1,18 @@
+.ligne {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.colonne {
+    margin: 1rem;
+    margin-top: 0px;
+    max-width: 50%;
+}
+
+.titre {
+    font-size: 1.2rem;
+}
+
+.logo-api-entreprise, .logo-api-subvention {
+    width: 150px;
+}

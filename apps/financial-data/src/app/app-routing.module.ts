@@ -7,6 +7,7 @@ import { AuthGuard } from 'apps/common-lib/src/public-api';
 import { HomeComponent } from './pages/home/home.component';
 import { PreferenceComponent } from './pages/preference/preference.component';
 import { FinancialDataResolver } from './resolvers/financial-data.resolver';
+import { router_template_path_full as info_supplementaires_path } from './modules/informations-supplementaires/routes';
 
 const routes: Routes = [
   {
@@ -17,6 +18,12 @@ const routes: Routes = [
     resolve: {
       financial: FinancialDataResolver,
     },
+  },
+  {
+    path: info_supplementaires_path(),
+    loadChildren: () => import('./modules/informations-supplementaires/informations-supplementaires.module')
+        .then(m => m.InformationsSupplementairesModule),
+    canActivate: [AuthGuard],
   },
   {
     path: 'preference',
@@ -50,4 +57,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
