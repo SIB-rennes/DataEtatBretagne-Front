@@ -12,6 +12,7 @@ import { ActivitePrincipaleCorrige } from "./models/correction-api-externes/Acti
 import { TrancheEffectifCorrige } from "./models/correction-api-externes/TrancheEffectifCorrige";
 import { EtablissementLight } from "./models/EtablissementLight";
 import { SubventionLight } from "./models/SubventionLight";
+import { HttpErrorResponse } from "@angular/common/http";
 
 
 function fromInfoApiEntreprise(info: InfoApiEntreprise): EntrepriseFull {
@@ -67,6 +68,18 @@ export class InformationSupplementairesViewService {
     return null;
   }
 
+  _extract_error(err: HttpErrorResponse) {
+
+    let defaultError: ModelError = {
+      code: 'UNKNOWN',
+      message: "Le service API externe répond mal."
+    }
+
+    let actual = err?.error || defaultError
+
+    return actual
+  }
+
   api_entreprise_light_error: ModelError | null = null;
   api_entreprise_light$(): Observable<EtablissementLight> {
     return this.ligne_chorus$
@@ -79,7 +92,7 @@ export class InformationSupplementairesViewService {
           }
         }),
         catchError(err => {
-          this.api_entreprise_light_error = err;
+          this.api_entreprise_light_error = this._extract_error(err);
           throw err;
         })
       )
@@ -91,7 +104,7 @@ export class InformationSupplementairesViewService {
       .pipe(
         map((subvention) => this._map_subvention_light(subvention)),
         catchError(err => {
-          this.api_subvention_light_error = err;
+          this.api_subvention_light_error = this._extract_error(err);
           throw err;
         })
       );
@@ -105,7 +118,7 @@ export class InformationSupplementairesViewService {
     })
       .pipe(
         catchError(err => {
-          this.api_subvention_full_error = err;
+          this.api_subvention_full_error = this._extract_error(err);
           throw err
         })
       );
@@ -118,7 +131,7 @@ export class InformationSupplementairesViewService {
       .pipe(
         map((info) => fromInfoApiEntreprise(info)),
         catchError(err => {
-          this.api_entreprise_full_error = err;
+          this.api_entreprise_full_error = this._extract_error(err);
           throw err;
         })
       )

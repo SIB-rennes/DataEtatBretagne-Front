@@ -19,10 +19,9 @@
 </ng-container>
 
 <ng-template #chargement>
-    <financial-informations-supplementaires-chargement-ou-erreur [erreur]="vService.api_entreprise_full_error">
-        <span class="message-erreur">
-            Une erreur est survenue lors du chargement des informations de l'établissement.
-        </span>
+    <financial-informations-supplementaires-chargement-ou-erreur 
+        nom_service_distant="API entreprise"
+        [erreur]="vService.api_entreprise_full_error">
     </financial-informations-supplementaires-chargement-ou-erreur>
 </ng-template>
 
