@@ -7,7 +7,7 @@ import { ChargementOuErreurComponent } from './chargement-ou-erreur/chargement-o
 import { DetailApiDataSubventionsComponent } from './detail-api-data-subventions/detail-api-data-subventions.component';
 import { DetailApiEntrepriseComponent } from './detail-api-entreprise/detail-api-entreprise.component';
 import { EtablissementLight, InformationsSupplementairesService, SubventionLight } from './informations-supplementaires.service';
-import { OuNonRenseignePipe } from './ou-non-renseigne.pipe';
+import { OuNonRenseignePipe } from '../../../../../common-lib/src/lib/pipes/ou-non-renseigne.pipe';
 
 export enum View {
   light = 'light',
