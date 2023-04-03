@@ -22,6 +22,7 @@ import {
 } from 'apps/grouping-table/src/lib/components/grouping-table/group-utils';
 import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
 import { DataSubventionInfoDialogComponent } from '../../components/data-subvention-info-dialog/data-subvention-info-dialog.component';
+import { FinancialDataHttpService } from '@services/financial-data-http.service';
 
 @Component({
   selector: 'financial-home',
@@ -46,6 +47,8 @@ export class HomeComponent implements OnInit {
    */
   preFilter: JSONObject | null;
 
+  lastImportDate: string | null = null;
+
   groupingColumns: GroupingColumn[] = [
     { columnName: 'nom_programme' },
     { columnName: 'type_etablissement' },
@@ -67,14 +70,13 @@ export class HomeComponent implements OnInit {
     private route: ActivatedRoute,
     private alertService: AlertService,
     private preferenceService: PreferenceUsersHttpService,
+    private financialService: FinancialDataHttpService,
     private _gridFullscreen: GridInFullscreenStateService
   ) {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR',
     });
-    const dateFormat = (dateStr: string) =>
-      dateStr ? this.datePipe.transform(dateStr, 'shortDate') : '';
 
     this.columnsMetaData = new ColumnsMetaData([
       { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
@@ -132,8 +134,6 @@ export class HomeComponent implements OnInit {
       {
         name: 'Annee',
         label: 'Année',
-        // renderFn: (row, col) =>
-        //   row[col.name] ? dateFormat(row[col.name]) : row[col.name],
         columnStyle: {
           'min-width': '18ex',
           'flex-grow': '0',
@@ -161,6 +161,14 @@ export class HomeComponent implements OnInit {
               `Application du filtre ${preference.name}`
             );
           });
+      }
+    });
+
+    const dateFormat = (dateStr: string) =>
+      dateStr ? this.datePipe.transform(dateStr, 'dd/MM/yyyy à hh:mm') : '';
+    this.financialService.getLastDateUpdateData().subscribe((response) => {
+      if (response.date) {
+        this.lastImportDate = dateFormat(response.date);
       }
     });
   }
