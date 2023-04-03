@@ -1,7 +1,7 @@
 import { HttpParameterCodec } from '@angular/common/http';
 import { Param } from './param';
 
-export interface dsConfigurationParameters {
+export interface aeConfigurationParameters {
     /**
      *  @deprecated Since 5.0. Use credentials instead
      */
@@ -34,7 +34,7 @@ export interface dsConfigurationParameters {
     credentials?: {[ key: string ]: string | (() => string | undefined)};
 }
 
-export class dsConfiguration {
+export class aeConfiguration {
     /**
      *  @deprecated Since 5.0. Use credentials instead
      */
@@ -66,7 +66,7 @@ export class dsConfiguration {
      */
     credentials: {[ key: string ]: string | (() => string | undefined)};
 
-    constructor(configurationParameters: dsConfigurationParameters = {}) {
+    constructor(configurationParameters: aeConfigurationParameters = {}) {
         this.apiKeys = configurationParameters.apiKeys;
         this.username = configurationParameters.username;
         this.password = configurationParameters.password;
@@ -101,7 +101,7 @@ export class dsConfiguration {
 
     /**
      * Select the correct content-type to use for a request.
-     * Uses {@link dsConfiguration#isJsonMime} to determine the correct content-type.
+     * Uses {@link aeConfiguration#isJsonMime} to determine the correct content-type.
      * If no content type is found return the first found type if the contentTypes is not empty
      * @param contentTypes - the array of content types that are available for selection
      * @returns the selected content-type or <code>undefined</code> if no selection could be made.
@@ -120,7 +120,7 @@ export class dsConfiguration {
 
     /**
      * Select the correct accept content-type to use for a request.
-     * Uses {@link dsConfiguration#isJsonMime} to determine the correct accept content-type.
+     * Uses {@link aeConfiguration#isJsonMime} to determine the correct accept content-type.
      * If no content type is found return the first found type if the contentTypes is not empty
      * @param accepts - the array of content types that are available for selection.
      * @returns the selected content-type or <code>undefined</code> if no selection could be made.

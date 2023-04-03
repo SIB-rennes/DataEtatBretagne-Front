@@ -48,12 +48,12 @@ Le dossier [apps/clients](./apps/clients/) contient des clients d'api, ces derni
 
 ## Data subventions
 
- - url api: [https://api.nocode.csm.ovh/data_subventions/swagger.json](https://api.nocode.csm.ovh/data_subventions/swagger.json)
+ - url api: [https://api.nocode.csm.ovh/apis_externes/swagger.json](https://api.nocode.csm.ovh/apis_externes/swagger.json)
  - Commande de génération:
 ```
-docker run --rm -v "<PRJ_FOLDER>/apps/clients:/local" openapitools/openapi-generator-cli generate \        
-  -i https://api.nocode.csm.ovh/data_subventions/swagger.json \
-  -g typescript-angular \
-  -o /local/ds-client \
-  --additional-properties npmName=ds-client,npmVersion=1.0.0,snapshot=false,ngVersion="15.0.1",apiModulePrefix=ds,configurationPrefix=ds
+docker run --rm -v (pwd)"/apps/clients:/local" openapitools/openapi-generator-cli generate \
+              -i "https://api.nocode.csm.ovh/apis_externes/swagger.json" \
+              -g typescript-angular \
+              -o /local/apis-externes \
+              --additional-properties npmName=ds-client,npmVersion=1.0.0,snapshot=false,ngVersion="15.0.1",apiModulePrefix=ae,configurationPrefix=ae
 ```

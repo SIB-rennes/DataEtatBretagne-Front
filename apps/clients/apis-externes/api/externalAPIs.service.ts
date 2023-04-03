@@ -19,27 +19,27 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { RepresentantsLegaux } from '../model/representantsLegaux';
+import { InfoApiEntreprise } from '../model/infoApiEntreprise';
 // @ts-ignore
-import { Subvention } from '../model/subvention';
+import { InfoApiSubvention } from '../model/infoApiSubvention';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
-import { dsConfiguration }                                     from '../configuration';
+import { aeConfiguration }                                     from '../configuration';
 
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class DataSubventionsService {
+export class ExternalAPIsService {
 
-    protected basePath = '/data_subventions';
+    protected basePath = '/apis_externes';
     public defaultHeaders = new HttpHeaders();
-    public configuration = new dsConfiguration();
+    public configuration = new aeConfiguration();
     public encoder: HttpParameterCodec;
 
-    constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string|string[], @Optional() configuration: dsConfiguration) {
+    constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string|string[], @Optional() configuration: aeConfiguration) {
         if (configuration) {
             this.configuration = configuration;
         }
@@ -98,12 +98,12 @@ export class DataSubventionsService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getRepresentantLegauxCtrl(siret: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<RepresentantsLegaux>;
-    public getRepresentantLegauxCtrl(siret: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<RepresentantsLegaux>>;
-    public getRepresentantLegauxCtrl(siret: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<RepresentantsLegaux>>;
-    public getRepresentantLegauxCtrl(siret: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public getInfoEntrepriseCtrl(siret: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<InfoApiEntreprise>;
+    public getInfoEntrepriseCtrl(siret: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<InfoApiEntreprise>>;
+    public getInfoEntrepriseCtrl(siret: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<InfoApiEntreprise>>;
+    public getInfoEntrepriseCtrl(siret: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (siret === null || siret === undefined) {
-            throw new Error('Required parameter siret was null or undefined when calling getRepresentantLegauxCtrl.');
+            throw new Error('Required parameter siret was null or undefined when calling getInfoEntrepriseCtrl.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -144,8 +144,8 @@ export class DataSubventionsService {
             }
         }
 
-        let localVarPath = `/representants_legaux/${this.configuration.encodeParam({name: "siret", value: siret, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<RepresentantsLegaux>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/info_entreprise/${this.configuration.encodeParam({name: "siret", value: siret, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<InfoApiEntreprise>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,
@@ -159,22 +159,15 @@ export class DataSubventionsService {
 
     /**
      * @param siret 
-     * @param ej Numéro d\&#39;ej
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getSubventionsCtrl(siret: string, ej?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Subvention>;
-    public getSubventionsCtrl(siret: string, ej?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Subvention>>;
-    public getSubventionsCtrl(siret: string, ej?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Subvention>>;
-    public getSubventionsCtrl(siret: string, ej?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public getInfoSubventionCtrl(siret: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<InfoApiSubvention>;
+    public getInfoSubventionCtrl(siret: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<InfoApiSubvention>>;
+    public getInfoSubventionCtrl(siret: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<InfoApiSubvention>>;
+    public getInfoSubventionCtrl(siret: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (siret === null || siret === undefined) {
-            throw new Error('Required parameter siret was null or undefined when calling getSubventionsCtrl.');
-        }
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (ej !== undefined && ej !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>ej, 'ej');
+            throw new Error('Required parameter siret was null or undefined when calling getInfoSubventionCtrl.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -215,11 +208,10 @@ export class DataSubventionsService {
             }
         }
 
-        let localVarPath = `/subventions/${this.configuration.encodeParam({name: "siret", value: siret, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
-        return this.httpClient.request<Subvention>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/info_subvention/${this.configuration.encodeParam({name: "siret", value: siret, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        return this.httpClient.request<InfoApiSubvention>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,

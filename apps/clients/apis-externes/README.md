@@ -54,12 +54,12 @@ In your Angular project:
 
 ```
 // without configuring providers
-import { dsApiModule } from 'ds-client';
+import { aeApiModule } from 'ds-client';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
     imports: [
-        dsApiModule,
+        aeApiModule,
         // make sure to import the HttpClientModule in the AppModule only,
         // see https://github.com/angular/angular/issues/20575
         HttpClientModule
@@ -73,17 +73,17 @@ export class AppModule {}
 
 ```
 // configuring providers
-import { dsApiModule, dsConfiguration, dsConfigurationParameters } from 'ds-client';
+import { aeApiModule, aeConfiguration, aeConfigurationParameters } from 'ds-client';
 
-export function apiConfigFactory (): dsConfiguration {
-  const params: dsConfigurationParameters = {
+export function apiConfigFactory (): aeConfiguration {
+  const params: aeConfigurationParameters = {
     // set configuration parameters here.
   }
-  return new dsConfiguration(params);
+  return new aeConfiguration(params);
 }
 
 @NgModule({
-    imports: [ dsApiModule.forRoot(apiConfigFactory) ],
+    imports: [ aeApiModule.forRoot(apiConfigFactory) ],
     declarations: [ AppComponent ],
     providers: [],
     bootstrap: [ AppComponent ]
@@ -93,15 +93,15 @@ export class AppModule {}
 
 ```
 // configuring providers with an authentication service that manages your access tokens
-import { dsApiModule, dsConfiguration } from 'ds-client';
+import { aeApiModule, aeConfiguration } from 'ds-client';
 
 @NgModule({
-    imports: [ dsApiModule ],
+    imports: [ aeApiModule ],
     declarations: [ AppComponent ],
     providers: [
       {
-        provide: dsConfiguration,
-        useFactory: (authService: AuthService) => new dsConfiguration(
+        provide: aeConfiguration,
+        useFactory: (authService: AuthService) => new aeConfiguration(
           {
             basePath: environment.apiUrl,
             accessToken: authService.getAccessToken.bind(authService)
@@ -124,21 +124,21 @@ export class AppComponent {
 }
 ```
 
-Note: The dsApiModule is restricted to being instantiated once app wide.
+Note: The aeApiModule is restricted to being instantiated once app wide.
 This is to ensure that all services are treated as singletons.
 
-#### Using multiple OpenAPI files / APIs / dsApiModules
-In order to use multiple `dsApiModules` generated from different OpenAPI files,
+#### Using multiple OpenAPI files / APIs / aeApiModules
+In order to use multiple `aeApiModules` generated from different OpenAPI files,
 you can create an alias name when importing the modules
 in order to avoid naming conflicts:
 ```
-import { dsApiModule } from 'my-api-path';
-import { dsApiModule as OtherApiModule } from 'my-other-api-path';
+import { aeApiModule } from 'my-api-path';
+import { aeApiModule as OtherApiModule } from 'my-other-api-path';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   imports: [
-    dsApiModule,
+    aeApiModule,
     OtherApiModule,
     // make sure to import the HttpClientModule in the AppModule only,
     // see https://github.com/angular/angular/issues/20575

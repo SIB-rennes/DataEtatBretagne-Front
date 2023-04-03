@@ -9,10 +9,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { RepresentantLegal } from './representantLegal';
 
 
-export interface RepresentantsLegaux { 
-    representants_legaux?: Array<RepresentantLegal>;
+export interface ActivitePrincipale { 
+    code: string;
+    nomenclature: string;
 }
 
