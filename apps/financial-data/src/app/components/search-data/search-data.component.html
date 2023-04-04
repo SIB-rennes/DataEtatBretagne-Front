@@ -25,9 +25,9 @@
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
-      <mat-form-field class="field-25-width" appearance="fill">
-        <mat-label>Programme</mat-label>
-        <mat-select formControlName="bops" multiple>
+      <mat-form-field class="field-25-width" appearance="fill" floatLabel="always">
+        <mat-label><i>Saisir un nom ou un numéro de programme (Exemple : 102 ou Accès et retour à l’emploi)</i></mat-label>
+        <mat-select formControlName="bops" multiple placeholder="Programme">
           <mat-form-field class="field-100-width" appearance="fill">
             <mat-label>Filtrer</mat-label>
             <input type="text" class="fr-input" matInput formControlName="filterBop">
@@ -58,9 +58,9 @@
 
       <div class="break"></div>
 
-      <mat-form-field class="field-25-width" appearance="fill">
-        <mat-label>Bénéficiaire</mat-label>
-        <input type="text" matInput formControlName="beneficiaire" [matAutocomplete]="beneficiaire">
+      <mat-form-field class="field-25-width" appearance="fill" floatLabel="always">
+        <mat-label><i>Saisir un nom (sans accent) ou un SIRET (Exemple: Decathlon, Rennes... ou 40447186400433,...)</i></mat-label>
+        <input type="text" matInput formControlName="beneficiaire" [matAutocomplete]="beneficiaire" placeholder="Bénéficiaire">
         <button *ngIf="searchForm.controls['beneficiaire'].value !== null" matSuffix mat-icon-button
           (click)="searchForm.controls['beneficiaire'].setValue(null)">
           <mat-icon>close</mat-icon>
