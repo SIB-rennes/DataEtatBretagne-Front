@@ -20,24 +20,21 @@ workflow:
     # Désactive les pipelines sur création de branche
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BEFORE_SHA == "0000000000000000000000000000000000000000"'
       when: never
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
-      variables:
-        DO_BUILD: "true"
-        DO_DEPLOY: "true"
-        DO_E2E: "false"
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop" )'
       variables:
         DO_BUILD: "true"
         DO_DEPLOY: "true"
         DO_E2E: "true"
     - if: '$CI_PIPELINE_SOURCE == "push" &&  $CI_COMMIT_REF_NAME =~ "/^feature\//"'
       variables:
-        DO_BUILD: "if_changed"
-        DO_DEPLOY: "if_changed"
+        DO_BUILD: "true"
+        DO_DEPLOY: "manual"
         DO_E2E: "manual"
-    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "push" &&  $CI_COMMIT_REF_NAME =~ "/^fix\//"'
       variables:
         DO_BUILD: "true"
+        DO_DEPLOY: "manual"
+        DO_E2E: "true"
     - if: '$CI_PIPELINE_SOURCE == "web"'
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
@@ -48,14 +45,26 @@ workflow:
     IMAGE: ""
     DOCKERFILE: ""
   script:
-    - if [[ $VERSION_IMAGE == ""]]; then  echo "VERSION NOT SET"; VERSION_IMAGE=${CI_COMMIT_REF_NAME}-snapshot; fi
-    - echo ${VERSION_IMAGE}
     - echo $IMAGE
-    - docker build -f ${DOCKERFILE} -t ${IMAGE} .
+    - echo $CI_COMMIT_TAG
+    - >
+      if [[ "$CI_COMMIT_TAG" == "" ]]; then
+        echo "TAG VIDE";
+        IMAGE_BUILD=${IMAGE}/${CI_COMMIT_REF_NAME};
+        VERSION_IMAGE=${CI_COMMIT_SHA:0:8}-snapshot;
+      else
+        echo "TAG PAS VIDE";
+        IMAGE_BUILD=${IMAGE};
+        VERSION_IMAGE=${CI_COMMIT_REF_NAME};
+      fi
+    - echo ${VERSION_IMAGE}
+    - echo ${IMAGE_BUILD}
+    - docker build -f ${DOCKERFILE} -t ${IMAGE_BUILD} .
     - echo ${REGISTRY_PASSWORD} | docker login ${REGISTRY} -u ${REGISTRY_USER} --password-stdin
-    - docker tag ${IMAGE} ${IMAGE}:${VERSION_IMAGE}
-    - echo "push ${IMAGE}:${VERSION_IMAGE}" && docker push ${IMAGE}:${VERSION_IMAGE}
+    - docker tag ${IMAGE_BUILD} ${IMAGE_BUILD}:${VERSION_IMAGE}
+    - echo "push ${IMAGE_BUILD}:${VERSION_IMAGE}" && docker push ${IMAGE_BUILD}:${VERSION_IMAGE}
 
+#BUILD APP
 build angular financial data app:
   image: node:16
   stage: build-angular
@@ -102,59 +111,38 @@ build angular francerelance app:
       changes:
         - "apps/france-relance/**/*"
 
-docker-image-financial-snapshot:
+#BUILD DOCKER
+docker-image-financial:
   extends: .build-docker
   variables:
-    IMAGE: "${REGISTRY}nocode/financial-data/${CI_COMMIT_REF_NAME}"
+    IMAGE: "${REGISTRY}nocode/financial-data"
     DOCKERFILE: "apps/financial-data/Dockerfile"
   needs:
     - job: build angular financial data app
-  before_script:
-    - export VERSION_IMAGE="${CI_COMMIT_SHA:0:8}-snapshot"
   rules:
-    - if: '$DO_BUILD == "true" && $DO_DEPLOY == "true"'
+    - if: '$DO_BUILD == "true"'
+    - if: '$CI_COMMIT_TAG == ""'
     - if: '$DO_DEPLOY == "manual"'
       when: manual
     - if: '$DO_DEPLOY == "if_changed"'
       changes:
         - "apps/financial-data/**/*"
 
-docker-image-francerelance-snapshot:
+docker-image-francerelance:
   extends: .build-docker
   variables:
-    IMAGE: "${REGISTRY}nocode/france-relance/${CI_COMMIT_REF_NAME}"
+    IMAGE: "${REGISTRY}nocode/france-relance"
     DOCKERFILE: "apps/france-relance/Dockerfile"
   needs:
     - job: build angular francerelance app
-  before_script:
-    - export VERSION_IMAGE="${CI_COMMIT_SHA:0:8}-snapshot"
   rules:
-    - if: '$DO_BUILD == "true" && $DO_DEPLOY == "true"'
+    - if: '$DO_BUILD == "true"'
+    - if: '$CI_COMMIT_TAG == ""'
     - if: '$DO_DEPLOY == "manual"'
       when: manual
     - if: '$DO_DEPLOY == "if_changed"'
       changes:
         - "apps/france-relance/**/*"
-
-docker-build-financial-tags:
-  extends: .build-docker
-  only:
-    - tags
-  variables:
-    IMAGE: "${REGISTRY}nocode/financial-data"
-    DOCKERFILE: "apps/financial-data/Dockerfile"
-  before_script:
-    - export VERSION_IMAGE="${CI_COMMIT_REF_NAME}"
-
-docker-build-france-relance-tags:
-  extends: .build-docker
-  only:
-    - tags
-  variables:
-    IMAGE: "${REGISTRY}nocode/france-relance"
-    DOCKERFILE: "apps/france-relance/Dockerfile"
-  before_script:
-    - export VERSION_IMAGE="${CI_COMMIT_REF_NAME}"
 
 # DEPLOY
 .deploy-integ:
@@ -167,11 +155,11 @@ docker-build-france-relance-tags:
     - ssh ${USER_INTEG}@${SERVER_INTEG} "docker network create -d overlay --attachable app_network || true"
     - ssh ${USER_INTEG}@${SERVER_INTEG} "export VERSION=${VERSION};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file '" ${COMPOSE} ${STACK_NAME}"
     - ssh ${USER_INTEG}@${SERVER_INTEG} "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait -n ${SERVICE} ${STACK_NAME}"
-
+#INTEG
 deploy-integ-financial-tag:
   extends: .deploy-integ
   needs:
-    - job: docker-build-financial-tags
+    - job: docker-image-francerelance
   only:
     - tags
   variables:
@@ -188,7 +176,8 @@ deploy-integ-financial-snapshot:
   before_script:
     - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"
   rules:
-    - if: '$DO_DEPLOY == "true" && $DO_BUILD == "true"'
+    - if: '$DO_DEPLOY == "true"'
+    - if: '$CI_COMMIT_TAG == ""'
     - if: '$DO_DEPLOY == "manual"'
       when: manual
     - if: '$DO_DEPLOY == "if_changed"'
@@ -198,7 +187,7 @@ deploy-integ-financial-snapshot:
 deploy-integ-francerelance-tag:
   extends: .deploy-integ
   needs:
-    - job: docker-build-france-relance-tags
+    - job: docker-image-francerelance
   only:
     - tags
   variables:
@@ -215,13 +204,15 @@ deploy-integ-francerelance-snapshot:
   before_script:
     - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"
   rules:
-    - if: '$DO_DEPLOY == "true" && $DO_BUILD == "true"'
+    - if: '$DO_DEPLOY == "true"'
+    - if: '$CI_COMMIT_TAG == ""'
     - if: '$DO_DEPLOY == "manual"'
       when: manual
     - if: '$DO_DEPLOY == "if_changed"'
       changes:
         - "apps/france-relance/**/*"
 
+#TESTS E2E
 run-tests-e2e:
   stage: test-e2e
   image: mcr.microsoft.com/playwright:v1.29.2-focal
