@@ -71,19 +71,19 @@ export class FinancialDataHttpService extends NocodbHttpService {
     else return `where=(Denomination,like,${nomOuSiret})`;
   }
 
-  public get(ej: string, poste_ej: string | number): Observable<FinancialDataModel|undefined> {
-
+  public get(
+    ej: string,
+    poste_ej: string | number
+  ): Observable<FinancialDataModel | undefined> {
     let apiFinancial = this.settings.apiNocodb;
 
-    let params = `&limit=1&where=(NEj,eq,${ej})~and(NPosteEj,eq,${poste_ej})`
+    let params = `&limit=1&where=(NEj,eq,${ej})~and(NPosteEj,eq,${poste_ej})`;
 
     let answer$ = this.mapNocoDbReponse(
       this.http.get<NocoDbResponse<FinancialDataModel>>(
         `${apiFinancial}/DataChorus/Chorus-front?${params}`
       )
-    ).pipe(
-      map((lignes) => lignes[0])
-    );
+    ).pipe(map((lignes) => lignes[0]));
 
     return answer$;
   }
@@ -203,14 +203,14 @@ export class FinancialDataHttpService extends NocodbHttpService {
   public loadFileChorus(
     file: any,
     annee: string,
-    code_region = 53
+    code_region = '53'
   ): Observable<any> {
     const apiData = this.settings.apiFinancialata;
 
     const formData = new FormData();
     formData.append('fichier', file);
     formData.append('annee', annee);
-    formData.append('code_region', annee);
+    formData.append('code_region', code_region);
 
     return this.http.post(`${apiData}/chorus/import/ae`, formData);
   }
