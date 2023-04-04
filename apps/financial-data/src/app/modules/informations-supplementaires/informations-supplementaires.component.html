@@ -133,14 +133,14 @@
 
 <ng-template #loading_entreprise_light>
     <financial-informations-supplementaires-chargement-ou-erreur 
-        nom_service_distant="API entreprise"
+        nom_service_distant="entreprise.api.gouv.fr"
         [erreur]="vService.api_entreprise_light_error">
     </financial-informations-supplementaires-chargement-ou-erreur>
 </ng-template>
 
 <ng-template #loading_subvention_light>
     <financial-informations-supplementaires-chargement-ou-erreur 
-        nom_service_distant="API subvention"
+        nom_service_distant="datasubvention.beta.gouv.fr"
         [erreur]="vService.api_subvention_light_error">
     </financial-informations-supplementaires-chargement-ou-erreur>
 </ng-template>
