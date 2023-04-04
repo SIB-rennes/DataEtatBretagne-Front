@@ -12,7 +12,8 @@ import { ActivitePrincipaleCorrige } from "./models/correction-api-externes/Acti
 import { TrancheEffectifCorrige } from "./models/correction-api-externes/TrancheEffectifCorrige";
 import { EtablissementLight } from "./models/EtablissementLight";
 import { SubventionLight } from "./models/SubventionLight";
-import { HttpErrorResponse } from "@angular/common/http";
+import { HttpContext, HttpErrorResponse } from "@angular/common/http";
+import { BYPASS_ALERT_INTERCEPTOR } from "apps/common-lib/src/public-api";
 
 
 function fromInfoApiEntreprise(info: InfoApiEntreprise): EntrepriseFull {
@@ -28,6 +29,8 @@ function fromInfoApiEntreprise(info: InfoApiEntreprise): EntrepriseFull {
 }
 
 export class InformationSupplementairesViewService {
+
+  private _options = { context: new HttpContext().set(BYPASS_ALERT_INTERCEPTOR, true) }
 
   private _ligne_chorus$: Observable<FinancialDataModel | undefined> | undefined
   private _api_subvention$: Observable<InfoApiSubvention | undefined> | undefined;
@@ -154,8 +157,7 @@ export class InformationSupplementairesViewService {
           .pipe(
             mergeMap((ligne) => {
               let siret = ligne?.code_siret
-
-              return this.ae.getInfoEntrepriseCtrl(siret!)
+              return this.ae.getInfoEntrepriseCtrl(siret!, 'body', false, this._options)
             })
           )
     }
@@ -204,7 +206,7 @@ export class InformationSupplementairesViewService {
           mergeMap(
             (ligne) => {
               let siret = ligne?.code_siret;
-              return this.ae.getInfoSubventionCtrl(siret!)
+              return this.ae.getInfoSubventionCtrl(siret!, 'body', false, this._options)
             }
           ),
           shareReplay(1),
