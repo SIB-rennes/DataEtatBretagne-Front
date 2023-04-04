@@ -44,6 +44,7 @@ export class UploadFinancialComponent {
     if (this.file !== null && this.yearSelected) {
       this.service.loadFileChorus(this.file, '' + this.yearSelected).subscribe({
         next: () => {
+          this.cancelUpload();
           this.alertService.openAlertSuccess('Le fichier a bien été récupéré.');
         },
         error: (err: HttpErrorResponse) => {
