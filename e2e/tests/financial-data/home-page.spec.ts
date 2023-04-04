@@ -21,10 +21,10 @@ test.describe("Page d'accueil", () => {
       .isVisible();
 
     // vérification du formulaire
-    await page.getByLabel('Theme').click();
+    await page.getByLabel('Thème').click();
     await expect(
       page
-        .getByRole('listbox', { name: 'Theme' })
+        .getByRole('listbox', { name: 'Thème' })
         .locator('.mdc-list-item__primary-text')
     ).toHaveCount(18);
 
@@ -44,7 +44,7 @@ test.describe("Page d'accueil", () => {
     await page.getByTestId('niveau-localisation').click({ force: true });
     await expect(
       page
-        .getByRole('listbox', { name: 'Niveau de localisation' })
+        .getByRole('listbox', { name: 'Zone géographique' })
         .locator('.mdc-list-item__primary-text')
     ).toHaveCount(4);
 
