@@ -9,7 +9,9 @@
   <mat-icon matSuffix>map</mat-icon>
 </mat-form-field>
 
-<mat-form-field appearance="fill" class="location">
+<mat-form-field appearance="fill" class="location"
+  matTooltipPosition="above" matTooltip="Filtrer sur une zone géographique" aria-label="Champ de selection pour une zone géographique."
+>
   <mat-label data-test-id="category-localisation">{{categorySelected}}</mat-label>
 
   <mat-select [formControl]="control" multiple>

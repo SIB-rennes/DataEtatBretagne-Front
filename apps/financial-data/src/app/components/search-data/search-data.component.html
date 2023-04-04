@@ -58,7 +58,9 @@
 
       <div class="break"></div>
 
-      <mat-form-field class="field-25-width" appearance="fill" floatLabel="always">
+      <mat-form-field class="field-25-width" appearance="fill" floatLabel="always"
+        matTooltipPosition="above" matTooltip="Filtrer par bénéficiaire" aria-label="Champ de selection pour bénéficiaire."
+      >
         <mat-label><i>Saisir un nom (sans accent) ou un SIRET (Exemple: Decathlon, Rennes... ou 40447186400433,...)</i></mat-label>
         <input type="text" matInput formControlName="beneficiaire" [matAutocomplete]="beneficiaire" placeholder="Bénéficiaire">
         <button *ngIf="searchForm.controls['beneficiaire'].value !== null" matSuffix mat-icon-button
@@ -78,16 +80,16 @@
 
       <div class="spacer"></div>
 
-      <button mat-fab color="primary" (click)="doSearch()">
+      <button mat-fab color="primary" (click)="doSearch()" matTooltip="Rechercher" aria-label="Bouton de recherche.">
         <mat-icon fontIcon="search"></mat-icon>
       </button>
 
-      <button mat-fab color="secondary" matTooltip="Télécharger les données" (click)="downloadCsv()"
+      <button mat-fab color="secondary"  (click)="downloadCsv()" matTooltip="Télécharger les données" aria-label="Bouton de téléchargement de données."
         *ngIf="searchFinish === true" (disabled)="searchInProgress.value === true">
         <mat-icon fontIcon="download"></mat-icon>
       </button>
 
-      <button mat-fab color="warn" matTooltip="Reset le formulaire" (click)="reset()" *ngIf="searchFinish === true">
+      <button mat-fab color="warn" (click)="reset()" *ngIf="searchFinish === true" matTooltip="Réinitialiser les critères de recherche" aria-label="Bouton de réinitialisation des critères de recherche">
         <mat-icon fontIcon="disabled_by_default"></mat-icon>
       </button>
     </div>
