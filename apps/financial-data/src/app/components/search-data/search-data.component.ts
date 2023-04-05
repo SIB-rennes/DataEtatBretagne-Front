@@ -362,14 +362,6 @@ export class SearchDataComponent implements OnInit, OnChanges {
       },
     );
 
-    this.searchForm.controls['theme'].valueChanges.subscribe((val) =>
-      this._makeLocationRequired(val)
-    );
-
-    this.searchForm.controls['bops'].valueChanges.subscribe((val) =>
-      this._makeLocationRequired(val)
-    );
-
     this.searchForm.controls['filterBop'].valueChanges.subscribe((value) => {
       if (typeof value === 'string') {
         this.filteredBop = this._filterBop(value ? value : '');
@@ -391,15 +383,6 @@ export class SearchDataComponent implements OnInit, OnChanges {
         return of([]);
       })
     );
-  }
-
-  private _makeLocationRequired(bopOrTheme: any): void {
-    if (bopOrTheme) {
-      this.searchForm.controls['location'].setValidators([Validators.required]);
-    } else {
-      this.searchForm.controls['location'].clearValidators();
-    }
-    this.searchForm.controls['location'].updateValueAndValidity();
   }
 
   private _filterBop(value: string): BopModel[] {
