@@ -19,7 +19,6 @@ export class UploadFinancialComponent {
 
   public file: File | null = null;
   public years;
-  // public yearDefault = new Date().getFullYear();
   public yearSelected = new Date().getFullYear();
 
   constructor(
@@ -45,7 +44,9 @@ export class UploadFinancialComponent {
       this.service.loadFileChorus(this.file, '' + this.yearSelected).subscribe({
         next: () => {
           this.cancelUpload();
-          this.alertService.openAlertSuccess('Le fichier a bien été récupéré.');
+          this.alertService.openAlertSuccess(
+            'Le fichier a bien été récupéré. Il sera traité dans les prochaines minutes.'
+          );
         },
         error: (err: HttpErrorResponse) => {
           if (err.error['message']) {
