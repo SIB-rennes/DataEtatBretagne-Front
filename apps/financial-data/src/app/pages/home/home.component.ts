@@ -166,10 +166,16 @@ export class HomeComponent implements OnInit {
     });
 
     const dateFormat = (dateStr: string) =>
-      dateStr ? this.datePipe.transform(dateStr, 'dd/MM/yyyy à hh:mm') : '';
+      dateStr ? this.datePipe.transform(dateStr, 'dd/MM/yyyy à HH:mm') : '';
     this.financialService.getLastDateUpdateData().subscribe((response) => {
       if (response.date) {
-        this.lastImportDate = dateFormat(response.date);
+        // date au format UTC
+        console.log(response.date);
+        const utcDate = new Date(response.date);
+        utcDate.setUTCHours(utcDate.getHours() - utcDate.getTimezoneOffset());
+        const localDate = utcDate.toLocaleString('fr-FR');
+
+        this.lastImportDate = dateFormat(localDate);
       }
     });
   }
