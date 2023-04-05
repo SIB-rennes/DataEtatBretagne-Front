@@ -5,7 +5,7 @@ import { IApi, Settings, Keycloak } from 'apps/common-lib/src/public-api';
 class Api implements IApi {
   financial_data = '';
   nocodb_proxy = '';
-  management = '';
+  administration = '';
   geo = '';
   referentiel = '';
   apis_externes = '';
@@ -52,7 +52,7 @@ export class SettingsService implements ISettingsService {
     return (this.settings.apis as Api).financial_data;
   }
 
-  public get apiManagement(): string {
-    return (this.settings.apis as Api).management;
+  public get apiAdministration(): string {
+    return (this.settings.apis as Api).administration;
   }
 }

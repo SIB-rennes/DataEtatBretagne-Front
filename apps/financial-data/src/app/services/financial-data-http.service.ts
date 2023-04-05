@@ -214,10 +214,4 @@ export class FinancialDataHttpService extends NocodbHttpService {
 
     return this.http.post(`${apiData}/chorus/import/ae`, formData);
   }
-
-  public getLastDateUpdateData(): Observable<{ date: string }> {
-    const apiData = this.settings.apiFinancialata;
-
-    return this.http.get<{ date: string }>(`${apiData}/chorus/last-import`);
-  }
 }

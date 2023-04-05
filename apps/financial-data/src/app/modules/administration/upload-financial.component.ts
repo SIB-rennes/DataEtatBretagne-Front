@@ -1,5 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import {
+  AuditUpdateData,
+  DataType,
+} from '@models/audit/audit-update-data.models';
+import { AuditHttpService } from '@services/audit.service';
 import { FinancialDataHttpService } from '@services/financial-data-http.service';
 import { AlertService } from 'apps/common-lib/src/public-api';
 import { Subscription } from 'rxjs';
@@ -9,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './upload-financial.component.html',
   styleUrls: ['./upload-financial.component.scss'],
 })
-export class UploadFinancialComponent {
+export class UploadFinancialComponent implements OnInit {
   public readonly requiredFileType: string = '.csv';
 
   uploadSub: Subscription | null = new Subscription();
@@ -19,16 +24,28 @@ export class UploadFinancialComponent {
 
   public file: File | null = null;
   public years;
+  public dataSource: AuditUpdateData[] = [];
+  displayedColumns: string[] = ['username', 'filename', 'date'];
+
   public yearSelected = new Date().getFullYear();
 
   constructor(
     private service: FinancialDataHttpService,
+    private auditService: AuditHttpService,
     private alertService: AlertService
   ) {
     const max_year = new Date().getFullYear();
     let arr = Array(8).fill(new Date().getFullYear());
     arr = arr.map((_val, index) => max_year - index);
     this.years = arr;
+  }
+
+  ngOnInit(): void {
+    this.auditService
+      .getHistoryData(DataType.FINANCIAL_DATA)
+      .subscribe((response: AuditUpdateData[]) => {
+        this.dataSource = response;
+      });
   }
 
   onFileSelected(event: any) {
