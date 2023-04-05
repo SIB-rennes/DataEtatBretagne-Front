@@ -123,6 +123,7 @@ export class InformationSupplementairesViewService {
   api_subvention_full_error: ModelError | null = null;
   api_subvention_full$(): Observable<SubventionFull> {
     let full = forkJoin({
+      siret: this.ligne_chorus$.pipe(map(ligne => ligne?.code_siret!)),
       subvention: this.api_subvention_subvention$,
       contact: this.api_subvention_president$,
     })
