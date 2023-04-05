@@ -46,7 +46,7 @@ export class InformationSupplementairesViewService {
     window.open(_path_full(this.ej, poste))
   }
 
-  _map_subvention_light(subvention: Subvention | null): SubventionLight {
+  _map_subvention_light(subvention: Subvention | null, representantLegal: RepresentantLegal | null): SubventionLight {
 
     let objectifs = null;
 
@@ -54,8 +54,11 @@ export class InformationSupplementairesViewService {
       objectifs = subvention.actions_proposees[0].intitule;
     }
 
+    let has_more_info = subvention != null || representantLegal != null;
+
     return {
-      objectifs
+      objectifs,
+      has_more_info
     }
   }
 
@@ -103,14 +106,18 @@ export class InformationSupplementairesViewService {
 
   api_subvention_light_error: ModelError | null = null;
   api_subvention_light$() {
-    return this.api_subvention_subvention$
-      .pipe(
-        map((subvention) => this._map_subvention_light(subvention)),
-        catchError(err => {
-          this.api_subvention_light_error = this._extract_error(err);
-          throw err;
-        })
-      );
+    let light = forkJoin({
+      subvention: this.api_subvention_subvention$,
+      contact: this.api_subvention_president$,
+    })
+    .pipe(
+      map((full) => this._map_subvention_light(full.subvention, full.contact)),
+      catchError(err => {
+        this.api_subvention_light_error = this._extract_error(err);
+        throw err;
+      })
+    );
+    return light;
   }
 
   api_subvention_full_error: ModelError | null = null;

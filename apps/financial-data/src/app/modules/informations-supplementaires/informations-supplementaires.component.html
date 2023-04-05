@@ -106,8 +106,8 @@
             </div>
 
             <div class="colonne colonne-plus-info">
-                <button class="fr-btn" (click)="on_click_full_api_data_subventions()">
-                    Information disponible
+                <button class="fr-btn" (click)="on_click_full_api_data_subventions()" [disabled]="!info.has_more_info">
+                    {{ info.has_more_info ? 'Information disponible' : 'Information indisponible' }}
                     <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
                 </button>
             </div>
