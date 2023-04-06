@@ -1,7 +1,10 @@
 <mat-form-field appearance="fill">
   <mat-label>Zone géographique</mat-label>
-  <mat-select data-test-id="niveau-localisation" (selectionChange)="selectedCategory($event)"
+  <mat-select 
+    data-test-id="niveau-localisation"
+    (selectionChange)="selectedCategory($event)"
     [value]="categorySelected">
+    <mat-option></mat-option>
     <mat-option *ngFor="let type of TypeLocalisation" [value]="type">
       {{type}}
     </mat-option>
