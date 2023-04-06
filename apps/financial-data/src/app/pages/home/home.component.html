@@ -8,9 +8,9 @@
       [preFilter]="preFilter" [ngClass]="{ 'hidden': grid_fullscreen }">
     </financial-search-data>
 
-    <div class="main-content overlay-container">
+    <div class="main-content overlay-container no-content">
       <ng-container *ngIf="tableData && tableData.length === 0 else groupingTable">
-        <div class="no-content">Aucune donnée</div>
+        <div><i>Aucune donnée ne correspond à vos critères de recherche.</i></div>
       </ng-container>
     </div>
   </mat-card-content>
