@@ -58,4 +58,8 @@ export class DetailApiDataSubventionsComponent {
   get a_aucune_info() {
     return this.service.viewService.subvention_full_has_no_info(this.info)
   }
+
+  get lien_data_subvention() {
+    return `https://datasubvention.beta.gouv.fr/etablissement/${this.info?.siret}`;
+  }
 }
