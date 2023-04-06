@@ -35,4 +35,20 @@ export class SessionService {
       this._userInfo !== null && this._userInfo?.roles.includes(Profil.ADMIN)
     );
   }
+
+  /**
+   * Vérifie si l'utilisateur a au moins un des roles
+   * @param profiles
+   * @returns
+   */
+  public hasOneRole(profiles: Profil[]): boolean {
+    if (this._userInfo === null) return false;
+
+    const roles = profiles.map((p) => p.toString());
+    const isIncluded = this._userInfo.roles.some((element) =>
+      roles.includes(element)
+    );
+
+    return isIncluded;
+  }
 }

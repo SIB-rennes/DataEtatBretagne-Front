@@ -28,29 +28,23 @@
         <div class="fr-header__tools">
           <div class="fr-header__tools-links">
             <ul class="fr-btns-group" *ngIf="isLoggedIn && user !== null">
+
+              <ng-content select="[administration]"></ng-content>
+
               <li>
-                <button mat-icon-button [matMenuTriggerFor]="infoUser" matTooltip="Préférence {{user.username}}"
-                  class="fr-btn">
-                  <mat-icon aria-hidden="false" aria-label="Paramètre de l'utilisateur" fontIcon="person_outline">
-                  </mat-icon>
-                </button>
-
-                <mat-menu #infoUser="matMenu">
-                  <button mat-menu-item routerLink='preference'>Préférences</button>
-                </mat-menu>
-              </li>
-
-
-              <li *ngIf="session.isAdmin()">
-                <button mat-icon-button routerLink="/management" matTooltip="Administration" class="fr-btn"
-                  id="administration">
-                  <mat-icon aria-hidden="false" aria-label="Administration" fontIcon="settings"></mat-icon>
-                </button>
+                <button 
+                  routerLink="preference" matTooltip="Mes recherches"
+                  class="fr-btn fr-btn--tertiary-no-outline fr-icon-bookmark-line">Mes recherches</button>
               </li>
 
               <li>
-                <button mat-icon-button (click)="logout()" matTooltip="Se déconnecter" class="fr-btn">
-                  <mat-icon aria-hidden="false" aria-label="Se déconnecter" fontIcon="logout"></mat-icon>
+                <button 
+                  mat-icon-button 
+                  class="fr-btn fr-btn--tertiary-no-outline fr-icon-logout-box-r-line"
+                  (click)="logout()" 
+                  matTooltip="Déconnexion" 
+                  >
+                  Déconnexion
                 </button>
               </li>
 

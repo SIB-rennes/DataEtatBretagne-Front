@@ -1,0 +1,39 @@
+<ng-container *ngIf="erreur; else chargment">
+
+    <ng-container [ngSwitch]="erreur.code">
+
+        <ng-container *ngSwitchCase="'REMOTE_CALL_FAILED'">
+            <span class="fr-icon-info-fill info-main-525"></span>
+            <span #erreur_projetee><ng-content select="span.message-erreur-api-distante"></ng-content></span>
+            <ng-container *ngIf="!erreur_projetee.hasChildNodes()">
+                Le service distant « {{nom_service_distant}} » (API) ne répond pas correctement. Veuillez réessayer ultérieurement.
+            </ng-container>
+        </ng-container>
+        <ng-container *ngSwitchCase="'LIMIT_HIT'">
+            <span class="fr-icon-warning-fill warning-main-525"></span>
+            <span #erreur_projetee><ng-content select="span.message-erreur-api-distante-limit"></ng-content></span>
+            <ng-container *ngIf="!erreur_projetee.hasChildNodes()">
+                Limite d'appel atteinte pour le service distant « {{nom_service_distant}} » (API). Veuillez réessayer ultérieurement.
+            </ng-container>
+        </ng-container>
+
+        <ng-container *ngSwitchDefault>
+            <span class="fr-icon-error-fill error-main-525"></span>
+            <span #erreur_projetee><ng-content select="span.message-erreur"></ng-content></span>
+            <ng-container *ngIf="!erreur_projetee.hasChildNodes()">
+                Une erreur inconnue s'est produite lors de l'appel à « {{nom_service_distant}} » (API).
+            </ng-container>
+        </ng-container>
+
+    </ng-container>
+
+
+</ng-container>
+
+<ng-template #chargment>
+    <div class="ligne" style="justify-content: center;">
+        <div class="colonne">
+            <mat-spinner></mat-spinner>
+        </div>
+    </div>
+</ng-template>

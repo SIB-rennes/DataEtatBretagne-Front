@@ -1,0 +1,73 @@
+<ng-container *ngIf="info; else chargement">
+
+    <div class="contenu">
+        <ng-container *ngTemplateOutlet="contenu"></ng-container>
+    </div>
+
+    <hr>
+
+    <div class="footer">
+        <i>
+            Autres informations sur l'organisme sur « annuaire-entreprises.data.gouv.fr » (ex: fiche d'immatriculation
+            RNCS)
+            <a title="Etablissement sur « annuaire-entreprises.data.gouv.fr »"
+                [href]="lien_annuaire_entreprise(info.donnees_etablissement.siret)" target="_blank" rel="noopener">
+            </a>
+        </i>
+    </div>
+
+</ng-container>
+
+<ng-template #chargement>
+    <financial-informations-supplementaires-chargement-ou-erreur 
+        nom_service_distant="API entreprise"
+        [erreur]="vService.api_entreprise_full_error">
+    </financial-informations-supplementaires-chargement-ou-erreur>
+</ng-template>
+
+<ng-template #contenu>
+    <ng-container *ngIf="info">
+
+        <div class="ligne">
+            <div class="colonne">
+                <img class="logo-api-entreprise" src="assets/img/api-entreprise.custom.png" alt="Logo API entreprise">
+            </div>
+        </div>
+
+        <div class="ligne">
+
+            <div class="colonne">
+
+                <strong>Dénomination :</strong> {{info.quick.personne_morale.raison_sociale | ouNonRenseigne}} <br>
+                <strong>N° SIRET :</strong> {{info.donnees_etablissement.siret | ouNonRenseigne}} <br>
+                <strong>Forme juridique :</strong> {{info.donnees_etablissement.unite_legale.forme_juridique.libelle |
+                ouNonRenseigne}} <br>
+                <strong>Libellé NAF :</strong> {{info.quick.activite_principale.libelle | ouNonRenseigne}} <br>
+                <strong>Code NAF :</strong> {{info.quick.activite_principale.code | ouNonRenseigne}} <br>
+
+                <strong>Date de création :</strong>
+                {{info.donnees_etablissement.date_creation * 1000 | date: 'dd MMMM yyyy' | ouNonRenseigne}}
+                <br>
+
+                <strong>Effectif de l'organisation (INSEE) :</strong> {{info.quick.tranche_effectif.intitule |
+                ouNonRenseigne}} <br>
+                <strong>Numéro de TVA intracommunautaire :</strong> {{info.tva?.tva_number | ouNonRenseigne}} <br>
+            </div>
+
+            <div class="colonne">
+
+                <strong>Adresse</strong><br>
+                <ng-container *ngFor="let ligne of lignes_adresse">
+                    {{ligne}}<br>
+                </ng-container>
+                <br>
+
+                <strong>ESS (Économie Sociale et Solidaire):</strong> {{label_ess}}<br>
+                <strong>Certification RGE:</strong> {{label_rge}}<br>
+                <strong>Certification Qualibat:</strong> {{label_qualibat}}<br>
+            </div>
+
+        </div>
+
+    </ng-container>
+</ng-template>

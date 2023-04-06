@@ -27,10 +27,6 @@ import { BopModel } from '@models//bop.models';
 import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
 import { RefTheme } from '@models//theme.models';
 import { FinancialDataHttpService } from '../../services/financial-data-http.service';
-import {
-  CrossFieldErrorMatcher,
-  financialDataFormValidators,
-} from '../../validators/financial-data-form.validators';
 import { FinancialDataModel } from '@models/financial-data.models';
 import { DatePipe } from '@angular/common';
 import { RefSiret } from '@models/RefSiret';
@@ -48,8 +44,6 @@ import { AlertService, TypeLocalisation } from 'apps/common-lib/src/public-api';
 export class SearchDataComponent implements OnInit, OnChanges {
   public readonly TypeLocalisation = TypeLocalisation;
   public searchForm!: FormGroup;
-
-  public errorMatcher = new CrossFieldErrorMatcher();
 
   public bop: BopModel[] = [];
   public themes: RefTheme[] = [];
@@ -366,15 +360,6 @@ export class SearchDataComponent implements OnInit, OnChanges {
         filterBop: new FormControl(null), // controls pour le filtre des bops
         location: new FormControl({ value: null, disabled: false }, []),
       },
-      financialDataFormValidators()
-    );
-
-    this.searchForm.controls['theme'].valueChanges.subscribe((val) =>
-      this._makeLocationRequired(val)
-    );
-
-    this.searchForm.controls['bops'].valueChanges.subscribe((val) =>
-      this._makeLocationRequired(val)
     );
 
     this.searchForm.controls['filterBop'].valueChanges.subscribe((value) => {
@@ -398,15 +383,6 @@ export class SearchDataComponent implements OnInit, OnChanges {
         return of([]);
       })
     );
-  }
-
-  private _makeLocationRequired(bopOrTheme: any): void {
-    if (bopOrTheme) {
-      this.searchForm.controls['location'].setValidators([Validators.required]);
-    } else {
-      this.searchForm.controls['location'].clearValidators();
-    }
-    this.searchForm.controls['location'].updateValueAndValidity();
   }
 
   private _filterBop(value: string): BopModel[] {

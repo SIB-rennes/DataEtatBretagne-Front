@@ -1,5 +1,17 @@
-<lib-header [ngClass]="{'hidden': grid_fullscreen }" [title]="'Budget Data État Bretagne'"
-  [logo]="'BudgetEtat.svg'"></lib-header>
+<lib-header [ngClass]="{'hidden': grid_fullscreen }" [title]="'Budget Data État Bretagne'" [logo]="'BudgetEtat.svg'">
+
+  <li administration *ngIf="displayAdmin">
+    <button mat-icon-button [matMenuTriggerFor]="administration" matTooltip="Administration" class="fr-btn"
+      id="administration">
+      <mat-icon aria-hidden="false" aria-label="Administration" fontIcon="settings"></mat-icon>
+    </button>
+
+    <mat-menu #administration="matMenu">
+      <button mat-menu-item routerLink='administration/management' *ngIf="isAdmin">Gestion des utilisateurs</button>
+      <button mat-menu-item routerLink='administration/upload'>Charger des données</button>
+    </mat-menu>
+  </li>
+</lib-header>
 
 <div *ngIf="progressBarVisible === true">
   <mat-progress-bar mode="query"></mat-progress-bar>
@@ -7,4 +19,9 @@
 
 <router-outlet class="page-content-outlet"></router-outlet>
 
-<lib-footer *ngIf="isAuthenticated" [ngClass]="{'hidden': grid_fullscreen }" [contact]="contact"></lib-footer>
+<lib-footer *ngIf="isAuthenticated" [ngClass]="{'hidden': grid_fullscreen }" [contact]="contact">
+  <li class="fr-footer__bottom-item" *ngIf="help">
+    <a class="fr-footer__bottom-link" href="{{help}}" target="_blank">Aide en
+      ligne</a>
+  </li>
+</lib-footer>

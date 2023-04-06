@@ -2,7 +2,8 @@ import { Injectable, Inject } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 import { BopModel } from '@models/bop.models';
-import { map, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { SettingsService } from '../../environments/settings.service';
 import { RefTheme } from '@models/theme.models';
 import { FinancialDataModel } from '@models/financial-data.models';
@@ -27,7 +28,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
   }
 
   public getBop(): Observable<BopModel[]> {
-    const apiFinancial = this.settings.apiFinancial;
+    const apiFinancial = this.settings.apiNocodb;
 
     const params = 'limit=500&fields=Id,Label,Code,RefTheme&sort=Code';
     return this.http
@@ -42,7 +43,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
    * @returns les the
    */
   public getTheme(): Observable<RefTheme[]> {
-    const apiFinancial = this.settings.apiFinancial;
+    const apiFinancial = this.settings.apiNocodb;
 
     return this.http
       .get<NocoDbResponse<RefTheme>>(
@@ -52,7 +53,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
   }
 
   public filterRefSiret(nomOuSiret: string): Observable<RefSiret[]> {
-    const apiFinancial = this.settings.apiFinancial;
+    const apiFinancial = this.settings.apiNocodb;
 
     let whereClause = this._filterRefSiretWhereClause(nomOuSiret);
 
@@ -68,6 +69,23 @@ export class FinancialDataHttpService extends NocodbHttpService {
 
     if (is_number) return `where=(Code,like,${nomOuSiret}%)`;
     else return `where=(Denomination,like,${nomOuSiret})`;
+  }
+
+  public get(
+    ej: string,
+    poste_ej: string | number
+  ): Observable<FinancialDataModel | undefined> {
+    let apiFinancial = this.settings.apiNocodb;
+
+    let params = `&limit=1&where=(NEj,eq,${ej})~and(NPosteEj,eq,${poste_ej})`;
+
+    let answer$ = this.mapNocoDbReponse(
+      this.http.get<NocoDbResponse<FinancialDataModel>>(
+        `${apiFinancial}/DataChorus/Chorus-front?${params}`
+      )
+    ).pipe(map((lignes) => lignes[0]));
+
+    return answer$;
   }
 
   /**
@@ -89,7 +107,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
     if (bops == null && themes == null && year == null && location == null)
       return of();
 
-    const apiFinancial = this.settings.apiFinancial;
+    const apiFinancial = this.settings.apiNocodb;
 
     const params = this._buildparams(
       beneficiaire,
@@ -115,7 +133,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
     if (bops == null && themes == null && year == null && location == null)
       return of();
 
-    const apiFinancial = this.settings.apiFinancial;
+    const apiFinancial = this.settings.apiNocodb;
     const params = this._buildparams(
       beneficiaire,
       bops,
@@ -180,5 +198,20 @@ export class FinancialDataHttpService extends NocodbHttpService {
       params += `)`;
     }
     return params;
+  }
+
+  public loadFileChorus(
+    file: any,
+    annee: string,
+    code_region = '53'
+  ): Observable<any> {
+    const apiData = this.settings.apiFinancialata;
+
+    const formData = new FormData();
+    formData.append('fichier', file);
+    formData.append('annee', annee);
+    formData.append('code_region', code_region);
+
+    return this.http.post(`${apiData}/chorus/import/ae`, formData);
   }
 }

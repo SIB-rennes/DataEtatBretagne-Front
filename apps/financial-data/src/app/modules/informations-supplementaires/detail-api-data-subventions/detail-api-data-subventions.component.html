@@ -1,0 +1,97 @@
+<ng-container *ngIf="info; else chargement">
+
+    <div class="contenu">
+        <ng-container *ngTemplateOutlet="contenu"></ng-container>
+    </div>
+
+    <hr>
+
+    <div class="footer">
+        <i>
+            Autres informations sur l'association 
+            <a title="Etablissement sur « annuaire-entreprises.data.gouv.fr »"
+                [href]="lien_data_subvention" target="_blank" rel="noopener">
+            </a>
+        </i>
+    </div>
+
+</ng-container>
+
+<ng-template #chargement>
+    <financial-informations-supplementaires-chargement-ou-erreur 
+        nom_service_distant="API subvention"
+        [erreur]="vService.api_subvention_full_error">
+        </financial-informations-supplementaires-chargement-ou-erreur>
+</ng-template>
+
+<ng-template #contenu>
+
+    <ng-container *ngIf="info">
+
+        <div class="ligne">
+            <div class="colonne">
+                <img class="logo-data-subvention" src="assets/img/data-subvention.custom.png" alt="Logo data subvention">
+            </div>
+        </div>
+
+        <ng-container *ngIf="a_aucune_info">
+            <span>Aucune information sur la demande de subvention.</span>
+        </ng-container>
+
+        <div class="ligne" *ngIf="!a_aucune_info">
+
+            <div class="colonne">
+
+                <strong class="titre">Demande de subvention associée</strong> <br>
+
+                <ng-container *ngIf="info.subvention">
+                    <strong>N° EJ :</strong> {{info.subvention.ej | ouNonRenseigne}}<br>
+                    <strong>Service instructeur :</strong> {{info.subvention.service_instructeur | ouNonRenseigne}}<br>
+                    <strong>Dispositif :</strong> {{info.subvention.dispositif | ouNonRenseigne}}<br>
+                    <strong>Sous-dispositif :</strong> {{info.subvention.sous_dispositif | ouNonRenseigne}}<br>
+                    <strong>Montant demandé :</strong> {{info.subvention.montant_demande | currency:"EUR":"symbol":"1.0-0" | ouNonRenseigne}}<br>
+                    <strong>Montant accordé :</strong> {{info.subvention.montant_accorde | currency:"EUR":"symbol":"1.0-0" | ouNonRenseigne}}<br>
+                </ng-container>
+                <ng-container *ngIf="!info.subvention">
+                    {{info.subvention | ouNonRenseigne}}
+                </ng-container>
+
+                <br>
+                <strong class="titre">Contact de l'association</strong> <br>
+
+                <ng-container *ngIf="info.contact">
+                    <strong>Rôle : </strong> {{info.contact.role | ouNonRenseigne}} <br>
+                    <strong>Civilité : </strong> {{info.contact.civilite | ouNonRenseigne}} <br>
+                    <strong>Nom : </strong> {{info.contact.nom | ouNonRenseigne}} <br>
+                    <strong>Prénom : </strong> {{info.contact.prenom | ouNonRenseigne}} <br>
+                    <strong>E-mail : </strong> {{info.contact.email | ouNonRenseigne}} <br>
+                    <strong>Téléphone : </strong> {{info.contact.telephone | ouNonRenseigne}} <br>
+                </ng-container>
+                <ng-container *ngIf="!info.contact">
+                    {{info.contact | ouNonRenseigne}}
+                </ng-container>
+
+            </div>
+
+            <div class="colonne">
+
+                <div>
+                    <strong class="titre">Objectif :</strong> <br>
+
+                    {{objectif | ouNonRenseigne}} <br>
+                </div>
+
+                <br>
+
+                <div style="align-content: center;">
+                    <strong class="titre">Description de la subvention : </strong><br>
+
+                    {{description | ouNonRenseigne}} <br>
+                </div>
+            </div>
+
+        </div>
+
+    </ng-container>
+
+</ng-template>

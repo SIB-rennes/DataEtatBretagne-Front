@@ -18,6 +18,7 @@ import { FormControl } from '@angular/forms';
 import { debounceTime, Observable, Subject } from 'rxjs';
 import { GeoModel, TypeLocalisation } from '../../models/geo.models';
 import { GeoHttpService } from '../../services/geo-http.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'lib-localisation',
@@ -30,6 +31,7 @@ import { GeoHttpService } from '../../services/geo-http.service';
     FormsModule,
     MatInputModule,
     MatFormFieldModule,
+    MatTooltipModule,
     ReactiveFormsModule,
   ],
   styles: [
@@ -69,9 +71,6 @@ export class LocalisationComponent implements OnChanges, OnInit {
   }
 
   ngOnInit(): void {
-    if (this.categorySelected === null) {
-      this.categorySelected = TypeLocalisation.DEPARTEMENT;
-    }
     this._search();
   }
 

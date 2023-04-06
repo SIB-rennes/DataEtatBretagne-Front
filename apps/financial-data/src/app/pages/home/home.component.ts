@@ -21,7 +21,8 @@ import {
   TableData,
 } from 'apps/grouping-table/src/lib/components/grouping-table/group-utils';
 import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
-import { DataSubventionInfoDialogComponent } from '../../components/data-subvention-info-dialog/data-subvention-info-dialog.component';
+import { InformationsSupplementairesDialogComponent } from '../../modules/informations-supplementaires/informations-supplementaires-dialog/informations-supplementaires-dialog.component';
+import { AuditHttpService } from '@services/audit.service';
 
 @Component({
   selector: 'financial-home',
@@ -46,6 +47,8 @@ export class HomeComponent implements OnInit {
    */
   preFilter: JSONObject | null;
 
+  lastImportDate: string | null = null;
+
   groupingColumns: GroupingColumn[] = [
     { columnName: 'nom_programme' },
     { columnName: 'type_etablissement' },
@@ -67,20 +70,20 @@ export class HomeComponent implements OnInit {
     private route: ActivatedRoute,
     private alertService: AlertService,
     private preferenceService: PreferenceUsersHttpService,
+    private auditService: AuditHttpService,
     private _gridFullscreen: GridInFullscreenStateService
   ) {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR',
     });
-    const dateFormat = (dateStr: string) =>
-      dateStr ? this.datePipe.transform(dateStr, 'shortDate') : '';
 
     this.columnsMetaData = new ColumnsMetaData([
       { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
       {
         name: 'Montant',
         label: 'Montant',
+        sub_label: "(autorisation d'engagement)",
         renderFn: (row, col) =>
           row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
         aggregateReducer: AggregatorFns.sum,
@@ -132,8 +135,6 @@ export class HomeComponent implements OnInit {
       {
         name: 'Annee',
         label: 'Année',
-        // renderFn: (row, col) =>
-        //   row[col.name] ? dateFormat(row[col.name]) : row[col.name],
         columnStyle: {
           'min-width': '18ex',
           'flex-grow': '0',
@@ -161,6 +162,11 @@ export class HomeComponent implements OnInit {
               `Application du filtre ${preference.name}`
             );
           });
+      }
+    });
+    this.auditService.getLastDateUpdateData().subscribe((response) => {
+      if (response.date) {
+        this.lastImportDate = response.date;
       }
     });
   }
@@ -200,7 +206,7 @@ export class HomeComponent implements OnInit {
   }
 
   onRowClick(row: RowData) {
-    this.dialog.open(DataSubventionInfoDialogComponent, {
+    this.dialog.open(InformationsSupplementairesDialogComponent, {
       width: '100%',
       data: { row },
     });

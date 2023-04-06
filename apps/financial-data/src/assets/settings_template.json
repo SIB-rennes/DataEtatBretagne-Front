@@ -5,10 +5,13 @@
     "clientId": "client"
   },
   "apis": {
-    "financial": "<url api financial>",
-    "magagement": "<url api management>",
+    "financial_data": "<url api financial pour import>",
+    "nocodb_proxy": "<url api proxy>",
+    "administration": "<url api administration>",
     "geo": "url api geo",
     "referentiel": "url api referentiel",
-    "data_subventions": "url api data_subventions"
-  }
+    "apis_externes": "url api externes"
+  },
+  "contact": "http://contact.fr",
+  "help_pdf": "https://www.africau.edu/images/default/sample.pdf"
 }

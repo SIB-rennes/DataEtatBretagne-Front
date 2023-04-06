@@ -11,8 +11,8 @@
     <div class="box">
 
       <mat-form-field class="field-20-width" appearance="fill">
-        <mat-label>Theme</mat-label>
-        <mat-select formControlName="theme" multiple [errorStateMatcher]="errorMatcher"
+        <mat-label>Thème</mat-label>
+        <mat-select formControlName="theme" multiple
           (selectionChange)="onSelectTheme($event)">
           <mat-option *ngFor="let theme of themes" [value]="theme">
             {{theme.Label}}
@@ -25,9 +25,11 @@
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
-      <mat-form-field class="field-25-width" appearance="fill">
+      <mat-form-field class="field-25-width" appearance="fill"
+        matTooltipPosition="above" matTooltip="Saisir un nom ou un numéro de programme (Exemple : 102 ou Accès et retour à l’emploi)"
+      >
         <mat-label>Programme</mat-label>
-        <mat-select formControlName="bops" multiple [errorStateMatcher]="errorMatcher">
+        <mat-select formControlName="bops" multiple>
           <mat-form-field class="field-100-width" appearance="fill">
             <mat-label>Filtrer</mat-label>
             <input type="text" class="fr-input" matInput formControlName="filterBop">
@@ -58,10 +60,11 @@
 
       <div class="break"></div>
 
-      <mat-form-field class="field-25-width" appearance="fill">
+      <mat-form-field class="field-25-width" appearance="fill"
+        matTooltipPosition="above" matTooltip="Saisir un nom (sans accent) ou un SIRET (Exemple: Decathlon, Rennes... ou 40447186400433,...)" aria-label="Champ de selection pour bénéficiaire."
+      >
         <mat-label>Bénéficiaire</mat-label>
-        <input type="text" matInput formControlName="beneficiaire" [matAutocomplete]="beneficiaire"
-          [errorStateMatcher]="errorMatcher">
+        <input type="text" matInput formControlName="beneficiaire" [matAutocomplete]="beneficiaire">
         <button *ngIf="searchForm.controls['beneficiaire'].value !== null" matSuffix mat-icon-button
           (click)="searchForm.controls['beneficiaire'].setValue(null)">
           <mat-icon>close</mat-icon>
@@ -76,20 +79,19 @@
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
-
       <div class="spacer"></div>
 
-      <button mat-fab color="primary" (click)="doSearch()">
+      <button mat-fab color="primary" (click)="doSearch()" matTooltip="Rechercher" aria-label="Bouton de recherche.">
         <mat-icon fontIcon="search"></mat-icon>
       </button>
 
-      <button mat-fab color="secondary" matTooltip="Télécharger les données" (click)="downloadCsv()"
+      <button mat-fab color="secondary"  (click)="downloadCsv()" matTooltip="Télécharger" aria-label="Bouton de téléchargement de données."
         *ngIf="searchFinish === true" (disabled)="searchInProgress.value === true">
         <mat-icon fontIcon="download"></mat-icon>
       </button>
 
-      <button mat-fab color="warn" matTooltip="Reset le formulaire" (click)="reset()" *ngIf="searchFinish === true">
-        <mat-icon fontIcon="disabled_by_default"></mat-icon>
+      <button mat-fab color="warn" (click)="reset()" *ngIf="searchFinish === true" matTooltip="Effacer la recherche" aria-label="Bouton de réinitialisation des critères de recherche">
+        <mat-icon fontIcon="delete"></mat-icon>
       </button>
     </div>
 

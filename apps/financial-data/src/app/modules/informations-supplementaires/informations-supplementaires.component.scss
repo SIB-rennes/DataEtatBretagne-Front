@@ -1,0 +1,45 @@
+.ligne {
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.colonne {
+    margin: 10px;
+    margin-top: 0px;
+    max-width: none;
+}
+
+.colonne-logo {
+    min-width: 150px;
+
+    i {
+        font-size: 0.8rem;
+    }
+
+    img {
+        width: 150px;
+    }
+}
+
+.colonne-plus-info {
+    min-width: 220px;
+    button {
+        font-size: 0.9rem;
+    }
+}
+
+.newtab:focus {
+    outline: none;
+}
+
+.titre {
+    font-size: 1.2rem;
+}
+
+.conteneur-full {
+    margin: 3rem;
+}
+
+.conteneur-section {
+    margin-bottom: 3rem;
+}

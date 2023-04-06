@@ -8,42 +8,62 @@
       [preFilter]="preFilter" [ngClass]="{ 'hidden': grid_fullscreen }">
     </financial-search-data>
 
-    <div class="main-content overlay-container">
+    <div class="main-content overlay-container no-content">
       <ng-container *ngIf="tableData && tableData.length === 0 else groupingTable">
-        <div class="no-content">Aucune donnée</div>
+        <div><i>Aucune donnée ne correspond à vos critères de recherche.</i></div>
       </ng-container>
     </div>
   </mat-card-content>
+
+  <div class="last-import" *ngIf="lastImportDate">
+    <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="info"></mat-icon>
+    <span>Le dernier chargement des données financières date du <lib-display-date
+        [date]="lastImportDate"></lib-display-date> </span>
+  </div>
 </mat-card>
 
 <ng-template #groupingTable>
   <ng-container *ngIf="tableData">
-    <mat-toolbar class="grid-buttons">
-      <div *ngIf="!grid_fullscreen">
-        <button mat-button (click)="openGroupConfigDialog()" aria-label="Choisir les groupes">
-          Choisir les groupes
-        </button>
-        <button *ngIf="newFilter" mat-icon-button color="primary" matTooltip="Enregistrer le filtre"
-          (click)="openSaveFilterDialog()">
-          <mat-icon fontIcon="save"></mat-icon>
-        </button>
+
+    <div class="table-toolbar">
+      <div>
+        <ul class="fr-btns-group--inline">
+          <li>
+            <button *ngIf="!grid_fullscreen && newFilter"
+              class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-menu-2-fill"
+              (click)="openGroupConfigDialog()" aria-label="Grouper les lignes par">
+              Grouper les lignes par
+            </button>
+          </li>
+        </ul>
       </div>
 
       <div class="spacer"></div>
 
-      <button mat-button (click)="toggle_grid_fullscreen()">
-        <mat-icon matSuffix *ngIf="grid_fullscreen">close_fullscreen</mat-icon>
-        <mat-icon matSuffix *ngIf="!grid_fullscreen">fullscreen</mat-icon>
-        {{fullscreen_label}}
-      </button>
-    </mat-toolbar>
+      <div>
+        <ul class="fr-btns-group--inline">
+          <li>
+            <button *ngIf="!grid_fullscreen && newFilter"
+              class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-save-fill"
+              (click)="openSaveFilterDialog()" aria-label="Sauvegarder la recherche">
+              Sauvegarder la recherche
+            </button>
+          </li>
+          <li>
 
-    <lib-grouping-table class="h-100" 
-      [tableData]="tableData" 
-      [columnsMetaData]="columnsMetaData"
-      [groupingColumns]="groupingColumns"
-      (rowClick)="onRowClick($event)"
-    ></lib-grouping-table>
+            <button class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left"
+              [ngClass]="{ 'fr-icon-subtract-line': grid_fullscreen, 'fr-icon-fullscreen-line': !grid_fullscreen }"
+              (click)="toggle_grid_fullscreen()" aria-label="Bouton de contrôle du plein écran">
+              {{fullscreen_label}}
+            </button>
+
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <lib-grouping-table class="h-100" [tableData]="tableData" [columnsMetaData]="columnsMetaData"
+      [groupingColumns]="groupingColumns" (rowClick)="onRowClick($event)"></lib-grouping-table>
 
   </ng-container>
 </ng-template>
