@@ -83,6 +83,7 @@ export class HomeComponent implements OnInit {
       {
         name: 'Montant',
         label: 'Montant',
+        sub_label: "(autorisation d'engagement)",
         renderFn: (row, col) =>
           row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
         aggregateReducer: AggregatorFns.sum,

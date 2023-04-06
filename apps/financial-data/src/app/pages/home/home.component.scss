@@ -4,8 +4,11 @@
   min-height: 0;
 }
 
-grid-buttons {
+.table-toolbar {
   display: flex;
+  width: 100%;
+  flex-direction: row;
+  background-color: var(--background-contrast-grey);
 }
 
 .mat-card{
