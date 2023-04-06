@@ -71,9 +71,6 @@ export class LocalisationComponent implements OnChanges, OnInit {
   }
 
   ngOnInit(): void {
-    if (this.categorySelected === null) {
-      this.categorySelected = TypeLocalisation.DEPARTEMENT;
-    }
     this._search();
   }
 

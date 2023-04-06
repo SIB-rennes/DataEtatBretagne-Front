@@ -3,4 +3,8 @@
   class="grouping-table-cell {{isFirst ? '' : ('col-' + i)}}"
 >
   {{col.label}}
+  <ng-container *ngIf="col.sub_label">
+    <br>
+    <i style="font-size: 0.8rem;">{{col.sub_label}}</i>
+  </ng-container>
 </div>
