@@ -37,9 +37,7 @@ test.describe("Page d'accueil", () => {
     ).toHaveCount(132);
 
     // vérification des niveaux de localisation
-    await expect(page.locator('data-test-id=category-localisation')).toHaveText(
-      ''
-    );
+    await expect(page.locator('data-test-id=category-localisation')).toBeEmpty();
     await page.getByTestId('niveau-localisation').click({ force: true });
     await page.getByTestId('niveau-localisation').click({ force: true });
     await expect(
