@@ -47,4 +47,8 @@ export class AppComponent implements OnInit {
   public get contact(): string | undefined {
     return this.settings.getSetting().contact;
   }
+
+  public get help(): string | undefined {
+    return this.settings.getSetting().help_pdf;
+  }
 }

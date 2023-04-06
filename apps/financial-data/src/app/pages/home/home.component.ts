@@ -22,7 +22,7 @@ import {
 } from 'apps/grouping-table/src/lib/components/grouping-table/group-utils';
 import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
 import { InformationsSupplementairesDialogComponent } from '../../modules/informations-supplementaires/informations-supplementaires-dialog/informations-supplementaires-dialog.component';
-import { FinancialDataHttpService } from '@services/financial-data-http.service';
+import { AuditHttpService } from '@services/audit.service';
 
 @Component({
   selector: 'financial-home',
@@ -70,7 +70,7 @@ export class HomeComponent implements OnInit {
     private route: ActivatedRoute,
     private alertService: AlertService,
     private preferenceService: PreferenceUsersHttpService,
-    private financialService: FinancialDataHttpService,
+    private auditService: AuditHttpService,
     private _gridFullscreen: GridInFullscreenStateService
   ) {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
@@ -164,12 +164,9 @@ export class HomeComponent implements OnInit {
           });
       }
     });
-
-    const dateFormat = (dateStr: string) =>
-      dateStr ? this.datePipe.transform(dateStr, 'dd/MM/yyyy à hh:mm') : '';
-    this.financialService.getLastDateUpdateData().subscribe((response) => {
+    this.auditService.getLastDateUpdateData().subscribe((response) => {
       if (response.date) {
-        this.lastImportDate = dateFormat(response.date);
+        this.lastImportDate = response.date;
       }
     });
   }

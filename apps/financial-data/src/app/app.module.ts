@@ -13,7 +13,7 @@ import { DatePipe, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PreferenceUsersModule } from 'apps/preference-users/src/lib/preference-users.module';
 import { API_PREFERENCE_PATH } from 'apps/preference-users/src/public-api';
 import { SettingsService } from '../environments/settings.service';
@@ -33,9 +33,15 @@ import { ManagementModule } from 'apps/management/src/public-api';
 import { API_MANAGEMENT_PATH } from 'apps/management/src/lib/services/users-http.service';
 import { GroupingTableModule } from 'apps/grouping-table/src/public-api';
 
-import { aeApiModule, aeConfiguration, aeConfigurationParameters } from 'apps/clients/apis-externes';
+import {
+  aeApiModule,
+  aeConfiguration,
+  aeConfigurationParameters,
+} from 'apps/clients/apis-externes';
 
-export function apiConfigFactory (settingsService: SettingsService) : aeConfiguration {
+export function apiConfigFactory(
+  settingsService: SettingsService
+): aeConfiguration {
   const params: aeConfigurationParameters = {
     withCredentials: false,
     basePath: settingsService.apiExternes,
@@ -77,7 +83,7 @@ registerLocaleData(localeFr);
     {
       provide: API_PREFERENCE_PATH,
       useFactory: (settings: SettingsService) => {
-        return settings.apiManagement;
+        return settings.apiAdministration;
       },
       deps: [SETTINGS],
     },
@@ -98,7 +104,7 @@ registerLocaleData(localeFr);
     {
       provide: API_MANAGEMENT_PATH,
       useFactory: (settings: SettingsService) => {
-        return settings.apiManagement;
+        return settings.apiAdministration;
       },
       deps: [SETTINGS],
     },

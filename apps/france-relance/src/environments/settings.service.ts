@@ -4,7 +4,7 @@ import { IApi, Settings, Keycloak } from 'apps/common-lib/src/public-api';
 
 class Api implements IApi {
   franceRelance = '';
-  management = '';
+  administration = '';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -28,8 +28,8 @@ export class SettingsService implements ISettingsService {
     return this.settings;
   }
 
-  public get apiManagement(): string {
-    return (this.settings.apis as Api).management;
+  public get apiAdministration(): string {
+    return (this.settings.apis as Api).administration;
   }
 
   public get apiFranceRelance(): string {

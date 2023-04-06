@@ -63,14 +63,14 @@ registerLocaleData(localeFr);
     {
       provide: API_PREFERENCE_PATH,
       useFactory: (settings: SettingsService) => {
-        return settings.apiManagement;
+        return settings.apiAdministration;
       },
       deps: [SETTINGS],
     },
     {
       provide: API_MANAGEMENT_PATH,
       useFactory: (settings: SettingsService) => {
-        return settings.apiManagement;
+        return settings.apiAdministration;
       },
       deps: [SETTINGS],
     },

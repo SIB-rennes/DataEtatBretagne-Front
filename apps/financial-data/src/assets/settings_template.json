@@ -7,10 +7,11 @@
   "apis": {
     "financial_data": "<url api financial pour import>",
     "nocodb_proxy": "<url api proxy>",
-    "magagement": "<url api management>",
+    "administration": "<url api administration>",
     "geo": "url api geo",
     "referentiel": "url api referentiel",
     "apis_externes": "url api externes"
   },
-  "contact": "http://contact.fr"
+  "contact": "http://contact.fr",
+  "help_pdf": "https://www.africau.edu/images/default/sample.pdf"
 }

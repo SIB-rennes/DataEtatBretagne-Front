@@ -17,7 +17,8 @@
 
   <div class="last-import" *ngIf="lastImportDate">
     <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="info"></mat-icon>
-    <span>Le dernier chargement des données financières date du {{lastImportDate}} </span>
+    <span>Le dernier chargement des données financières date du <lib-display-date
+        [date]="lastImportDate"></lib-display-date> </span>
   </div>
 </mat-card>
 
