@@ -7,7 +7,7 @@ import {
 import { AuditHttpService } from '@services/audit.service';
 import { FinancialDataHttpService } from '@services/financial-data-http.service';
 import { AlertService } from 'apps/common-lib/src/public-api';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, finalize } from 'rxjs';
 
 @Component({
   selector: 'financial-upload-financial-component',
@@ -25,6 +25,12 @@ export class UploadFinancialComponent implements OnInit {
   public file: File | null = null;
   public years;
   public dataSource: AuditUpdateData[] = [];
+
+  /**
+   * Indique si la recherche est en cours
+   */
+  public uploadInProgress = new BehaviorSubject(false);
+
   displayedColumns: string[] = ['username', 'filename', 'date'];
 
   public yearSelected = new Date().getFullYear();
@@ -41,11 +47,7 @@ export class UploadFinancialComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.auditService
-      .getHistoryData(DataType.FINANCIAL_DATA)
-      .subscribe((response: AuditUpdateData[]) => {
-        this.dataSource = response;
-      });
+    this._fetchAudit();
   }
 
   onFileSelected(event: any) {
@@ -58,19 +60,36 @@ export class UploadFinancialComponent implements OnInit {
 
   uploadFinancialFile() {
     if (this.file !== null && this.yearSelected) {
-      this.service.loadFileChorus(this.file, '' + this.yearSelected).subscribe({
-        next: () => {
-          this.cancelUpload();
-          this.alertService.openAlertSuccess(
-            'Le fichier a bien été récupéré. Il sera traité dans les prochaines minutes.'
-          );
-        },
-        error: (err: HttpErrorResponse) => {
-          if (err.error['message']) {
-            this.alertService.openAlertError(err.error['message']);
-          }
-        },
-      });
+      this.uploadInProgress.next(true);
+      this.service
+        .loadFileChorus(this.file, '' + this.yearSelected)
+        .pipe(
+          finalize(() => {
+            this.cancelUpload();
+            this.uploadInProgress.next(false);
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.alertService.openAlertSuccess(
+              'Le fichier a bien été récupéré. Il sera traité dans les prochaines minutes.'
+            );
+            this._fetchAudit();
+          },
+          error: (err: HttpErrorResponse) => {
+            if (err.error['message']) {
+              this.alertService.openAlertError(err.error['message']);
+            }
+          },
+        });
     }
+  }
+
+  private _fetchAudit() {
+    this.auditService
+      .getHistoryData(DataType.FINANCIAL_DATA)
+      .subscribe((response: AuditUpdateData[]) => {
+        this.dataSource = response;
+      });
   }
 }

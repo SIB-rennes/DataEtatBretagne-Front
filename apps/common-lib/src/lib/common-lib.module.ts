@@ -8,6 +8,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { RegisterComponent } from './components/register/register.component';
 import { TermOfUseComponent } from './components/term-of-use/term-of-use.component';
+import { DisplayDateComponent } from './components/display-date/display-date.component';
 
 @NgModule({
   declarations: [
@@ -22,11 +23,13 @@ import { TermOfUseComponent } from './components/term-of-use/term-of-use.compone
     ReactiveFormsModule,
     FormsModule,
     HeaderComponent,
+    DisplayDateComponent,
   ],
   exports: [
     AlertSnackBarComponent,
     LocalisationComponent,
     HeaderComponent,
+    DisplayDateComponent,
     FooterComponent,
     TermOfUseComponent,
     RegisterComponent,

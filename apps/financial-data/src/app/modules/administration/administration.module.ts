@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
   declarations: [UploadFinancialComponent],
   imports: [
     CommonModule,
+    CommonLibModule,
     AdministrationRoutingModule,
     MaterialModule,
     FormsModule,
