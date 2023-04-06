@@ -38,7 +38,7 @@ test.describe("Page d'accueil", () => {
 
     // vérification des niveaux de localisation
     await expect(page.locator('data-test-id=category-localisation')).toHaveText(
-      'Département'
+      ''
     );
     await page.getByTestId('niveau-localisation').click({ force: true });
     await page.getByTestId('niveau-localisation').click({ force: true });
@@ -46,7 +46,7 @@ test.describe("Page d'accueil", () => {
       page
         .getByRole('listbox', { name: 'Zone géographique' })
         .locator('.mdc-list-item__primary-text')
-    ).toHaveCount(4);
+    ).toHaveCount(5);
 
     await page.getByLabel('Année').isVisible();
     await page.getByLabel('Bénéficiaire').isVisible();
