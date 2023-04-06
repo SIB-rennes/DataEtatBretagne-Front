@@ -11,12 +11,16 @@ class Api implements IApi {
   apis_externes = '';
 }
 
+class FinancialSettings extends Settings {
+  help_pdf: string | undefined = undefined;
+}
+
 @Injectable({ providedIn: 'root' })
 export class SettingsService implements ISettingsService {
   public settings: Settings;
 
   constructor() {
-    this.settings = new Settings();
+    this.settings = new FinancialSettings();
     this.settings.apis = new Api();
     this.settings.keycloak = new Keycloak();
   }
@@ -24,12 +28,13 @@ export class SettingsService implements ISettingsService {
   setSettings(settings: Settings): void {
     this.settings = settings;
   }
+
   getKeycloakSettings(): Keycloak {
     return this.settings.keycloak;
   }
 
-  getSetting(): Settings {
-    return this.settings;
+  getSetting(): FinancialSettings {
+    return this.settings as FinancialSettings;
   }
 
   public get apiGeo(): string {
