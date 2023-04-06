@@ -37,16 +37,14 @@ test.describe("Page d'accueil", () => {
     ).toHaveCount(132);
 
     // vérification des niveaux de localisation
-    await expect(page.locator('data-test-id=category-localisation')).toHaveText(
-      'Département'
-    );
+    await expect(page.locator('data-test-id=category-localisation')).toBeEmpty();
     await page.getByTestId('niveau-localisation').click({ force: true });
     await page.getByTestId('niveau-localisation').click({ force: true });
     await expect(
       page
         .getByRole('listbox', { name: 'Zone géographique' })
         .locator('.mdc-list-item__primary-text')
-    ).toHaveCount(4);
+    ).toHaveCount(5);
 
     await page.getByLabel('Année').isVisible();
     await page.getByLabel('Bénéficiaire').isVisible();
