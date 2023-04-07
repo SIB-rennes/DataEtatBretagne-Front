@@ -21,6 +21,12 @@
 
 * [Financial data](./apps/financial-data/README.md)
 
+# Comment mettre à jour les dépendances
+
+```bash
+npx ng update # suivre les instructions
+```
+
 # Test e2e
 
 Créer un fichier '.env' à la racine du projet [e2e](./e2e) et mettre les identifiants d'un utilisateur pour passer l'authentification :  
