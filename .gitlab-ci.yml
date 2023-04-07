@@ -1,5 +1,6 @@
 stages:
   - build-angular
+  - 📖 storybook-test
   - 🔨 docker-build
   - 🐣 deploy
   - test-e2e
@@ -8,11 +9,14 @@ variables:
   DO_BUILD:
     description: "Activation du build de base des projets (build + TU) : true | if_changed | manual"
     value: "true"
+  DO_TEST:
+    description: "Activation des tests unitaires : true | manual"
+    value: "manual"
   DO_DEPLOY:
     description: "Activation du déploiement des images crées: manual_if_changed | manual"
     value: "manual"
   DO_E2E:
-    description: "Activation des tests end-to-end: true"
+    description: "Activation des tests end-to-end: true | manual"
     value: "manual"
 
 workflow:
@@ -23,16 +27,19 @@ workflow:
     - if: '$CI_PIPELINE_SOURCE == "push" && ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop" )'
       variables:
         DO_BUILD: "true"
+        DO_TEST: "true"
         DO_DEPLOY: "true"
         DO_E2E: "true"
     - if: '$CI_PIPELINE_SOURCE == "push" &&  $CI_COMMIT_REF_NAME =~ "/^feature\//"'
       variables:
         DO_BUILD: "true"
+        DO_TEST: "manual"
         DO_DEPLOY: "manual"
         DO_E2E: "manual"
     - if: '$CI_PIPELINE_SOURCE == "push" &&  $CI_COMMIT_REF_NAME =~ "/^fix\//"'
       variables:
         DO_BUILD: "true"
+        DO_TEST: "manual"
         DO_DEPLOY: "manual"
         DO_E2E: "true"
     - if: '$CI_PIPELINE_SOURCE == "web"'
@@ -111,6 +118,27 @@ build angular francerelance app:
       changes:
         - "apps/france-relance/**/*"
 
+# 
+run-storybook-test:
+  image: mcr.microsoft.com/playwright:v1.29.2-focal
+  stage: 📖 storybook-test
+  script:
+    - npm ci --cache ${CI_PROJECT_DIR}/.npm --prefer-offline --quiet --force
+    - npm i concurrently wait-on http-server
+    - npx playwright install --with-deps
+    - npx ng run common-lib:build-storybook
+    - npx concurrently -k -s first \
+        "npx http-server dist/storybook/common-lib --port 6006 --silent" \
+        "npx wait-on tcp:6006 && npm run test-storybook"
+  cache:
+    key: ${CI_PROJECT_ID}-npm
+    paths:
+      - ${CI_PROJECT_DIR}/.npm/
+  rules:
+    - if: '$DO_TEST == "true"'
+    - if: '$DO_TEST == "manual"'
+      when: manual
+
 #BUILD DOCKER
 docker-image-financial:
   extends: .build-docker
@@ -175,6 +203,8 @@ deploy-integ-financial-snapshot:
     SERVICE: "financial-data"
   before_script:
     - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"
+  needs:
+    - job: docker-image-financial
   rules:
     - if: '$DO_DEPLOY == "true"'
     - if: '$CI_COMMIT_TAG == ""'
@@ -203,6 +233,8 @@ deploy-integ-francerelance-snapshot:
     SERVICE: "france-relance"
   before_script:
     - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"
+  needs:
+    - job: docker-image-francerelance
   rules:
     - if: '$DO_DEPLOY == "true"'
     - if: '$CI_COMMIT_TAG == ""'

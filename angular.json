@@ -208,6 +208,24 @@
               "apps/common-lib/**/*.html"
             ]
           }
+        },
+        "storybook": {
+          "builder": "@storybook/angular:start-storybook",
+          "options": {
+            "configDir": "apps/common-lib/.storybook",
+            "browserTarget": "common-lib:build",
+            "compodoc": false,
+            "port": 6006
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular:build-storybook",
+          "options": {
+            "configDir": "apps/common-lib/.storybook",
+            "browserTarget": "common-lib:build",
+            "compodoc": false,
+            "outputDir": "dist/storybook/common-lib"
+          }
         }
       }
     },
