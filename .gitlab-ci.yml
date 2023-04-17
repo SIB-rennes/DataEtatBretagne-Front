@@ -187,7 +187,7 @@ docker-image-francerelance:
 deploy-integ-financial-tag:
   extends: .deploy-integ
   needs:
-    - job: docker-image-francerelance
+    - job: docker-image-financial
   only:
     - tags
   variables:
@@ -207,7 +207,8 @@ deploy-integ-financial-snapshot:
     - job: docker-image-financial
   rules:
     - if: '$DO_DEPLOY == "true"'
-    - if: '$CI_COMMIT_TAG == ""'
+    - if: '$CI_COMMIT_TAG != ""'
+      when: never
     - if: '$DO_DEPLOY == "manual"'
       when: manual
     - if: '$DO_DEPLOY == "if_changed"'
@@ -237,7 +238,8 @@ deploy-integ-francerelance-snapshot:
     - job: docker-image-francerelance
   rules:
     - if: '$DO_DEPLOY == "true"'
-    - if: '$CI_COMMIT_TAG == ""'
+    - if: '$CI_COMMIT_TAG != ""'
+      when: never
     - if: '$DO_DEPLOY == "manual"'
       when: manual
     - if: '$DO_DEPLOY == "if_changed"'
