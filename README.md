@@ -11,7 +11,7 @@
 <div align="center">
  
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-green.svg)](https://conventionalcommits.org)
-[![Angular](https://img.shields.io/badge/angular-14-blue)](https://angular.io/)
+[![Angular](https://img.shields.io/badge/angular-15-blue)](https://angular.io/)
 [![Docker build](https://img.shields.io/badge/docker-automated-informational)](https://docs.docker.com/compose/)
 
 </div>
@@ -20,6 +20,12 @@
 # Liste des fronts
 
 * [Financial data](./apps/financial-data/README.md)
+
+# Comment mettre à jour les dépendances
+
+```bash
+npx ng update # suivre les instructions
+```
 
 # Test e2e
 
@@ -48,13 +54,13 @@ Le dossier [apps/clients](./apps/clients/) contient des clients d'api, ces derni
 
 ## Data subventions
 
- - url api: [https://api.nocode.csm.ovh/apis_externes/swagger.json](https://api.nocode.csm.ovh/apis_externes/swagger.json)
+ - url api: [https://api.databretagne.fr/apis_externes/swagger.json](https://api.databretagne.fr/apis_externes/swagger.json)
  - Commande de génération:
 
 Depuis la racine du projet: 
 ```
 docker run --rm -v "$(pwd)/apps/clients:/local" openapitools/openapi-generator-cli generate \
-              -i "https://api.nocode.csm.ovh/apis_externes/swagger.json" \
+              -i "https://api.databretagne.fr/apis_externes/swagger.json" \
               -g typescript-angular \
               -o /local/apis-externes \
               --additional-properties npmName=ds-client,npmVersion=1.0.0,snapshot=false,ngVersion="15.0.1",apiModulePrefix=ae,configurationPrefix=ae

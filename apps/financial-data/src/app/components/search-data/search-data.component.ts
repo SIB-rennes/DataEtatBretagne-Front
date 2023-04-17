@@ -318,7 +318,7 @@ export class SearchDataComponent implements OnInit, OnChanges {
   private _filenameCsv(): string {
     const formValue = this.searchForm.value;
     let filename = `${this.datePipe.transform(new Date(), 'yyyyMMdd')}_export_${
-      formValue.location.nom
+      formValue?.location?.nom || ''
     }`;
 
     if (formValue.theme !== null) {
