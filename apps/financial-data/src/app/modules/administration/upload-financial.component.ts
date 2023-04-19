@@ -7,7 +7,15 @@ import {
 import { AuditHttpService } from '@services/audit.service';
 import { FinancialDataHttpService } from '@services/financial-data-http.service';
 import { AlertService } from 'apps/common-lib/src/public-api';
-import { BehaviorSubject, Subscription, finalize } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subscription,
+  catchError,
+  finalize,
+  forkJoin,
+  map,
+  of,
+} from 'rxjs';
 
 @Component({
   selector: 'financial-upload-financial-component',
@@ -16,6 +24,7 @@ import { BehaviorSubject, Subscription, finalize } from 'rxjs';
 })
 export class UploadFinancialComponent implements OnInit {
   public readonly requiredFileType: string = '.csv';
+  public DataType = DataType;
 
   uploadSub: Subscription | null = new Subscription();
 
@@ -34,6 +43,8 @@ export class UploadFinancialComponent implements OnInit {
   displayedColumns: string[] = ['username', 'filename', 'date'];
 
   public yearSelected = new Date().getFullYear();
+
+  public typeSelected: DataType | null = null;
 
   constructor(
     private service: FinancialDataHttpService,
@@ -59,10 +70,10 @@ export class UploadFinancialComponent implements OnInit {
   }
 
   uploadFinancialFile() {
-    if (this.file !== null && this.yearSelected) {
+    if (this.file !== null && this.yearSelected && this.typeSelected) {
       this.uploadInProgress.next(true);
       this.service
-        .loadFileChorus(this.file, '' + this.yearSelected)
+        .loadFinancialFile(this.file, '' + this.yearSelected, this.typeSelected)
         .pipe(
           finalize(() => {
             this.cancelUpload();
@@ -86,10 +97,23 @@ export class UploadFinancialComponent implements OnInit {
   }
 
   private _fetchAudit() {
-    this.auditService
-      .getHistoryData(DataType.FINANCIAL_DATA)
-      .subscribe((response: AuditUpdateData[]) => {
-        this.dataSource = response;
+    const financialAe$ = this.auditService
+      .getHistoryData(DataType.FINANCIAL_DATA_AE)
+      .pipe(catchError((error) => of([])));
+
+    const financialCp$ = this.auditService
+      .getHistoryData(DataType.FINANCIAL_DATA_CP)
+      .pipe(catchError((error) => of([])));
+
+    forkJoin({
+      ae: financialAe$,
+      cp: financialCp$,
+    }).subscribe((response) => {
+      const tabs = [...response.ae, ...response.cp];
+      tabs.sort((a1: AuditUpdateData, a2: AuditUpdateData) => {
+        return a1.date <= a2.date ? 1 : -1;
       });
+      this.dataSource = tabs;
+    });
   }
 }

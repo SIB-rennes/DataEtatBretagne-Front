@@ -15,6 +15,7 @@ import {
 } from 'apps/common-lib/src/public-api';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { NocoDbResponse } from 'apps/common-lib/src/lib/models/nocodb-response';
+import { DataType } from '@models/audit/audit-update-data.models';
 
 @Injectable({
   providedIn: 'root',
@@ -200,18 +201,24 @@ export class FinancialDataHttpService extends NocodbHttpService {
     return params;
   }
 
-  public loadFileChorus(
+  public loadFinancialFile(
     file: any,
     annee: string,
+    type: DataType,
     code_region = '53'
   ): Observable<any> {
-    const apiData = this.settings.apiFinancialata;
-
     const formData = new FormData();
     formData.append('fichier', file);
     formData.append('annee', annee);
     formData.append('code_region', code_region);
 
-    return this.http.post(`${apiData}/chorus/import/ae`, formData);
+    const apiData = this.settings.apiFinancialData;
+
+    if (type === DataType.FINANCIAL_DATA_AE) {
+      return this.http.post(`${apiData}/ae`, formData);
+    } else if (type === DataType.FINANCIAL_DATA_CP) {
+      return this.http.post(`${apiData}/cp`, formData);
+    }
+    return of();
   }
 }

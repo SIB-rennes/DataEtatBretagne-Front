@@ -53,7 +53,7 @@ export class SettingsService implements ISettingsService {
     return (this.settings.apis as Api).nocodb_proxy;
   }
 
-  public get apiFinancialata(): string {
+  public get apiFinancialData(): string {
     return (this.settings.apis as Api).financial_data;
   }
 
