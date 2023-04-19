@@ -22,7 +22,7 @@ export class AuditHttpService {
     const apiData = this.settings.apiAdministration;
 
     return this.http.get<{ date: string }>(
-      `${apiData}/audit/FINANCIAL_DATA/last`
+      `${apiData}/audit/FINANCIAL_DATA_AE/last`
     );
   }
 
