@@ -180,72 +180,50 @@ docker-image-francerelance:
     COMPOSE: ""
     SERVICE: ""
   script:
-    - echo ${VERSION}
+    - >
+      if [[ "$CI_COMMIT_TAG" == "" ]]; then
+        echo "TAG VIDE";
+        VERSION=/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot
+      else
+        echo "TAG PAS VIDE";
+        VERSION=:${CI_COMMIT_REF_NAME}
+      fi
+    - echo $VERSION
     - ssh ${USER_INTEG}@${SERVER_INTEG} "docker network create -d overlay --attachable app_network || true"
     - ssh ${USER_INTEG}@${SERVER_INTEG} "export VERSION=${VERSION};"'export $(cat ~/stack-nocode/livraison/env-file-integ);docker stack deploy --with-registry-auth --compose-file '" ${COMPOSE} ${STACK_NAME}"
     - ssh ${USER_INTEG}@${SERVER_INTEG} "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait -n ${SERVICE} ${STACK_NAME}"
-#INTEG
-deploy-integ-financial-tag:
-  extends: .deploy-integ
-  needs:
-    - job: docker-image-financial
-  only:
-    - tags
-  variables:
-    COMPOSE: "~/stack-nocode/compose/integ/front-financial.yml"
-    SERVICE: "financial-data"
-  before_script:
-    - export VERSION=":${CI_COMMIT_REF_NAME}"
 
-deploy-integ-financial-snapshot:
+
+deploy-integ-financial:
   extends: .deploy-integ
+  needs:
+    - job: docker-image-financial
   variables:
     COMPOSE: "~/stack-nocode/compose/integ/front-financial.yml"
     SERVICE: "financial-data"
-  before_script:
-    - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"
-  needs:
-    - job: docker-image-financial
   rules:
     - if: '$DO_DEPLOY == "true"'
-    - if: '$CI_COMMIT_TAG != ""'
-      when: never
     - if: '$DO_DEPLOY == "manual"'
       when: manual
     - if: '$DO_DEPLOY == "if_changed"'
       changes:
         - "apps/financial-data/**/*"
 
-deploy-integ-francerelance-tag:
+deploy-integ-francerelance:
   extends: .deploy-integ
   needs:
     - job: docker-image-francerelance
-  only:
-    - tags
   variables:
     COMPOSE: "~/stack-nocode/compose/integ/front-france-relance.yml"
     SERVICE: "france-relance"
-  before_script:
-    - export VERSION=":${CI_COMMIT_REF_NAME}"
-
-deploy-integ-francerelance-snapshot:
-  extends: .deploy-integ
-  variables:
-    COMPOSE: "~/stack-nocode/compose/integ/front-france-relance.yml"
-    SERVICE: "france-relance"
-  before_script:
-    - export VERSION="/${CI_COMMIT_REF_NAME}:${CI_COMMIT_SHA:0:8}-snapshot"
-  needs:
-    - job: docker-image-francerelance
   rules:
     - if: '$DO_DEPLOY == "true"'
-    - if: '$CI_COMMIT_TAG != ""'
-      when: never
     - if: '$DO_DEPLOY == "manual"'
       when: manual
     - if: '$DO_DEPLOY == "if_changed"'
       changes:
         - "apps/france-relance/**/*"
+
 
 #TESTS E2E
 run-tests-e2e:
