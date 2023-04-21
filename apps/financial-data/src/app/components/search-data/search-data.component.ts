@@ -34,7 +34,11 @@ import {
   JSONObject,
   Preference,
 } from 'apps/preference-users/src/lib/models/preference.models';
-import { AlertService, TypeLocalisation } from 'apps/common-lib/src/public-api';
+import {
+  AlertService,
+  GeoModel,
+  TypeLocalisation,
+} from 'apps/common-lib/src/public-api';
 
 @Component({
   selector: 'financial-search-data',
@@ -228,8 +232,7 @@ export class SearchDataComponent implements OnInit, OnChanges {
    * lance la recherche des lignes d'engagement financière
    */
   public doSearch(): void {
-    this.searchForm.markAllAsTouched(); // pour notifier les erreurs sur le formulaire
-    if (this.searchForm.valid && !this.searchInProgress.value) {
+    if (!this.searchInProgress.value) {
       const formValue = this.searchForm.value;
       this.searchInProgress.next(true);
       this.service
@@ -317,25 +320,25 @@ export class SearchDataComponent implements OnInit, OnChanges {
 
   private _filenameCsv(): string {
     const formValue = this.searchForm.value;
-    let filename = `${this.datePipe.transform(new Date(), 'yyyyMMdd')}_export_${
-      formValue?.location?.nom || ''
-    }`;
-
-    if (formValue.theme !== null) {
-      filename += '_' + formValue.theme.Label;
+    console.log(formValue);
+    let filename = `${this.datePipe.transform(new Date(), 'yyyyMMdd')}_export`;
+    if (formValue.location !== null) {
+      const locations = formValue.location as GeoModel[];
+      filename += '_' + locations[0].type + '-';
+      locations
+        .filter((loc) => loc.code)
+        .map((loc) => loc.code)
+        .join('-');
     }
+
     if (formValue.bops !== null) {
       const bops = formValue.bops as BopModel[];
       filename +=
-        '_' +
+        '_bops-' +
         bops
           .filter((bop) => bop.Code)
           .map((bop) => bop.Code)
           .join('-');
-    }
-
-    if (formValue.year) {
-      filename += '_' + formValue.year;
     }
 
     return filename + '.csv';
@@ -346,21 +349,19 @@ export class SearchDataComponent implements OnInit, OnChanges {
    */
   private _onFilter(): void {
     // formulaire
-    this.searchForm = new FormGroup(
-      {
-        year: new FormControl('', {
-          validators: [
-            Validators.min(2000),
-            Validators.max(new Date().getFullYear()),
-          ],
-        }),
-        bops: new FormControl(null),
-        theme: new FormControl(null),
-        beneficiaire: new FormControl(null),
-        filterBop: new FormControl(null), // controls pour le filtre des bops
-        location: new FormControl({ value: null, disabled: false }, []),
-      },
-    );
+    this.searchForm = new FormGroup({
+      year: new FormControl('', {
+        validators: [
+          Validators.min(2000),
+          Validators.max(new Date().getFullYear()),
+        ],
+      }),
+      bops: new FormControl(null),
+      theme: new FormControl(null),
+      beneficiaire: new FormControl(null),
+      filterBop: new FormControl(null), // controls pour le filtre des bops
+      location: new FormControl({ value: null, disabled: false }, []),
+    });
 
     this.searchForm.controls['filterBop'].valueChanges.subscribe((value) => {
       if (typeof value === 'string') {
@@ -390,7 +391,7 @@ export class SearchDataComponent implements OnInit, OnChanges {
     const themes = this.searchForm.controls['theme'].value as RefTheme[];
     const themesId = themes ? themes.map((t) => t.Id) : null;
 
-    return this.bop.filter((option) => {
+    let filterGeo = this.bop.filter((option) => {
       if (themesId && option.RefTheme) {
         return (
           themesId.includes(option.RefTheme.Id) &&
@@ -402,6 +403,23 @@ export class SearchDataComponent implements OnInit, OnChanges {
         option.Code.startsWith(filterValue)
       );
     });
+
+    const controlBop = this.searchForm.controls['bops'].value as BopModel[];
+
+    if (controlBop) {
+      // si des BOPs sont déjà sélectionné
+      return [
+        ...controlBop,
+        ...filterGeo.filter(
+          (element) =>
+            controlBop.findIndex(
+              (valueSelected: BopModel) => valueSelected.Code === element.Code
+            ) === -1 // on retire les doublons éventuels
+        ),
+      ];
+    } else {
+      return filterGeo;
+    }
   }
 
   public generateArrayOfYears() {
