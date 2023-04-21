@@ -109,7 +109,13 @@ export class FinancialDataHttpService extends NocodbHttpService {
     year: number[] | null,
     location: GeoModel[] | null
   ): Observable<FinancialDataModel[]> {
-    if (bops == null && themes == null && year == null && location == null)
+    if (
+      bops == null &&
+      themes == null &&
+      year == null &&
+      location == null &&
+      beneficiaire == null
+    )
       return of();
 
     const params = this._buildparams(
@@ -133,7 +139,13 @@ export class FinancialDataHttpService extends NocodbHttpService {
     year: number[] | null,
     location: GeoModel[] | null
   ): Observable<Blob> {
-    if (bops == null && themes == null && year == null && location == null)
+    if (
+      bops == null &&
+      themes == null &&
+      year == null &&
+      location == null &&
+      beneficiaire == null
+    )
       return of();
 
     const params = this._buildparams(
