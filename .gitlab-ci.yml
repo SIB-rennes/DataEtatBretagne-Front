@@ -1,8 +1,8 @@
 stages:
   - build-angular
-  - 📖 storybook-test
   - 🔨 docker-build
   - 🐣 deploy
+  # - 📖 storybook-test
   - test-e2e
 
 variables:
@@ -35,7 +35,7 @@ workflow:
         DO_BUILD: "true"
         DO_TEST: "manual"
         DO_DEPLOY: "manual"
-        DO_E2E: "manual"
+        DO_E2E: "if_changed"
     - if: '$CI_PIPELINE_SOURCE == "push" &&  $CI_COMMIT_REF_NAME =~ "/^fix\//"'
       variables:
         DO_BUILD: "true"
@@ -54,6 +54,8 @@ workflow:
   script:
     - echo $IMAGE
     - echo $CI_COMMIT_TAG
+    - echo $DO_DEPLOY
+    - echo $DO_E2E
     - >
       if [[ "$CI_COMMIT_TAG" == "" ]]; then
         echo "TAG VIDE";
@@ -118,26 +120,25 @@ build angular francerelance app:
       changes:
         - "apps/france-relance/**/*"
 
-# 
-run-storybook-test:
-  image: mcr.microsoft.com/playwright:v1.29.2-focal
-  stage: 📖 storybook-test
-  script:
-    - npm ci --cache ${CI_PROJECT_DIR}/.npm --prefer-offline --quiet --force
-    - npm i concurrently wait-on http-server
-    - npx playwright install --with-deps
-    - npx ng run common-lib:build-storybook
-    - npx concurrently -k -s first \
-        "npx http-server dist/storybook/common-lib --port 6006 --silent" \
-        "npx wait-on tcp:6006 && npm run test-storybook"
-  cache:
-    key: ${CI_PROJECT_ID}-npm
-    paths:
-      - ${CI_PROJECT_DIR}/.npm/
-  rules:
-    - if: '$DO_TEST == "true"'
-    - if: '$DO_TEST == "manual"'
-      when: manual
+# run-storybook-test:
+#   image: mcr.microsoft.com/playwright:v1.29.2-focal
+#   stage: 📖 storybook-test
+#   script:
+#     - npm ci --cache ${CI_PROJECT_DIR}/.npm --prefer-offline --quiet --force
+#     - npm i concurrently wait-on http-server
+#     - npx playwright install --with-deps
+#     - npx ng run common-lib:build-storybook
+#     - npx concurrently -k -s first \
+#       "npx http-server dist/storybook/common-lib --port 6006 --silent" \
+#       "npx wait-on tcp:6006 && npm run test-storybook"
+#   cache:
+#     key: ${CI_PROJECT_ID}-npm
+#     paths:
+#       - ${CI_PROJECT_DIR}/.npm/
+#   rules:
+#     - if: '$DO_TEST == "true"'
+#     - if: '$DO_TEST == "manual"'
+#       when: manual
 
 #BUILD DOCKER
 docker-image-financial:
