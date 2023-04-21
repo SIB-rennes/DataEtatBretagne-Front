@@ -392,8 +392,9 @@ export class SearchDataComponent implements OnInit, OnChanges {
     const themesId = themes ? themes.map((t) => t.Id) : null;
 
     let filterGeo = this.bop.filter((option) => {
-      if (themesId && option.RefTheme) {
+      if (themesId) {
         return (
+          option.RefTheme != null &&
           themesId.includes(option.RefTheme.Id) &&
           option.Label?.toLowerCase().includes(filterValue)
         );
