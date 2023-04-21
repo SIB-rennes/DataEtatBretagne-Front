@@ -2,10 +2,12 @@ import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import {
+  GeoArrondissementModel,
   GeoCommuneModel,
   GeoModel,
   TypeLocalisation,
 } from '../models/geo.models';
+import { ReferentielResponse } from '../models/pagination/referentiel-response.models';
 
 /**
  * Injection token for the API path.
@@ -138,5 +140,33 @@ export class GeoHttpService {
         });
       })
     );
+  }
+
+  /**
+   * Filters Arrondissement by search query
+   * @param search The search query.
+   * @returns An observable of an array of GeoModel objects representing the filtered Arrondissement.
+   */
+  public filterArrondissement(search: string | null): Observable<GeoModel[]> {
+    let params = 'limit=500';
+    if (search) {
+      params = `limit=100&query=${search}`;
+    }
+
+    return this.http
+      .get<ReferentielResponse<GeoArrondissementModel>>(
+        `${this.apiRef}/arrondissement?${params}`
+      )
+      .pipe(
+        map((items: ReferentielResponse<GeoArrondissementModel>) => {
+          return items.items.map((arr: GeoArrondissementModel) => {
+            return {
+              nom: arr.label,
+              code: arr.code,
+              type: TypeLocalisation.ARRONDISSEMENT,
+            } as GeoModel;
+          });
+        })
+      );
   }
 }

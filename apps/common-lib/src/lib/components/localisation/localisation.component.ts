@@ -140,6 +140,8 @@ export class LocalisationComponent implements OnChanges, OnInit {
         return this.geoService.filterEpci(value);
       case TypeLocalisation.CRTE:
         return this.geoService.filterCrte(value);
+      case TypeLocalisation.ARRONDISSEMENT:
+        return this.geoService.filterArrondissement(value);
     }
   }
 }

@@ -11,7 +11,6 @@ import { RefSiret } from '@models/RefSiret';
 import {
   GeoModel,
   NocodbHttpService,
-  TableNocodb,
   TypeLocalisation,
 } from 'apps/common-lib/src/public-api';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
@@ -188,6 +187,9 @@ export class FinancialDataHttpService extends NocodbHttpService {
           break;
         case TypeLocalisation.CRTE:
           params += `~and(code_crte,in,${listCode})`;
+          break;
+        case TypeLocalisation.ARRONDISSEMENT:
+          params += `~and(code_arrondissement,in,${listCode})`;
           break;
       }
     }
