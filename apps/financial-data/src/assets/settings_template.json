@@ -6,7 +6,18 @@
   },
   "apis": {
     "financial_data": "<url api financial pour import>",
-    "nocodb_proxy": "<url api proxy>",
+    "nocodb_proxy": {
+      "base_uri": "<base uri proxy nocodb>",
+      "project": {
+        "budget": {
+          "table": "<nom de la table>",
+          "financial": "<nom de la table des donnes AE>",
+          "themes": "RefTheme/RefTheme",
+          "siret": "RefSiret/RefSiret",
+          "programme": "RefCodeProgramme/RefCodeProgramme"
+        }
+      }
+    },
     "administration": "<url api administration>",
     "geo": "url api geo",
     "referentiel": "url api referentiel",

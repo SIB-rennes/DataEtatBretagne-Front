@@ -1,10 +1,30 @@
 import { Injectable } from '@angular/core';
 import { ISettingsService } from 'apps/common-lib/src/lib/environments/interface-settings.service';
-import { IApi, Settings, Keycloak } from 'apps/common-lib/src/public-api';
+import {
+  IApi,
+  NocodApiProxy,
+  Settings,
+  NocodbViews,
+  NocodbProject,
+  TableNocodb,
+  Keycloak,
+} from 'apps/common-lib/src/public-api';
+
+interface FinancialView extends NocodbViews {
+  financial: string;
+  themes: string;
+  programmes: string;
+  siret: string;
+}
+
+interface FinancialProject extends NocodbProject<FinancialView> {
+  budget: TableNocodb<FinancialView>;
+}
 
 class Api implements IApi {
   financial_data = '';
-  nocodb_proxy = '';
+  nocodb_proxy: NocodApiProxy<FinancialProject, FinancialView> | undefined =
+    undefined;
   administration = '';
   geo = '';
   referentiel = '';
@@ -49,8 +69,14 @@ export class SettingsService implements ISettingsService {
     return (this.settings.apis as Api).apis_externes;
   }
 
-  public get apiNocodb(): string {
+  public get nocodbProxy():
+    | NocodApiProxy<FinancialProject, FinancialView>
+    | undefined {
     return (this.settings.apis as Api).nocodb_proxy;
+  }
+
+  public get projectFinancial(): TableNocodb<FinancialView> | undefined {
+    return this.nocodbProxy?.projects.budget;
   }
 
   public get apiFinancialData(): string {
