@@ -207,6 +207,7 @@ export class HomeComponent implements OnInit {
   onRowClick(row: RowData) {
     this.dialog.open(InformationsSupplementairesDialogComponent, {
       width: '100%',
+      maxHeight: '100vh',
       data: { row },
     });
   }
