@@ -82,12 +82,23 @@ export class HomeComponent implements OnInit {
       { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
       {
         name: 'Montant',
-        label: 'Montant',
+        label: 'Montant engagé',
         renderFn: (row, col) =>
           row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
         aggregateReducer: AggregatorFns.sum,
         aggregateRenderFn: (aggregateValue) =>
           aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
+        columnStyle: {
+          'text-align': 'right',
+          'min-width': '16ex',
+          'flex-grow': '0',
+        },
+      },
+      {
+        name: 'montant_cp',
+        label: 'Montant payé',
+        renderFn: (row, col) =>
+          row[col.name] ? moneyFormat.format(row[col.name]) : 'Non renseigné',
         columnStyle: {
           'text-align': 'right',
           'min-width': '16ex',
@@ -124,6 +135,12 @@ export class HomeComponent implements OnInit {
           'min-width': '16ex',
           'flex-grow': '0',
         },
+      },
+      {
+        name: 'date_cp',
+        label: 'Date dernier paiement',
+        renderFn: (row, col) =>
+         row[col.name] ? new Date(row[col.name]).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric'}): 'Non renseigné',
       },
       {
         name: 'type_etablissement',
