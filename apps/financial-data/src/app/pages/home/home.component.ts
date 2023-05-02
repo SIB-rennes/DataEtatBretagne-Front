@@ -168,14 +168,17 @@ export class HomeComponent implements OnInit {
     this.route.queryParams.subscribe((param) => {
 
       /* Filtres routes */
-      if (param['programme']) {
-        console.info(`Programme ${param['programme']}`);
+      if (param['programmes']) {
+        console.info(`Programme ${param['programmes']}`);
+
+        // TODO: C'est un MvP pour la marque blanche
+        let codes: string[] = param['programmes'].split(',')
+        let bops = codes.map(code => {
+          return { 'Code': code }
+        });
+
         this.preFilter = {
-          "bops": [
-            // TODO: c'est en dur
-            { "Code": "101" },
-            { "Code": "102" },
-          ]
+          bops
         }
       }
 
