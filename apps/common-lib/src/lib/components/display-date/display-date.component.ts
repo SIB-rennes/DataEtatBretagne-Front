@@ -17,7 +17,6 @@ export class DisplayDateComponent {
     if (this.date) {
       const utcDate = new Date(this.date);
       utcDate.setUTCMinutes(utcDate.getMinutes() - utcDate.getTimezoneOffset());
-      const localDate = utcDate.toLocaleString('fr-FR');
       return this.datePipe.transform(utcDate, this.dateFormat) || '';
     }
     return '';

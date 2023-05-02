@@ -103,7 +103,7 @@ export class UploadFinancialComponent implements OnInit {
 
     const financialCp$ = this.auditService
       .getHistoryData(DataType.FINANCIAL_DATA_CP)
-      .pipe(catchError((error) => of([])));
+      .pipe(catchError((_error) => of([])));
 
     forkJoin({
       ae: financialAe$,
