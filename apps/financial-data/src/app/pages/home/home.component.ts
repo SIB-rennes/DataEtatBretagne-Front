@@ -98,7 +98,10 @@ export class HomeComponent implements OnInit {
         name: 'montant_cp',
         label: 'Montant payé',
         renderFn: (row, col) =>
-          row[col.name] ? moneyFormat.format(row[col.name]) : 'Non renseigné',
+          row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
+        aggregateReducer: AggregatorFns.sum,
+        aggregateRenderFn: (aggregateValue) =>
+          aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
         columnStyle: {
           'text-align': 'right',
           'min-width': '16ex',
@@ -140,7 +143,7 @@ export class HomeComponent implements OnInit {
         name: 'date_cp',
         label: 'Date dernier paiement',
         renderFn: (row, col) =>
-         row[col.name] ? new Date(row[col.name]).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric'}): 'Non renseigné',
+         row[col.name] ? new Date(row[col.name]).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric'}): '',
       },
       {
         name: 'type_etablissement',
