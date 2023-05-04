@@ -1,5 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ElementRef,
+  ViewChild,
+  inject,
+} from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import {
   AuditUpdateData,
   DataType,
@@ -16,6 +23,7 @@ import {
   map,
   of,
 } from 'rxjs';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'financial-upload-financial-component',
@@ -34,6 +42,8 @@ export class UploadFinancialComponent implements OnInit {
   public file: File | null = null;
   public years;
   public dataSource: AuditUpdateData[] = [];
+
+  private dialog = inject(MatDialog);
 
   /**
    * Indique si la recherche est en cours
@@ -70,6 +80,26 @@ export class UploadFinancialComponent implements OnInit {
   }
 
   uploadFinancialFile() {
+    if (this.file !== null && this.yearSelected && this.typeSelected) {
+      if (this.typeSelected === DataType.FINANCIAL_DATA_CP) {
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          data: this.yearSelected,
+          width: '40rem',
+          autoFocus: 'input',
+        });
+
+        dialogRef.afterClosed().subscribe((result: boolean) => {
+          if (result) {
+            this._doLoadFile();
+          }
+        });
+      } else {
+        this._doLoadFile();
+      }
+    }
+  }
+
+  private _doLoadFile() {
     if (this.file !== null && this.yearSelected && this.typeSelected) {
       this.uploadInProgress.next(true);
       this.service
