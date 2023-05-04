@@ -15,26 +15,37 @@ import {
 } from 'apps/common-lib/src/public-api';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { NocoDbResponse } from 'apps/common-lib/src/lib/models/nocodb-response';
+import { DataType } from '@models/audit/audit-update-data.models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FinancialDataHttpService extends NocodbHttpService {
+  private _apiFinancial!: string;
+  private _apiTheme!: string;
+  private _apiSiret!: string;
+  private _apiProgramme!: string;
+
   constructor(
     private http: HttpClient,
     @Inject(SETTINGS) readonly settings: SettingsService
   ) {
     super();
+    const project = this.settings.projectFinancial;
+    let base_uri = this.settings.nocodbProxy?.base_uri;
+    if (project && base_uri) {
+      base_uri += project.table + '/';
+      this._apiFinancial = base_uri + project.views.financial;
+      this._apiProgramme = base_uri + project.views.programmes;
+      this._apiTheme = base_uri + project.views.themes;
+      this._apiSiret = base_uri + project.views.siret;
+    }
   }
 
   public getBop(): Observable<BopModel[]> {
-    const apiFinancial = this.settings.apiNocodb;
-
     const params = 'limit=500&fields=Id,Label,Code,RefTheme&sort=Code';
     return this.http
-      .get<NocoDbResponse<BopModel>>(
-        `${apiFinancial}/RefCodeProgramme/RefCodeProgramme?${params}`
-      )
+      .get<NocoDbResponse<BopModel>>(`${this._apiProgramme}?${params}`)
       .pipe(map((response) => response.list));
   }
 
@@ -43,23 +54,19 @@ export class FinancialDataHttpService extends NocodbHttpService {
    * @returns les the
    */
   public getTheme(): Observable<RefTheme[]> {
-    const apiFinancial = this.settings.apiNocodb;
-
     return this.http
       .get<NocoDbResponse<RefTheme>>(
-        `${apiFinancial}/RefTheme/RefTheme?fields=Id,Label&sort=Label&limit=500`
+        `${this._apiTheme}?fields=Id,Label&sort=Label&limit=500`
       )
       .pipe(map((response) => response.list));
   }
 
   public filterRefSiret(nomOuSiret: string): Observable<RefSiret[]> {
-    const apiFinancial = this.settings.apiNocodb;
-
     let whereClause = this._filterRefSiretWhereClause(nomOuSiret);
 
     return this.http
       .get<NocoDbResponse<RefSiret>>(
-        `${apiFinancial}/RefSiret/RefSiret?fields=Code,Denomination&sort=Code&${whereClause}`
+        `${this._apiSiret}?fields=Code,Denomination&sort=Code&${whereClause}`
       )
       .pipe(map((response) => response.list));
   }
@@ -75,13 +82,11 @@ export class FinancialDataHttpService extends NocodbHttpService {
     ej: string,
     poste_ej: string | number
   ): Observable<FinancialDataModel | undefined> {
-    let apiFinancial = this.settings.apiNocodb;
-
     let params = `&limit=1&where=(NEj,eq,${ej})~and(NPosteEj,eq,${poste_ej})`;
 
     let answer$ = this.mapNocoDbReponse(
       this.http.get<NocoDbResponse<FinancialDataModel>>(
-        `${apiFinancial}/DataChorus/Chorus-front?${params}`
+        `${this._apiFinancial}?${params}`
       )
     ).pipe(map((lignes) => lignes[0]));
 
@@ -104,10 +109,14 @@ export class FinancialDataHttpService extends NocodbHttpService {
     year: number[] | null,
     location: GeoModel[] | null
   ): Observable<FinancialDataModel[]> {
-    if (bops == null && themes == null && year == null && location == null)
+    if (
+      bops == null &&
+      themes == null &&
+      year == null &&
+      location == null &&
+      beneficiaire == null
+    )
       return of();
-
-    const apiFinancial = this.settings.apiNocodb;
 
     const params = this._buildparams(
       beneficiaire,
@@ -118,7 +127,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
     );
     return this.mapNocoDbReponse(
       this.http.get<NocoDbResponse<FinancialDataModel>>(
-        `${apiFinancial}/DataChorus/Chorus-front?${params}`
+        `${this._apiFinancial}?${params}`
       )
     );
   }
@@ -130,10 +139,15 @@ export class FinancialDataHttpService extends NocodbHttpService {
     year: number[] | null,
     location: GeoModel[] | null
   ): Observable<Blob> {
-    if (bops == null && themes == null && year == null && location == null)
+    if (
+      bops == null &&
+      themes == null &&
+      year == null &&
+      location == null &&
+      beneficiaire == null
+    )
       return of();
 
-    const apiFinancial = this.settings.apiNocodb;
     const params = this._buildparams(
       beneficiaire,
       bops,
@@ -141,10 +155,9 @@ export class FinancialDataHttpService extends NocodbHttpService {
       year,
       location
     );
-    return this.http.get(
-      `${apiFinancial}/DataChorus/Chorus-front/csv?${params}`,
-      { responseType: 'blob' }
-    );
+    return this.http.get(`${this._apiFinancial}/csv?${params}`, {
+      responseType: 'blob',
+    });
   }
 
   private _buildparams(
@@ -187,6 +200,9 @@ export class FinancialDataHttpService extends NocodbHttpService {
         case TypeLocalisation.CRTE:
           params += `~and(code_crte,in,${listCode})`;
           break;
+        case TypeLocalisation.ARRONDISSEMENT:
+          params += `~and(code_arrondissement,in,${listCode})`;
+          break;
       }
     }
 
@@ -200,18 +216,24 @@ export class FinancialDataHttpService extends NocodbHttpService {
     return params;
   }
 
-  public loadFileChorus(
+  public loadFinancialFile(
     file: any,
     annee: string,
+    type: DataType,
     code_region = '53'
   ): Observable<any> {
-    const apiData = this.settings.apiFinancialata;
-
     const formData = new FormData();
     formData.append('fichier', file);
     formData.append('annee', annee);
     formData.append('code_region', code_region);
 
-    return this.http.post(`${apiData}/chorus/import/ae`, formData);
+    const apiData = this.settings.apiFinancialData;
+
+    if (type === DataType.FINANCIAL_DATA_AE) {
+      return this.http.post(`${apiData}/ae`, formData);
+    } else if (type === DataType.FINANCIAL_DATA_CP) {
+      return this.http.post(`${apiData}/cp`, formData);
+    }
+    return of();
   }
 }

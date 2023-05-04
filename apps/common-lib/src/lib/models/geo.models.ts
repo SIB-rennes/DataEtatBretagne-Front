@@ -3,6 +3,7 @@ export enum TypeLocalisation {
   EPCI = 'Epci',
   COMMUNE = 'Commune',
   CRTE = 'Crte',
+  ARRONDISSEMENT = 'Arrondissement',
 }
 
 export interface GeoModel {
@@ -14,4 +15,10 @@ export interface GeoModel {
 
 export interface GeoCommuneModel extends GeoModel {
   codesPostaux: string[];
+}
+
+export interface GeoArrondissementModel extends Omit<GeoModel, 'nom'> {
+  label: string;
+  code_departement: string;
+  code_region: string;
 }

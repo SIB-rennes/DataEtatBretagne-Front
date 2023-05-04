@@ -32,7 +32,7 @@ npx ng update # suivre les instructions
 Créer un fichier '.env' à la racine du projet [e2e](./e2e) et mettre les identifiants d'un utilisateur pour passer l'authentification :  
 
 ```
-TEST_USERNAME=csm@sib.fr
+TEST_USERNAME=<USERNAME>
 TEST_PASSWORD=<PASSWORD>
 ```
 

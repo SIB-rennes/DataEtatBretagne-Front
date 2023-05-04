@@ -82,7 +82,21 @@ export class HomeComponent implements OnInit {
       { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
       {
         name: 'Montant',
-        label: 'Montant',
+        label: 'Montant engagé',
+        renderFn: (row, col) =>
+          row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
+        aggregateReducer: AggregatorFns.sum,
+        aggregateRenderFn: (aggregateValue) =>
+          aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
+        columnStyle: {
+          'text-align': 'right',
+          'min-width': '16ex',
+          'flex-grow': '0',
+        },
+      },
+      {
+        name: 'montant_cp',
+        label: 'Montant payé',
         renderFn: (row, col) =>
           row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
         aggregateReducer: AggregatorFns.sum,
@@ -132,8 +146,14 @@ export class HomeComponent implements OnInit {
           row[col.name] !== null ? row[col.name] : 'Non renseigné',
       },
       {
+        name: 'date_cp',
+        label: 'Date dernier paiement',
+        renderFn: (row, col) =>
+         row[col.name] ? new Date(row[col.name]).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric'}): '',
+      },
+      {
         name: 'Annee',
-        label: 'Année',
+        label: 'Année d\'engagement',
         columnStyle: {
           'min-width': '18ex',
           'flex-grow': '0',
@@ -207,6 +227,7 @@ export class HomeComponent implements OnInit {
   onRowClick(row: RowData) {
     this.dialog.open(InformationsSupplementairesDialogComponent, {
       width: '100%',
+      maxHeight: '100vh',
       data: { row },
     });
   }
