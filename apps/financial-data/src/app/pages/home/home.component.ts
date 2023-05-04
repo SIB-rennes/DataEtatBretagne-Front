@@ -140,20 +140,20 @@ export class HomeComponent implements OnInit {
         },
       },
       {
-        name: 'date_cp',
-        label: 'Date dernier paiement',
-        renderFn: (row, col) =>
-         row[col.name] ? new Date(row[col.name]).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric'}): '',
-      },
-      {
         name: 'type_etablissement',
         label: `Type d'établissement`,
         renderFn: (row, col) =>
           row[col.name] !== null ? row[col.name] : 'Non renseigné',
       },
       {
+        name: 'date_cp',
+        label: 'Date dernier paiement',
+        renderFn: (row, col) =>
+         row[col.name] ? new Date(row[col.name]).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric'}): '',
+      },
+      {
         name: 'Annee',
-        label: 'Année',
+        label: 'Année d\'engagement',
         columnStyle: {
           'min-width': '18ex',
           'flex-grow': '0',
