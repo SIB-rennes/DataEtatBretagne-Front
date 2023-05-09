@@ -26,6 +26,7 @@ class Api implements IApi {
   nocodb_proxy: NocodApiProxy<FinancialProject, FinancialView> | undefined =
     undefined;
   administration = '';
+  demarche_simplifie: { url: string; token: string } | undefined = undefined;
   geo = '';
   referentiel = '';
   apis_externes = '';
@@ -85,5 +86,9 @@ export class SettingsService implements ISettingsService {
 
   public get apiAdministration(): string {
     return (this.settings.apis as Api).administration;
+  }
+
+  public get apiDs(): { url: string; token: string } | undefined {
+    return (this.settings.apis as Api).demarche_simplifie;
   }
 }
