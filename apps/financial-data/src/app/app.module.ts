@@ -124,25 +124,12 @@ registerLocaleData(localeFr);
     {
       provide: APOLLO_OPTIONS,
       useFactory(httpLink: HttpLink, settings: SettingsService) {
-        const apiDs = settings.apiDs;
-        console.log(apiDs);
-        console.log('ICI');
-        const http = httpLink.create({ uri: apiDs?.url });
-        const middleware = new ApolloLink((operation, forward) => {
-          operation.setContext({
-            headers: new HttpHeaders().set(
-              'Authorization',
-              `Bearer ${apiDs?.token}`
-            ),
-          });
-          return forward(operation);
-        });
-
-        const link = middleware.concat(http);
-
+        const apiDs = settings.apiExternes + '/demarche-simplifie';
         return {
-          link,
           cache: new InMemoryCache(),
+          link: httpLink.create({
+            uri: apiDs,
+          }),
         };
       },
       deps: [HttpLink, SETTINGS],

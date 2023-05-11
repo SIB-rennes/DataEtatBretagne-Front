@@ -14,4 +14,7 @@ export interface FinancialDataModel {
   type_etablissement: string;
 
   code_commune: string;
+  code_departement: string;
+  code_ref_programmation: string;
+  Annee: number;
 }

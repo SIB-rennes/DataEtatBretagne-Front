@@ -13,8 +13,7 @@
     "storybook:common-lib": "ng run common-lib:storybook",
     "test-storybook": "test-storybook --config-dir=apps/common-lib/.storybook",
     "lint": "ng lint",
-    "init": "graphql-codegen init",
-    "codegen": "graphql-codegen --config codegen.yml"
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "private": true,
   "dependencies": {
@@ -47,10 +46,9 @@
     "@angular-eslint/template-parser": "15.2.1",
     "@angular/cli": "~15.2.5",
     "@angular/compiler-cli": "^15.2.6",
-    "@graphql-codegen/cli": "^3.3.1",
-    "@graphql-codegen/introspection": "3.0.1",
-    "@graphql-codegen/typescript": "^3.0.4",
-    "@graphql-codegen/typescript-apollo-angular": "^3.5.6",
+    "@graphql-codegen/cli": "3.3.1",
+    "@graphql-codegen/typescript": "3.0.4",
+    "@graphql-codegen/typescript-apollo-angular": "3.5.6",
     "@graphql-codegen/typescript-operations": "^3.0.4",
     "@graphql-codegen/typescript-resolvers": "^3.2.1",
     "@storybook/addon-essentials": "^7.0.2",

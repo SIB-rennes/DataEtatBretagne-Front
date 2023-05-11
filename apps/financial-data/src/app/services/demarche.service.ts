@@ -1,8 +1,10 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 
-import { Observable, of } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { Apollo, gql } from 'apollo-angular';
+import { Demarche } from '@models/demarche_simplifie/demarche-graphql';
+import { ApolloQueryResult } from '@apollo/client';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +12,36 @@ import { Apollo, gql } from 'apollo-angular';
 export class DemarcheHttpService {
   constructor(private apollo: Apollo) {}
 
-  public getDemarche(id: number): Observable<any> {
+  public getDemarcheLight(id: number): Observable<Demarche | null> {
+    const demarche = gql`
+      query getDemarche($demarcheNumber: Int!) {
+        demarche(number: $demarcheNumber) {
+          title
+          id
+        }
+      }
+    `;
+
+    return this.apollo
+      .watchQuery<{ demarche: Demarche }>({
+        query: demarche,
+        variables: {
+          demarcheNumber: id,
+        },
+      })
+      .valueChanges.pipe(
+        map((appoloResult: ApolloQueryResult<{ demarche: Demarche }>) => {
+          const d = appoloResult.data;
+          if (d.demarche && d.demarche !== null) return d.demarche;
+          return null;
+        })
+      );
+  }
+
+  public getDemarcheWithDossier(
+    id: number,
+    after?: string
+  ): Observable<Demarche | null> {
     //DETR filtre ref programmation
 
     const demarche = gql`
@@ -20,7 +51,6 @@ export class DemarcheHttpService {
         $after: String
       ) {
         demarche(number: $demarcheNumber) {
-          id
           title
           dossiers(state: $state, first: 100, after: $after) {
             pageInfo {
@@ -49,18 +79,22 @@ export class DemarcheHttpService {
       }
     `;
 
-    const r = this.apollo.watchQuery({
-      query: demarche,
-      variables: {
-        demarcheNumber: id,
-        state: 'accepte',
-      },
-    }).valueChanges;
-
+    const r = this.apollo
+      .watchQuery<{ demarche: Demarche }>({
+        query: demarche,
+        variables: {
+          demarcheNumber: id,
+          state: 'accepte',
+          after: after ?? '',
+        },
+      })
+      .valueChanges.pipe(
+        map((appoloResult: ApolloQueryResult<{ demarche: Demarche }>) => {
+          const d = appoloResult.data;
+          if (d.demarche && d.demarche !== null) return d.demarche;
+          return null;
+        })
+      );
     return r;
-  }
-
-  public get client() {
-    return this.apollo.client;
   }
 }
