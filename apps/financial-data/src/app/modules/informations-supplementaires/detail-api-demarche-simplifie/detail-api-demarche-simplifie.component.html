@@ -8,11 +8,7 @@
 </ng-container>
 
 <ng-template #chargement>
-  <div class="ligne">
-    <div class="colonne">
-      <img class="logo-api-demarche" src="assets/img/logo-ds.svg" alt="Logo API démarches simplifiées">
-    </div>
-  </div>
+
   <financial-informations-supplementaires-chargement-ou-erreur nom_service_distant="Api demarches simplifiées"
     [erreur]="vService.api_demarche_error">
   </financial-informations-supplementaires-chargement-ou-erreur>
@@ -22,7 +18,7 @@
   <ng-container *ngIf="dossier">
     <div class="ligne">
       <div class="colonne">
-        <img class="logo-api-demarche" src="assets/img/logo-ds.svg" alt="Logo API démarches simplifiées">
+        <img class="logo-api-demarche" src="assets/img/logo-ds.png" alt="Logo API démarches simplifiées">
       </div>
     </div>
 
