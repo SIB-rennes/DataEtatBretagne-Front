@@ -127,12 +127,15 @@ export class InformationSupplementairesViewService {
     );
   }
 
-  api_demarche_light$() {
+  api_demarche_light$(): Observable<{
+    has_more_info: boolean;
+    title?: string;
+  }> {
     return this.ligne_chorus$.pipe(
       mergeMap((ligne) => {
         let actual = ligne!;
-        console.log('ici demarche');
-        console.log(actual);
+        // FIXME - POC API DEMARCHE_SIMPLIFIE
+        // DEMARCHE 49721 pour le 29, Annee 2022 sur programmation DTER
         if (
           actual.code_departement === '29' &&
           actual.Annee === 2022 &&
@@ -145,6 +148,44 @@ export class InformationSupplementairesViewService {
           );
         }
         return of({ has_more_info: false });
+      }),
+      shareReplay(1)
+    );
+  }
+
+  api_demarche_error: ModelError | null = null;
+  api_find_dossier_demarche_simplifie$() {
+    return this.ligne_chorus$.pipe(
+      mergeMap((ligne) => {
+        const montant = ligne!.Montant;
+        const siret = ligne!.code_siret;
+
+        // FIXME - POC API DEMARCHE_SIMPLIFIE
+        // DEMARCHE 49721 pour le 29, Annee 2022 sur programmation DTER
+
+        return this.demarcheService
+          .foundDossierWithDemarche(49721, siret, montant)
+          .pipe(
+            map((dossier) => {
+              if (dossier === null) {
+                this.api_demarche_error = {
+                  code: 'NOT_FOUND',
+                  message:
+                    "Aucun dossier correspondant n'a été trouvé dans la démarche",
+                } as ModelError;
+                throw new Error();
+              }
+              return dossier;
+            }),
+            catchError((err) => {
+              this.api_demarche_error = {
+                code: 'NOT_FOUND',
+                message:
+                  "Aucun dossier correspondant n'a été trouvé dans la démarche",
+              } as ModelError;
+              throw err;
+            })
+          );
       })
     );
   }

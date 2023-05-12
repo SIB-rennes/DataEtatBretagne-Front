@@ -30,7 +30,10 @@
   </ng-container>
 
   <ng-container *ngSwitchCase="'full_api_demarche'">
-    ICI la demarche simplifie
+    <ng-container
+      *ngTemplateOutlet="titre; context:{ libelle: 'Informations sur le dossier de la démarche' }"></ng-container>
+
+    <financial-informations-demarche-simplifie></financial-informations-demarche-simplifie>
   </ng-container>
 
   <ng-container *ngSwitchCase="'full'">

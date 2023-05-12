@@ -23,6 +23,7 @@ import { SubventionLight } from './models/SubventionLight';
 import { FinancialDataModel } from '@models/financial-data.models';
 import { Demarche } from '@models/demarche_simplifie/demarche-graphql';
 import { DemarcheLight } from './models/DemarcheLight';
+import { DetailApiDemarcheSimplifieComponent } from './detail-api-demarche-simplifie/detail-api-demarche-simplifie.component';
 
 export enum View {
   light = 'light',
@@ -51,6 +52,7 @@ export enum View {
     ChargementOuErreurComponent,
     DetailApiEntrepriseComponent,
     DetailApiDataSubventionsComponent,
+    DetailApiDemarcheSimplifieComponent,
     OuNonRenseignePipe,
   ],
   providers: [InformationsSupplementairesService],
