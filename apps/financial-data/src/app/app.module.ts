@@ -1,7 +1,11 @@
 import { APP_INITIALIZER, LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import {
+  HttpClientModule,
+  HTTP_INTERCEPTORS,
+  HttpHeaders,
+} from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -32,12 +36,15 @@ import {
 import { ManagementModule } from 'apps/management/src/public-api';
 import { API_MANAGEMENT_PATH } from 'apps/management/src/lib/services/users-http.service';
 import { GroupingTableModule } from 'apps/grouping-table/src/public-api';
+import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
+import { HttpLink } from 'apollo-angular/http';
 
 import {
   aeApiModule,
   aeConfiguration,
   aeConfigurationParameters,
 } from 'apps/clients/apis-externes';
+import { ApolloLink, InMemoryCache } from '@apollo/client';
 
 export function apiConfigFactory(
   settingsService: SettingsService
@@ -114,6 +121,19 @@ registerLocaleData(localeFr);
       deps: [SETTINGS],
       multi: false,
     },
+    {
+      provide: APOLLO_OPTIONS,
+      useFactory(httpLink: HttpLink, settings: SettingsService) {
+        const apiDs = settings.apiExternes + '/demarche-simplifie';
+        return {
+          cache: new InMemoryCache(),
+          link: httpLink.create({
+            uri: apiDs,
+          }),
+        };
+      },
+      deps: [HttpLink, SETTINGS],
+    },
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -132,6 +152,7 @@ registerLocaleData(localeFr);
     CommonLibModule,
     ManagementModule,
     aeApiModule,
+    ApolloModule,
   ],
 })
 export class AppModule {}

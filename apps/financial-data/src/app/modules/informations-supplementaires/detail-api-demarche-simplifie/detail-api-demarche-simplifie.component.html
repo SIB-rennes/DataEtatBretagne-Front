@@ -1,0 +1,44 @@
+<ng-container *ngIf="dossier; else chargement">
+
+
+  <div class="contenu">
+    <ng-container *ngTemplateOutlet="contenu"></ng-container>
+  </div>
+  <hr>
+</ng-container>
+
+<ng-template #chargement>
+
+  <financial-informations-supplementaires-chargement-ou-erreur nom_service_distant="Api demarches simplifiées"
+    [erreur]="vService.api_demarche_error">
+  </financial-informations-supplementaires-chargement-ou-erreur>
+</ng-template>
+
+<ng-template #contenu>
+  <ng-container *ngIf="dossier">
+    <div class="ligne">
+      <div class="colonne">
+        <img class="logo-api-demarche" src="assets/img/logo-ds.png" alt="Logo API démarches simplifiées">
+      </div>
+    </div>
+
+    <div class="ligne">
+
+      <div class="colonne">
+
+        <strong>Nom de la démarche :</strong> {{title_demarche | ouNonRenseigne}} <br>
+        <strong>Numéro du dossier : </strong> {{dossier.number | ouNonRenseigne}} <br>
+        <strong> Nom du projet: </strong> {{getValueChamp("Intitulé du projet")}} <br>
+        <strong> Description du projet: </strong> - <br>
+        <strong> Catégorie du projet : </strong> {{getValueChamp("Catégorie d'opération éligible")}} <br>
+        <strong> Cout prévisionnel total du projet: </strong> {{getMontant("Coût prévisionnel global du projet (HT)")}} <br>
+        <strong> Montant demandé :</strong> {{ getMontant("Montant de subvention DETR sollicité")}} <br>
+        <strong> Montant accordé :</strong> {{ montantAccorde}} <br>
+
+        <strong> Date de fin de projet :</strong> {{getValueChamp("Date prévisionnelle de fin de l'opération")}} <br>
+        <strong> Contact : </strong> {{getValueChamp("Email du référent")}}
+      </div>
+    </div>
+
+  </ng-container>
+</ng-template>

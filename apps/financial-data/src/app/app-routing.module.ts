@@ -21,8 +21,10 @@ const routes: Routes = [
   },
   {
     path: info_supplementaires_path(),
-    loadChildren: () => import('./modules/informations-supplementaires/informations-supplementaires.module')
-        .then(m => m.InformationsSupplementairesModule),
+    loadChildren: () =>
+      import(
+        './modules/informations-supplementaires/informations-supplementaires.module'
+      ).then((m) => m.InformationsSupplementairesModule),
     canActivate: [AuthGuard],
   },
   {
@@ -57,4 +59,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

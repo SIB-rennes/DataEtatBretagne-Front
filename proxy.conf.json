@@ -7,6 +7,14 @@
       "^/api": "/"
     }
   },
+  "/demarches": {
+    "target": "https://www.demarches-simplifiees.fr/api",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/demarches": ""
+    }
+  },
   "/integ-api": {
     "target": "https://api.nocode.csm.ovh/nocodb/CHORUS-DATA",
     "secure": false,
