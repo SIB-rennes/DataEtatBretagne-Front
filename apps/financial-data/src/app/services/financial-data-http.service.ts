@@ -72,6 +72,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
   }
 
   private _filterRefSiretWhereClause(nomOuSiret: string): string {
+    nomOuSiret = encodeURIComponent(nomOuSiret);
     let is_number = /^\d+$/.test(nomOuSiret);
 
     if (is_number) return `where=(Code,like,${nomOuSiret}%)`;
