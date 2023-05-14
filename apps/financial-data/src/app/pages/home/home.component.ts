@@ -166,23 +166,6 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((param) => {
-
-      /* Filtres routes */
-      if (param['programmes']) {
-        console.info(`Programme ${param['programmes']}`);
-
-        // TODO: C'est un MvP pour la marque blanche
-        let codes: string[] = param['programmes'].split(',')
-        let bops = codes.map(code => {
-          return { 'Code': code }
-        });
-
-        this.preFilter = {
-          bops
-        }
-      }
-
-
       /* */
       if (param['uuid']) {
         this.preferenceService

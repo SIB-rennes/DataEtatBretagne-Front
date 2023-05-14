@@ -2,10 +2,8 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnInit,
   Output,
-  SimpleChanges,
 } from '@angular/core';
 import {
   FormControl,
@@ -50,7 +48,7 @@ import { PreFilter } from '@models/search/prefilter.model';
   templateUrl: './search-data.component.html',
   styleUrls: ['./search-data.component.scss'],
 })
-export class SearchDataComponent implements OnInit, OnChanges {
+export class SearchDataComponent implements OnInit {
   public readonly TypeLocalisation = TypeLocalisation;
   public searchForm!: FormGroup;
 
@@ -59,12 +57,7 @@ export class SearchDataComponent implements OnInit, OnChanges {
 
   public filteredBeneficiaire: Observable<RefSiret[]> | null | undefined = null;
 
-  private _filteredBop: BopModel[] | undefined = undefined;
-  get filteredBop() { return this._filteredBop }
-  set filteredBop(v) {
-    this._filteredBop = v;
-    this._apply_prefilters();
-  }
+  public filteredBop: BopModel[] | undefined = undefined;
 
   /**
    * Indique si la recherche a été effectué
@@ -92,8 +85,9 @@ export class SearchDataComponent implements OnInit, OnChanges {
    */
   @Output() currentFilter = new EventEmitter<Preference>();
 
-  @Input()
-  preFilter?: PreFilter;
+  @Input() public set preFilter(value: PreFilter | undefined) {
+    this._apply_prefilters(value);
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -119,18 +113,10 @@ export class SearchDataComponent implements OnInit, OnChanges {
     });
   }
 
-  /**
-   * Applique le filtre par défaut
-   * @param _changes
-   */
-  ngOnChanges(_changes: SimpleChanges): void {
-    this._apply_prefilters();
-  }
-
   ngOnInit(): void {
     // récupération des themes dans le resolver
     this.route.data.subscribe(
-      (response: { financial: FinancialDataResolverModel | Error } | any) => {
+      (response: { financial: FinancialDataResolverModel | Error, preFilter: PreFilter | null } | any) => {
         if ('themes' in response.financial) {
           this.displayError = false;
           this.themes = response.financial.themes;
@@ -140,6 +126,10 @@ export class SearchDataComponent implements OnInit, OnChanges {
         } else {
           this.displayError = true;
           this.error = response.financial as Error;
+        }
+
+        if (response.preFilter) {
+          this.preFilter = response.preFilter;
         }
       }
     );
@@ -402,23 +392,23 @@ export class SearchDataComponent implements OnInit, OnChanges {
     return arr;
   }
 
-  private _apply_prefilters() {
-    if (this.preFilter == null)
+  private _apply_prefilters(preFilter?: PreFilter) {
+    if (preFilter == null)
       return
 
-    this.searchForm.controls['location'].setValue(this.preFilter.location);
-    if (this.preFilter.year) {
+    this.searchForm.controls['location'].setValue(preFilter.location);
+    if (preFilter.year) {
       this.searchForm.controls['year'].setValue(
-        Array.isArray(this.preFilter.year)
-          ? this.preFilter.year
-          : [this.preFilter.year]
+        Array.isArray(preFilter.year)
+          ? preFilter.year
+          : [preFilter.year]
       );
     }
 
-    if (this.preFilter.theme) {
-      const preFilterTheme = Array.isArray(this.preFilter.theme)
-        ? (this.preFilter.theme as unknown as RefTheme[])
-        : ([this.preFilter.theme] as unknown as RefTheme[]);
+    if (preFilter.theme) {
+      const preFilterTheme = Array.isArray(preFilter.theme)
+        ? (preFilter.theme as unknown as RefTheme[])
+        : ([preFilter.theme] as unknown as RefTheme[]);
       const themeSelected = this.themes?.filter(
         (theme) =>
           preFilterTheme.findIndex(
@@ -429,13 +419,13 @@ export class SearchDataComponent implements OnInit, OnChanges {
     }
 
     this.searchForm.controls['beneficiaire'].setValue(
-      this.preFilter.beneficiaire ?? null
+      preFilter.beneficiaire ?? null
     );
 
     // Application du bops
     // Il faut rechercher dans les filtres "this.filteredBop"
-    if (this.preFilter.bops) {
-      const prefilterBops = this.preFilter.bops as unknown as BopModel[];
+    if (preFilter.bops) {
+      const prefilterBops = preFilter.bops as unknown as BopModel[];
       const bopSelect = this.filteredBop?.filter(
         (bop) =>
           prefilterBops.findIndex(
