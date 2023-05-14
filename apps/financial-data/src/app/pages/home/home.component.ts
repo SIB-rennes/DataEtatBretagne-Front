@@ -7,7 +7,6 @@ import {
   SavePreferenceDialogComponent,
 } from 'apps/preference-users/src/public-api';
 import {
-  JSONObject,
   Preference,
 } from 'apps/preference-users/src/lib/models/preference.models';
 import { ActivatedRoute } from '@angular/router';
@@ -23,6 +22,7 @@ import {
 import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
 import { InformationsSupplementairesDialogComponent } from '../../modules/informations-supplementaires/informations-supplementaires-dialog/informations-supplementaires-dialog.component';
 import { AuditHttpService } from '@services/audit.service';
+import { PreFilter } from '@models/search/prefilter.model';
 
 @Component({
   selector: 'financial-home',
@@ -45,7 +45,7 @@ export class HomeComponent implements OnInit {
   /**
    * Filtre à appliquer sur la recherche
    */
-  preFilter: JSONObject | null;
+  preFilter?: PreFilter;
 
   lastImportDate: string | null = null;
 
@@ -161,7 +161,7 @@ export class HomeComponent implements OnInit {
       },
     ]);
 
-    this.preFilter = null;
+    this.preFilter = undefined;
   }
 
   ngOnInit() {

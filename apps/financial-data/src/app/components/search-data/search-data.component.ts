@@ -43,6 +43,7 @@ import {
 import { Bop } from '@models/search/bop.model';
 import { Theme } from '@models/search/theme.model';
 import { Beneficiaire } from '@models/search/beneficiaire.model';
+import { PreFilter } from '@models/search/prefilter.model';
 
 @Component({
   selector: 'financial-search-data',
@@ -92,7 +93,7 @@ export class SearchDataComponent implements OnInit, OnChanges {
   @Output() currentFilter = new EventEmitter<Preference>();
 
   @Input()
-  preFilter: JSONObject | null = null;
+  preFilter?: PreFilter;
 
   constructor(
     private route: ActivatedRoute,
@@ -402,22 +403,22 @@ export class SearchDataComponent implements OnInit, OnChanges {
   }
 
   private _apply_prefilters() {
-    if (this.preFilter === null)
+    if (this.preFilter == null)
       return
 
-    this.searchForm.controls['location'].setValue(this.preFilter['location']);
-    if (this.preFilter['year']) {
+    this.searchForm.controls['location'].setValue(this.preFilter.location);
+    if (this.preFilter.year) {
       this.searchForm.controls['year'].setValue(
-        Array.isArray(this.preFilter['year'])
-          ? this.preFilter['year']
-          : [this.preFilter['year']]
+        Array.isArray(this.preFilter.year)
+          ? this.preFilter.year
+          : [this.preFilter.year]
       );
     }
 
-    if (this.preFilter['theme']) {
-      const preFilterTheme = Array.isArray(this.preFilter['theme'])
-        ? (this.preFilter['theme'] as unknown as RefTheme[])
-        : ([this.preFilter['theme']] as unknown as RefTheme[]);
+    if (this.preFilter.theme) {
+      const preFilterTheme = Array.isArray(this.preFilter.theme)
+        ? (this.preFilter.theme as unknown as RefTheme[])
+        : ([this.preFilter.theme] as unknown as RefTheme[]);
       const themeSelected = this.themes?.filter(
         (theme) =>
           preFilterTheme.findIndex(
@@ -428,13 +429,13 @@ export class SearchDataComponent implements OnInit, OnChanges {
     }
 
     this.searchForm.controls['beneficiaire'].setValue(
-      this.preFilter['beneficiaire'] ?? null
+      this.preFilter.beneficiaire ?? null
     );
 
     // Application du bops
     // Il faut rechercher dans les filtres "this.filteredBop"
-    if (this.preFilter['bops']) {
-      const prefilterBops = this.preFilter['bops'] as unknown as BopModel[];
+    if (this.preFilter.bops) {
+      const prefilterBops = this.preFilter.bops as unknown as BopModel[];
       const bopSelect = this.filteredBop?.filter(
         (bop) =>
           prefilterBops.findIndex(
