@@ -40,6 +40,9 @@ import {
   GeoModel,
   TypeLocalisation,
 } from 'apps/common-lib/src/public-api';
+import { Bop } from '@models/search/bop.model';
+import { Theme } from '@models/search/theme.model';
+import { Beneficiaire } from '@models/search/beneficiaire.model';
 
 @Component({
   selector: 'financial-search-data',
@@ -99,16 +102,18 @@ export class SearchDataComponent implements OnInit, OnChanges {
   ) {
     // formulaire
     this.searchForm = new FormGroup({
-      year: new FormControl('', {
+      year: new FormControl<number[]>([], {
         validators: [
           Validators.min(2000),
           Validators.max(new Date().getFullYear()),
         ],
       }),
-      bops: new FormControl(null),
-      theme: new FormControl(null),
-      beneficiaire: new FormControl(null),
-      filterBop: new FormControl(null), // controls pour le filtre des bops
+
+      filterBop: new FormControl<string>(''), // controls pour le filtre des bops
+
+      bops: new FormControl<Bop | null>(null),
+      theme: new FormControl<Theme | null>(null),
+      beneficiaire: new FormControl<Beneficiaire | null>(null),
       location: new FormControl({ value: null, disabled: false }, []),
     });
   }
@@ -137,24 +142,25 @@ export class SearchDataComponent implements OnInit, OnChanges {
         }
       }
     );
-    this._onFilter();
+    this._setupFilters();
   }
 
   /**
    * Change la valeur du bop pour déclencher une nouvelle recherche de BOP associé aux themes
    */
   public onSelectTheme(_event: any): void {
-    this.searchForm.controls['filterBop'].setValue('');
-    this.searchForm.controls['bops'].setValue(null);
+    this.searchForm.patchValue( { filterBop: '', bops: null } );
   }
 
   /**
    * Action déclenché quand on annule le theme
    */
   public cancelTheme(): void {
-    this.searchForm.controls['theme'].setValue(null);
-    this.searchForm.controls['filterBop'].setValue('');
-    this.searchForm.controls['bops'].setValue(null);
+    this.searchForm.patchValue({
+      theme: null,
+      filterBop: '',
+      bops: null,
+    });
   }
 
   public onSelectBeneficiaire(benef: RefSiret): void {
@@ -330,14 +336,10 @@ export class SearchDataComponent implements OnInit, OnChanges {
   /**
    * filtrage des données des formulaires pour les autocomplete
    */
-  private _onFilter(): void {
+  private _setupFilters(): void {
 
-    this.searchForm.controls['filterBop'].valueChanges.subscribe((value) => {
-      if (typeof value === 'string') {
-        this.filteredBop = this._filterBop(value ? value : '');
-      } else {
-        this.filteredBop = this._filterBop(value ? value?.Label : '');
-      }
+    this.searchForm.controls['filterBop'].valueChanges.subscribe((value: string) => {
+      this.filteredBop = this._filterBop(value ? value : '');
     });
 
     // filtre beneficiaire
