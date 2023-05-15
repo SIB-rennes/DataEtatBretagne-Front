@@ -19,6 +19,25 @@ export const API_GEO_PATH = new InjectionToken<string>('API GEO');
  */
 export const API_REF_PATH = new InjectionToken<string>('API REF');
 
+export function filterGeo(
+  apigeo: GeoHttpService,
+  value: string | null,
+  type: TypeLocalisation
+): Observable<GeoModel[]> {
+  switch (type) {
+    case TypeLocalisation.DEPARTEMENT:
+      return apigeo.filterDepartement(value);
+    case TypeLocalisation.COMMUNE:
+      return apigeo.filterCommune(value);
+    case TypeLocalisation.EPCI:
+      return apigeo.filterEpci(value);
+    case TypeLocalisation.CRTE:
+      return apigeo.filterCrte(value);
+    case TypeLocalisation.ARRONDISSEMENT:
+      return apigeo.filterArrondissement(value);
+  }
+}
+
 /**
  * Service to handle HTTP requests related to Geo data.
  */
@@ -66,7 +85,7 @@ export class GeoHttpService {
     let params = '';
     if (search) {
       params += 'limit=5';
-      if (search.length <= 8 && !isNaN(Number(search.substring(0, 7)))) {
+      if (search.length <= 9 && !isNaN(Number(search.substring(0, 8)))) {
         params += `&code=${search}`;
       } else {
         params += `&nom=${search}`;

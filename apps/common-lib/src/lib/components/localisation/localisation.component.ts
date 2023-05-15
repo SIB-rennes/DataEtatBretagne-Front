@@ -17,7 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { FormControl } from '@angular/forms';
 import { debounceTime, Observable, Subject } from 'rxjs';
 import { GeoModel, TypeLocalisation } from '../../models/geo.models';
-import { GeoHttpService } from '../../services/geo-http.service';
+import { filterGeo, GeoHttpService } from '../../services/geo-http.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
@@ -131,17 +131,6 @@ export class LocalisationComponent implements OnChanges, OnInit {
     value: string | null,
     type: TypeLocalisation
   ): Observable<GeoModel[]> {
-    switch (type) {
-      case TypeLocalisation.DEPARTEMENT:
-        return this.geoService.filterDepartement(value);
-      case TypeLocalisation.COMMUNE:
-        return this.geoService.filterCommune(value);
-      case TypeLocalisation.EPCI:
-        return this.geoService.filterEpci(value);
-      case TypeLocalisation.CRTE:
-        return this.geoService.filterCrte(value);
-      case TypeLocalisation.ARRONDISSEMENT:
-        return this.geoService.filterArrondissement(value);
-    }
+    return filterGeo(this.geoService, value, type)
   }
 }
