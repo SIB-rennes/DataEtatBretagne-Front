@@ -12,7 +12,7 @@ Il est possible de diriger un utilisateur vers des données financières filtrè
 
 Voici les paramètres pris en charge:
 
-| Paramètre  | Description                |
-| ---------- | -------------------------- |
-| Programmes | Codes programmes à inclure |
-|            |                            |
+| Paramètre  | Description                | Exemple              |
+| ---------- | -------------------------- | -------------------- |
+| Programmes | Codes programmes à inclure | `programmes=101,102` |
+|            |                            |                      |
