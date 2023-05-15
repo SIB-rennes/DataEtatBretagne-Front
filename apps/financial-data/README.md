@@ -12,7 +12,16 @@ Il est possible de diriger un utilisateur vers des données financières filtrè
 
 Voici les paramètres pris en charge:
 
+- Programmes
+
 | Paramètre  | Description                | Exemple              |
 | ---------- | -------------------------- | -------------------- |
 | Programmes | Codes programmes à inclure | `programmes=101,102` |
 |            |                            |                      |
+
+- Emplacement géographique
+
+| Paramètre           | Description         | Exemple              |
+| ------------------- | ------------------- | -------------------- |
+| Niveau géographique | Niveau géographique | `niveau_geo=Epci`    |
+| code_geo            | Code géographique   | `code_geo=200000172` |

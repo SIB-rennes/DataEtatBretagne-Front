@@ -11,6 +11,6 @@ export interface PreFilter {
   theme?: ThemePreFilter | ThemePreFilter[]
   bops?: BopsPreFilter | BopsPreFilter[]
 
-  location?: JSONObject
+  location?: JSONObject[]
   beneficiaire?: JSONObject
 }
