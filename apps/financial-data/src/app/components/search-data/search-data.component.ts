@@ -11,7 +11,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Data } from '@angular/router';
 import {
   switchMap,
   of,
@@ -42,6 +42,7 @@ import { Bop } from '@models/search/bop.model';
 import { Theme } from '@models/search/theme.model';
 import { Beneficiaire } from '@models/search/beneficiaire.model';
 import { PreFilter } from '@models/search/prefilter.model';
+import { PrefilterResolverModel } from '../../resolvers/pre-filter.resolver';
 
 @Component({
   selector: 'financial-search-data',
@@ -116,23 +117,31 @@ export class SearchDataComponent implements OnInit {
   ngOnInit(): void {
     // récupération des themes dans le resolver
     this.route.data.subscribe(
-      (response: { financial: FinancialDataResolverModel | Error, preFilter: PreFilter | null } | any) => {
-        if ('themes' in response.financial) {
-          this.displayError = false;
-          this.themes = response.financial.themes;
-          this.bop = response.financial.bop;
+      (data: Data) => {
+        let response = data as { financial: FinancialDataResolverModel, preFilter: PrefilterResolverModel }
 
-          this.filteredBop = this.bop;
-        } else {
+        let error = response.financial.error || response.preFilter?.error
+
+        if (error) {
           this.displayError = true;
-          this.error = response.financial as Error;
+          this.error = error;
+          return;
         }
 
-        if (response.preFilter) {
-          this.preFilter = response.preFilter;
-        }
+        let financial = response.financial.data!
+        let prefilter = response.preFilter?.data
+
+        this.displayError = false;
+        this.themes = financial.themes;
+        this.bop = financial.bop;
+
+        this.filteredBop = this.bop;
+
+        if (prefilter)
+          this.preFilter = prefilter;
       }
     );
+
     this._setupFilters();
   }
 
