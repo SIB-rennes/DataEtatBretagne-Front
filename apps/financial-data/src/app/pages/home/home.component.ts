@@ -23,6 +23,7 @@ import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/compo
 import { InformationsSupplementairesDialogComponent } from '../../modules/informations-supplementaires/informations-supplementaires-dialog/informations-supplementaires-dialog.component';
 import { AuditHttpService } from '@services/audit.service';
 import { PreFilter } from '@models/search/prefilter.model';
+import { QueryParam } from '@models/marqueblanche/query-params.model';
 
 @Component({
   selector: 'financial-home',
@@ -167,9 +168,9 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe((param) => {
       /* */
-      if (param['uuid']) {
+      if (param[QueryParam.Uuid]) {
         this.preferenceService
-          .getPreference(param['uuid'])
+          .getPreference(param[QueryParam.Uuid])
           .subscribe((preference) => {
             this.preFilter = preference.filters;
 

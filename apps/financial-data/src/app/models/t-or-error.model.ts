@@ -1,5 +1,5 @@
 
 export interface TOrError<T> {
     data?: T
-    error?: Error
+    error?: Error | any
 }
