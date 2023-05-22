@@ -1,191 +1,244 @@
-import { Inject, Injectable, InjectionToken } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
-import {
-  GeoArrondissementModel,
-  GeoCommuneModel,
-  GeoModel,
-  TypeLocalisation,
-} from '../models/geo.models';
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { Injectable, InjectionToken, inject } from "@angular/core";
+
+import { GeoArrondissementModel, TypeLocalisation } from "../models/geo.models";
+import { GeoModel } from "../models/geo.models";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+
 import { ReferentielResponse } from '../models/pagination/referentiel-response.models';
 
 /**
  * Injection token for the API path.
  */
 export const API_GEO_PATH = new InjectionToken<string>('API GEO');
-
 /**
+
  * Injection token for the API path CRTE.
  */
 export const API_REF_PATH = new InjectionToken<string>('API REF');
 
-export function filterGeo(
-  apigeo: GeoHttpService,
-  value: string | null,
-  type: TypeLocalisation
-): Observable<GeoModel[]> {
-  switch (type) {
-    case TypeLocalisation.DEPARTEMENT:
-      return apigeo.filterDepartement(value);
-    case TypeLocalisation.COMMUNE:
-      return apigeo.filterCommune(value);
-    case TypeLocalisation.EPCI:
-      return apigeo.filterEpci(value);
-    case TypeLocalisation.CRTE:
-      return apigeo.filterCrte(value);
-    case TypeLocalisation.ARRONDISSEMENT:
-      return apigeo.filterArrondissement(value);
-  }
+interface SearchParams {
+    [key: string]: any
 }
 
-/**
- * Service to handle HTTP requests related to Geo data.
- */
 @Injectable({
-  providedIn: 'root',
+    providedIn: 'root'
 })
 export class GeoHttpService {
-  constructor(
-    private http: HttpClient,
-    @Inject(API_GEO_PATH) private readonly apiGeo: string,
-    @Inject(API_REF_PATH) private readonly apiRef: string
-  ) {}
 
-  /**
-   * Filters departments by search query.
-   * @param search The search query.
-   * @returns An observable of an array of GeoModel objects representing the filtered departments.
-   */
-  public filterDepartement(search: string | null): Observable<GeoModel[]> {
-    let params = 'limit=500';
-    if (search) {
-      if (search.length <= 2 && !isNaN(Number(search.substring(0, 1)))) {
-        params += `&code=${search}`;
-      } else {
-        params += `&nom=${search}`;
-      }
+    private http = inject(HttpClient);
+    private readonly api_geo  = inject(API_GEO_PATH);
+    private readonly api_ref  = inject(API_REF_PATH);
+
+    public search(
+        type: TypeLocalisation,
+        search_param: SearchParams,
+    ): Observable<GeoModel[]> {
+
+        const base = this._baseUrl(type);
+        const str_params = _to_query_paramstr(search_param);
+        
+        const url = `${base}?${str_params}`
+
+        return this.http.get<GeoModel[]>(url)
+        .pipe(
+            map(payload => _api_to_service_mapper(type, payload))
+        )
+        ;
+   }
+
+   private _baseUrl(type: TypeLocalisation): string {
+
+    let base = ''
+
+    switch(type) {
+        case TypeLocalisation.CRTE:
+        case TypeLocalisation.ARRONDISSEMENT:
+            base = `${this.api_ref}`
+            break;
+        default:
+            base = `${this.api_geo}`
+            break;
     }
-    return this.http
-      .get<GeoModel[]>(`${this.apiGeo}/departements?${params}`)
-      .pipe(
-        map((arrayGeo: GeoModel[]) => {
-          return arrayGeo.map((geo: GeoModel) => {
-            return { ...geo, type: TypeLocalisation.DEPARTEMENT };
-          });
-        })
-      );
-  }
 
-  /**
-   * Filters epcis by search query.
-   * @param search The search query.
-   * @returns An observable of an array of GeoModel objects representing the filtered epcis.
-   */
-  public filterEpci(search: string | null): Observable<GeoModel[]> {
-    let params = '';
-    if (search) {
-      params += 'limit=5';
-      if (search.length <= 9 && !isNaN(Number(search.substring(0, 8)))) {
-        params += `&code=${search}`;
-      } else {
-        params += `&nom=${search}`;
-      }
+    let segment = '';
+    switch(type) {
+        case TypeLocalisation.ARRONDISSEMENT:
+            segment = 'arrondissement';
+            break;
+        case TypeLocalisation.COMMUNE:
+            segment = 'communes';
+            break;
+        case TypeLocalisation.CRTE:
+            segment = 'crte';
+            break;
+        case TypeLocalisation.DEPARTEMENT:
+            segment = 'departements';
+            break;
+        case TypeLocalisation.EPCI:
+            segment = 'epcis';
+            break;
+        default:
+            throw new Error(`Non géré: ${type}`);
     }
-    return this.http.get<GeoModel[]>(`${this.apiGeo}/epcis?${params}`).pipe(
-      map((arrayGeo: GeoModel[]) => {
-        return arrayGeo.map((geo: GeoModel) => {
-          return { ...geo, type: TypeLocalisation.EPCI };
-        });
-      })
-    );
-  }
 
-  /**
-   * Filters commune by search query.
-   * @param search The search query.
-   * @returns An observable of an array of GeoCommuneModel objects representing the filtered communes.
-   */
-  public filterCommune(search: string | null): Observable<GeoCommuneModel[]> {
-    // TODO rendre le codeDepartement par défaut paramétrable
-    let params = 'codeDepartement=35&limit=500';
-    if (search) {
-      params = 'limit=500';
-      if (!isNaN(Number(search))) {
-        if (search.length <= 2) {
-          params += `&codeDepartement=${search}`;
-        } else if (search.length == 5) {
-          params += `&codePostal=${search}`;
-        } else {
-          params += `&code=${search}`;
+    return `${_remove_trailing_slash(base)}/${segment}`
+   }
+}
+
+function _remove_trailing_slash(s: string) {
+
+    if (s.endsWith('/'))
+        return s.slice(0, -1)
+    return s
+}
+
+function _to_query_paramstr(search_params: SearchParams) {
+    let params = new HttpParams()
+
+    for (const key in search_params) {
+        if (Object.prototype.hasOwnProperty.call(search_params, key)) {
+            const v = search_params[key];
+
+            params = params.set(key, v);
         }
-      } else {
-        params = `&nom=${search}&limit=100`;
-      }
-    }
-    return this.http
-      .get<GeoCommuneModel[]>(
-        `${this.apiGeo}/communes?${params}&fields=nom,code,codeDepartement`
-      )
-      .pipe(
-        map((arrayGeo: GeoCommuneModel[]) => {
-          return arrayGeo.map((geo: GeoCommuneModel) => {
-            return { ...geo, type: TypeLocalisation.COMMUNE };
-          });
-        })
-      );
-  }
-
-  /**
-   * Filters Crte by search query.
-   * @param search The search query.
-   * @returns An observable of an array of GeoModel objects representing the filtered CRTE.
-   */
-  public filterCrte(search: string | null): Observable<GeoModel[]> {
-    // TODO rendre le codeDepartement par défaut paramétrable
-    let params = 'departement=01&limit=500';
-    if (search) {
-      params = 'limit=100';
-      if (!isNaN(Number(search)) && search.length <= 2) {
-        params += `&departement=${search}`;
-      } else {
-        params += `&nom=${search}`;
-      }
     }
 
-    return this.http.get<GeoModel[]>(`${this.apiRef}/crte?${params}`).pipe(
-      map((arrayGeo: GeoModel[]) => {
-        return arrayGeo.map((geo: GeoModel) => {
-          return { ...geo, type: TypeLocalisation.CRTE };
-        });
-      })
-    );
-  }
+    const str_params = params.toString();
+    return str_params;
+}
 
-  /**
-   * Filters Arrondissement by search query
-   * @param search The search query.
-   * @returns An observable of an array of GeoModel objects representing the filtered Arrondissement.
-   */
-  public filterArrondissement(search: string | null): Observable<GeoModel[]> {
-    let params = 'limit=500';
-    if (search) {
-      params = `limit=100&query=${search}`;
-    }
+function _api_to_service_mapper(type: TypeLocalisation, geo: GeoModel[]) {
 
-    return this.http
-      .get<ReferentielResponse<GeoArrondissementModel>>(
-        `${this.apiRef}/arrondissement?${params}`
-      )
-      .pipe(
-        map((items: ReferentielResponse<GeoArrondissementModel>) => {
-          return items.items.map((arr: GeoArrondissementModel) => {
+    if (type == TypeLocalisation.ARRONDISSEMENT) {
+        let payload = geo as unknown as ReferentielResponse<GeoArrondissementModel>
+
+        return payload.items.map(arr => {
             return {
-              nom: arr.label,
-              code: arr.code,
-              type: TypeLocalisation.ARRONDISSEMENT,
-            } as GeoModel;
-          });
+                nom: arr.label,
+                code: arr.code,
+                type: TypeLocalisation.ARRONDISSEMENT
+            } as GeoModel
         })
-      );
-  }
+    }
+    
+    return { ...geo, type: type }
+}
+
+type _FuzzyTerm = string | null;
+
+export type LimitHandler = (search_params: SearchParams, type: TypeLocalisation, default_limit: number) => SearchParams;
+export class SearchParamsBuilder {
+
+    private _defaultLimit = 100;
+    private _handler: LimitHandler;
+
+    constructor() {
+        this._handler = (search) => {
+            return { ...search, limit: this._defaultLimit };
+        }
+    }
+
+    public withDefaultLimit(n: number) {
+        this._defaultLimit = n;
+        return this;
+    }
+
+    public withLimitHandler(handler: LimitHandler) {
+        this._handler = handler;
+        return this;
+    }
+
+    public fuzzy(term: _FuzzyTerm, type: TypeLocalisation): SearchParams {
+
+        let search_params: SearchParams;
+        switch(type) {
+
+            case TypeLocalisation.ARRONDISSEMENT:
+                search_params = this._arrondissement_fuzzy(term);
+                break;
+            case TypeLocalisation.COMMUNE:
+                search_params = this._commune_fuzzy(term);
+                break;
+            case TypeLocalisation.CRTE:
+                search_params = this._crte_fuzzy(term);
+                break;
+            case TypeLocalisation.DEPARTEMENT:
+                search_params = this._departement_fuzzy(term);
+                break;
+            case TypeLocalisation.EPCI:
+                search_params = this._epci_fuzzy(term);
+                break;
+            default: 
+                throw new Error(`Non géré: ${type}`);
+        }
+
+        let limit_handled = this._handler(search_params, type, this._defaultLimit);
+        return limit_handled;
+    }
+
+    private _arrondissement_fuzzy(term: _FuzzyTerm): SearchParams {
+
+        if (term) return { query: term }
+        else return {}
+    }
+
+    private _commune_fuzzy(term: _FuzzyTerm): SearchParams {
+
+        if (!term) return {};
+
+        let params : SearchParams = {};
+        if (!isNaN(Number(term))) {
+            if (term.length <= 2) {
+                params = { codeDepartement: term }
+            } else if (term.length == 5) {
+                params = { codePostal: term };
+            } else {
+                params = { code: term };
+            }
+        } else {
+            params = { nom: term };
+        }
+        return params;
+    }
+
+    private _crte_fuzzy(term: _FuzzyTerm): SearchParams {
+
+        if (!term) return {}
+        
+        let params: SearchParams = {}
+        if (!isNaN(Number(term)) && term.length <= 2) {
+            params = { departement: term };
+        } else {
+            params = { nom: term };
+        }
+        return params;
+    }
+
+    private _departement_fuzzy(term: _FuzzyTerm): SearchParams {
+
+        if (!term) return {}
+        
+        let params: SearchParams = {}
+        if (term.length <= 2 && !isNaN(Number(term.substring(0, 1)))) {
+            params = { code: term };
+        } else {
+            params = { nom: term };
+        }
+        return params;
+    }
+
+    private _epci_fuzzy(term: _FuzzyTerm) {
+
+        if (!term) return {}
+
+        let params: SearchParams = {}
+        if (term.length <= 9 && !isNaN(Number(term.substring(0, 8)))) {
+            params = { code: term }
+        } else {
+            params = { nom: term }
+        }
+        return params
+    }
 }

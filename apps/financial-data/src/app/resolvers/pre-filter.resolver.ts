@@ -3,7 +3,8 @@ import { ActivatedRouteSnapshot, ResolveFn, RouterStateSnapshot } from '@angular
 import { QueryParam } from '@models/marqueblanche/query-params.model';
 import { PreFilter } from '@models/search/prefilter.model';
 import { TOrError } from '@models/t-or-error.model';
-import { GeoHttpService, GeoModel, TypeLocalisation, filterGeo } from 'apps/common-lib/src/public-api';
+import { GeoHttpService, SearchParamsBuilder } from 'apps/common-lib/src/lib/services/geo-http.service';
+import { GeoModel, TypeLocalisation } from 'apps/common-lib/src/public-api';
 import { JSONObject } from 'apps/preference-users/src/lib/models/preference.models';
 import { NGXLogger } from 'ngx-logger';
 import { Observable, catchError, map, mergeMap, of } from 'rxjs';
@@ -125,4 +126,10 @@ function _bxor(x: any, y: any) {
   let by = Number(Boolean(y));
 
   return Boolean(bx ^ by);
+}
+
+function filterGeo(api_geo: GeoHttpService, code_geo: string, niveau_geo: TypeLocalisation) {
+
+  let search_params = new SearchParamsBuilder().withDefaultLimit(1).fuzzy(code_geo, niveau_geo); // TODO: pas fuzzy ici
+  return api_geo.search(niveau_geo, search_params);
 }
