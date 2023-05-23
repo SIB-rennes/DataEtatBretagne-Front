@@ -169,7 +169,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
     location: GeoModel[] | null
   ): string {
     let params =
-      'sort=code_programme,label_commune&limit=5000&where=(Montant,gt,0)';
+      'sort=code_programme,label_commune&limit=5000&where=';
     if (beneficiaire) {
       params += `~and(code_siret,eq,${beneficiaire.Code})`;
     }
