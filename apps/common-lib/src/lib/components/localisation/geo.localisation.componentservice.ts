@@ -1,5 +1,5 @@
 import { inject } from "@angular/core";
-import { GeoHttpService, LimitHandler, SearchParamsBuilder } from "../../services/geo-http.service";
+import { GeoHttpService, LimitHandler, FuzzySearchParamsBuilder } from "../../services/geo-http.service";
 import { GeoModel, TypeLocalisation } from "../../models/geo.models";
 import { Observable } from "rxjs";
 
@@ -20,7 +20,8 @@ export class GeoLocalisationComponentService {
                     limit = 500;
                     break;
                 case TypeLocalisation.EPCI:
-                    limit = 5;
+                    if (Object.keys(search).length > 0) // Si on recherche un EPCI, on retourne les 5 premiers résultats, sinon default
+                        limit = 5;
                     break;
                 case TypeLocalisation.COMMUNE:
                 case TypeLocalisation.CRTE:
@@ -34,11 +35,11 @@ export class GeoLocalisationComponentService {
         }
         
 
-        let builder = new SearchParamsBuilder()
+        let builder = new FuzzySearchParamsBuilder()
             .withDefaultLimit(100)
             .withLimitHandler(limit_handler);
 
-        let search_params = builder.fuzzy(term, type);
+        let search_params = builder.search(term, type);
 
         return this.geo.search(type, search_params);
     }

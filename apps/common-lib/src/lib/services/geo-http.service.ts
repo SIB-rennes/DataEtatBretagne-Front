@@ -28,8 +28,8 @@ interface SearchParams {
 export class GeoHttpService {
 
     private http = inject(HttpClient);
-    private readonly api_geo  = inject(API_GEO_PATH);
-    private readonly api_ref  = inject(API_REF_PATH);
+    private readonly api_geo = inject(API_GEO_PATH);
+    private readonly api_ref = inject(API_REF_PATH);
 
     public search(
         type: TypeLocalisation,
@@ -38,53 +38,53 @@ export class GeoHttpService {
 
         const base = this._baseUrl(type);
         const str_params = _to_query_paramstr(search_param);
-        
+
         const url = `${base}?${str_params}`
 
         return this.http.get<GeoModel[]>(url)
-        .pipe(
-            map(payload => _api_to_service_mapper(type, payload))
-        )
-        ;
-   }
-
-   private _baseUrl(type: TypeLocalisation): string {
-
-    let base = ''
-
-    switch(type) {
-        case TypeLocalisation.CRTE:
-        case TypeLocalisation.ARRONDISSEMENT:
-            base = `${this.api_ref}`
-            break;
-        default:
-            base = `${this.api_geo}`
-            break;
+            .pipe(map(payload => {
+                const mapped = _api_to_service_mapper(type, payload);
+                return mapped;
+            }));
     }
 
-    let segment = '';
-    switch(type) {
-        case TypeLocalisation.ARRONDISSEMENT:
-            segment = 'arrondissement';
-            break;
-        case TypeLocalisation.COMMUNE:
-            segment = 'communes';
-            break;
-        case TypeLocalisation.CRTE:
-            segment = 'crte';
-            break;
-        case TypeLocalisation.DEPARTEMENT:
-            segment = 'departements';
-            break;
-        case TypeLocalisation.EPCI:
-            segment = 'epcis';
-            break;
-        default:
-            throw new Error(`Non géré: ${type}`);
-    }
+    private _baseUrl(type: TypeLocalisation): string {
 
-    return `${_remove_trailing_slash(base)}/${segment}`
-   }
+        let base = ''
+
+        switch (type) {
+            case TypeLocalisation.CRTE:
+            case TypeLocalisation.ARRONDISSEMENT:
+                base = `${this.api_ref}`
+                break;
+            default:
+                base = `${this.api_geo}`
+                break;
+        }
+
+        let segment = '';
+        switch (type) {
+            case TypeLocalisation.ARRONDISSEMENT:
+                segment = 'arrondissement';
+                break;
+            case TypeLocalisation.COMMUNE:
+                segment = 'communes';
+                break;
+            case TypeLocalisation.CRTE:
+                segment = 'crte';
+                break;
+            case TypeLocalisation.DEPARTEMENT:
+                segment = 'departements';
+                break;
+            case TypeLocalisation.EPCI:
+                segment = 'epcis';
+                break;
+            default:
+                throw new Error(`Non géré: ${type}`);
+        }
+
+        return `${_remove_trailing_slash(base)}/${segment}`
+    }
 }
 
 function _remove_trailing_slash(s: string) {
@@ -109,10 +109,10 @@ function _to_query_paramstr(search_params: SearchParams) {
     return str_params;
 }
 
-function _api_to_service_mapper(type: TypeLocalisation, geo: GeoModel[]) {
+function _api_to_service_mapper(type: TypeLocalisation, geos: GeoModel[]) {
 
     if (type == TypeLocalisation.ARRONDISSEMENT) {
-        let payload = geo as unknown as ReferentielResponse<GeoArrondissementModel>
+        let payload = geos as unknown as ReferentielResponse<GeoArrondissementModel>
 
         return payload.items.map(arr => {
             return {
@@ -122,17 +122,19 @@ function _api_to_service_mapper(type: TypeLocalisation, geo: GeoModel[]) {
             } as GeoModel
         })
     }
-    
-    return { ...geo, type: type }
+
+    return geos.map(geo => {
+        return { ...geo, type: type }
+    });
 }
 
-type _FuzzyTerm = string | null;
+type _Term = string | null;
 
 export type LimitHandler = (search_params: SearchParams, type: TypeLocalisation, default_limit: number) => SearchParams;
-export class SearchParamsBuilder {
 
-    private _defaultLimit = 100;
-    private _handler: LimitHandler;
+abstract class ASearchParamsBuilder {
+    protected _defaultLimit = 100;
+    protected _handler: LimitHandler;
 
     constructor() {
         this._handler = (search) => {
@@ -150,10 +152,34 @@ export class SearchParamsBuilder {
         return this;
     }
 
-    public fuzzy(term: _FuzzyTerm, type: TypeLocalisation): SearchParams {
+    search(term: _Term, type: TypeLocalisation): SearchParams {
+
+        let params = this.make_search_params(term, type);
+        params = this._handler(params, type, this._defaultLimit);
+
+        if (type == TypeLocalisation.COMMUNE)
+            params = this.add_fields_commune(params);
+
+        return params;
+    }
+
+    protected abstract make_search_params(term: _Term, type: TypeLocalisation): SearchParams;
+
+    protected add_fields_commune(search_params: SearchParams): SearchParams {
+        return { ...search_params, fields: 'nom,code,codeDepartement' }
+    }
+}
+
+export class FuzzySearchParamsBuilder extends ASearchParamsBuilder {
+
+    override make_search_params(term: _Term, type: TypeLocalisation): SearchParams {
+        return this.fuzzy(term, type);
+    }
+
+    public fuzzy(term: _Term, type: TypeLocalisation): SearchParams {
 
         let search_params: SearchParams;
-        switch(type) {
+        switch (type) {
 
             case TypeLocalisation.ARRONDISSEMENT:
                 search_params = this._arrondissement_fuzzy(term);
@@ -170,25 +196,24 @@ export class SearchParamsBuilder {
             case TypeLocalisation.EPCI:
                 search_params = this._epci_fuzzy(term);
                 break;
-            default: 
+            default:
                 throw new Error(`Non géré: ${type}`);
         }
 
-        let limit_handled = this._handler(search_params, type, this._defaultLimit);
-        return limit_handled;
+        return search_params;
     }
 
-    private _arrondissement_fuzzy(term: _FuzzyTerm): SearchParams {
+    private _arrondissement_fuzzy(term: _Term): SearchParams {
 
         if (term) return { query: term }
         else return {}
     }
 
-    private _commune_fuzzy(term: _FuzzyTerm): SearchParams {
+    private _commune_fuzzy(term: _Term): SearchParams {
 
         if (!term) return {};
 
-        let params : SearchParams = {};
+        let params: SearchParams = {};
         if (!isNaN(Number(term))) {
             if (term.length <= 2) {
                 params = { codeDepartement: term }
@@ -203,10 +228,10 @@ export class SearchParamsBuilder {
         return params;
     }
 
-    private _crte_fuzzy(term: _FuzzyTerm): SearchParams {
+    private _crte_fuzzy(term: _Term): SearchParams {
 
         if (!term) return {}
-        
+
         let params: SearchParams = {}
         if (!isNaN(Number(term)) && term.length <= 2) {
             params = { departement: term };
@@ -216,10 +241,10 @@ export class SearchParamsBuilder {
         return params;
     }
 
-    private _departement_fuzzy(term: _FuzzyTerm): SearchParams {
+    private _departement_fuzzy(term: _Term): SearchParams {
 
         if (!term) return {}
-        
+
         let params: SearchParams = {}
         if (term.length <= 2 && !isNaN(Number(term.substring(0, 1)))) {
             params = { code: term };
@@ -229,7 +254,7 @@ export class SearchParamsBuilder {
         return params;
     }
 
-    private _epci_fuzzy(term: _FuzzyTerm) {
+    private _epci_fuzzy(term: _Term) {
 
         if (!term) return {}
 
@@ -240,5 +265,35 @@ export class SearchParamsBuilder {
             params = { nom: term }
         }
         return params
+    }
+}
+
+export class SearchByCodeParamsBuilder extends ASearchParamsBuilder {
+
+    override make_search_params(term: _Term, type: TypeLocalisation): SearchParams {
+
+        let search_params: SearchParams;
+
+        switch(type) {
+            case TypeLocalisation.ARRONDISSEMENT:
+                search_params = { query: term };
+                break;
+            case TypeLocalisation.COMMUNE:
+                search_params = { code: term };
+                break;
+            case TypeLocalisation.CRTE:
+                search_params = { nom: term };
+                break;
+            case TypeLocalisation.DEPARTEMENT:
+                search_params = { code: term };
+                break;
+            case TypeLocalisation.EPCI:
+                search_params = { code: term };
+                break;
+            default:
+                throw new Error(`Non géré: ${type}`);
+        }
+        
+        return search_params;
     }
 }

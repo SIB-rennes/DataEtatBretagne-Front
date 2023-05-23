@@ -8,7 +8,7 @@ Utilise les API de la [plateforme data éta en bretagne](https://github.com/SIB-
 
 Il est possible de diriger un utilisateur vers des données financières filtrèes en utilisant des paramètres d'url, exemple:
 
-`https://budget.nocode.csm.ovh/?programmes=101,102`
+`http://localhost:4200/?programmes=101,102&niveau_geo=Epci&code_geo=200000172`
 
 Voici les paramètres pris en charge:
 
@@ -21,7 +21,7 @@ Voici les paramètres pris en charge:
 
 - Emplacement géographique
 
-| Paramètre           | Description         | Exemple              |
-| ------------------- | ------------------- | -------------------- |
-| Niveau géographique | Niveau géographique | `niveau_geo=Epci`    |
-| code_geo            | Code géographique   | `code_geo=200000172` |
+| Paramètre           | Description         | Valeurs acceptées                                                       | Exemple              |
+| ------------------- | ------------------- | ----------------------------------------------------------------------- | -------------------- |
+| Niveau géographique | Niveau géographique | `Département`,`Epci` et `Commune`                                       | `niveau_geo=Epci`    |
+| code_geo            | Code géographique   | [COG](https://www.insee.fr/fr/recherche/recherche-geographique?debut=0) | `code_geo=200000172` |
