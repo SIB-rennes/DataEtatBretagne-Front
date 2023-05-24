@@ -168,8 +168,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
     year: number[] | null,
     location: GeoModel[] | null
   ): string {
-    let params =
-      'sort=code_programme,label_commune&limit=5000&where=';
+    let params ='limit=5000&where=';
     if (beneficiaire) {
       params += `~and(code_siret,eq,${beneficiaire.Code})`;
     }
@@ -208,11 +207,8 @@ export class FinancialDataHttpService extends NocodbHttpService {
     }
 
     if (year && year.length > 0) {
-      params += `~and(`;
-      year.forEach((value) => {
-        params += `~or(Annee,eq,${value})`;
-      });
-      params += `)`;
+      params += `~and(Annee,in,${year
+        .join(',')})`;
     }
     return params;
   }
