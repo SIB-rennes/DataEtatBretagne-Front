@@ -34,15 +34,20 @@
       <ng-container matColumnDef="enabled">
         <th mat-header-cell *matHeaderCellDef> Activer/Désactiver </th>
         <td mat-cell *matCellDef="let element">
-          <mat-slide-toggle [disabled]="session.getCurrentAccount()?.id === element.id" [checked]="element.enabled"
-            color="primary" (change)="toggleEnabled(element, $event)">
-            <span *ngIf="element.enabled">Désactiver l'utilisateur</span>
-            <span *ngIf="!element.enabled">Activer l'utilisateur</span>
-          </mat-slide-toggle>
+          <div class="centered-container align-centered">
+            <mat-slide-toggle [disabled]="session.getCurrentAccount()?.id === element.id" [checked]="element.enabled"
+              color="primary" (change)="toggleEnabled(element, $event)">
+              <span *ngIf="element.enabled">Désactiver l'utilisateur</span>
+              <span *ngIf="!element.enabled">Activer l'utilisateur</span>
+            </mat-slide-toggle>
+            <button mat-mini-fab color="warn"
+            matTooltip="Supprimer l'utilisateur" (click)="confirmDelete(element)"
+            class="centered-item" aria-label="Example icon button with a home icon" *ngIf="!element.enabled">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
         </td>
       </ng-container>
-
-
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>

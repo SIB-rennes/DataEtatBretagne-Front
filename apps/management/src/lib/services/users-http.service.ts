@@ -42,13 +42,23 @@ export class UserHttpService {
   }
 
   /**
+   * Supprime un utilisateurs
+   * @param uuid  id de l'utilisateur
+   * @returns
+   */
+  public deleteUsers(uuid: string): Observable<any> {
+    return this.http.delete(
+      `${this.apiPath}/users/${uuid}`);
+  }
+
+  /**
    * Disables a user
    * @param uuid Unique identifier of the user to disable
    * @returns Observable containing a confirmation message
    */
   public disableUser(uuid: string): Observable<string> {
     return this.http.patch<string>(
-      `${this.apiPath}/users/disable/${uuid}`,
+      `${this.apiPath}/users/${uuid}/disable`,
       null
     );
   }
@@ -60,7 +70,7 @@ export class UserHttpService {
    */
   public enableUser(uuid: string): Observable<string> {
     return this.http.patch<string>(
-      `${this.apiPath}/users/enable/${uuid}`,
+      `${this.apiPath}/users/${uuid}/enable`,
       null
     );
   }
