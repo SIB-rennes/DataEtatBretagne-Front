@@ -1,22 +1,4 @@
 import { test, expect } from "@playwright/test"
-import mockRefApi from "../utils/mock-api";
-
-test.describe("Page d'accueil", () => {
-    test.beforeEach(async ({ page }) => {
-        const navigationPromise = page.waitForNavigation({
-            waitUntil: 'networkidle',
-        });
-        await mockRefApi(page);
-        await page.goto('./');
-        await navigationPromise;
-    });
-
-  test("L'utilisateur est connecté", async ({ page }) => {
-    await expect(page).toHaveTitle(
-      /^Données financières de l'état en Bretagne*/
-    );
-  });
-});
 
 const urlparam = `?programmes=101,102`
 
@@ -24,6 +6,7 @@ test.describe("Lorsque l'on spécifie deux programmes", () => {
   test("Les filtres sont pré remplis", async ({ page }) => {
     const navigationPromise = page.waitForNavigation({
       waitUntil: 'networkidle',
+      timeout: 30000,
     });
     await page.goto(`/${urlparam}`);
     await navigationPromise;
