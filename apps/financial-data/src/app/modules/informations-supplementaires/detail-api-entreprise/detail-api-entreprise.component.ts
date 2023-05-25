@@ -67,6 +67,7 @@ export class DetailApiEntrepriseComponent {
     return this.vue_tribool(this.info?.quick.ess);
   }
 
+  get rge_disponible() { return !this.info?.certifications_rge_indispo }
   get label_rge() {
 
     let a_rge_active = false
@@ -87,6 +88,7 @@ export class DetailApiEntrepriseComponent {
     return this.vue_tribool(a_rge_active);
   }
 
+  get qualibat_disponible() { return !this.info?.certification_qualibat_indispo }
   get label_qualibat() {
     let a_certif_qualibat = Boolean(this.info?.certification_qualibat);
 
@@ -96,5 +98,7 @@ export class DetailApiEntrepriseComponent {
   get has_chiffre_d_affaires() {
     return Boolean(this.info?.chiffre_d_affaires) && (this.info!.chiffre_d_affaires.length > 0);
   }
+
+  get tva_disponible() { return !this.info?.tva_indispo }
 
 }
