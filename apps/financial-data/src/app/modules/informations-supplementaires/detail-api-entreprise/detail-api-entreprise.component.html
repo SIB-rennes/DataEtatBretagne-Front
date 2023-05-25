@@ -51,7 +51,11 @@
 
                 <strong>Effectif de l'organisation (INSEE) :</strong> {{info.quick.tranche_effectif.intitule |
                 ouNonRenseigne}} <br>
-                <strong>Numéro de TVA intracommunautaire :</strong> {{info.tva?.tva_number | ouNonRenseigne}} <br>
+                <strong>Numéro de TVA intracommunautaire : </strong> 
+                <ng-container *ngIf="tva_disponible; else indisponibleInline">
+                    {{info.tva?.tva_number | ouNonRenseigne}} 
+                    <br>
+                </ng-container>
             </div>
 
             <div class="colonne">
@@ -62,12 +66,26 @@
                 </ng-container>
                 <br>
 
-                <strong>ESS (Économie Sociale et Solidaire):</strong> {{label_ess}}<br>
-                <strong>Certification RGE:</strong> {{label_rge}}<br>
-                <strong>Certification Qualibat:</strong> {{label_qualibat}}<br>
+                <strong>ESS (Économie Sociale et Solidaire) :</strong> {{label_ess}}<br>
+
+                <strong>Certification RGE : </strong> 
+                <ng-container *ngIf="rge_disponible; else indisponibleInline">
+                    {{label_rge}}
+                </ng-container>
+                <br>
+
+                <strong>Certification Qualibat : </strong> 
+                <ng-container *ngIf="qualibat_disponible; else indisponibleInline">
+                    {{label_qualibat}}
+                </ng-container>
+                <br>
             </div>
 
         </div>
 
     </ng-container>
+</ng-template>
+
+<ng-template #indisponibleInline>
+    <i>Donnée indisponible</i>
 </ng-template>
