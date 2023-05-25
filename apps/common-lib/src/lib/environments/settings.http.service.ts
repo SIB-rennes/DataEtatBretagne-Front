@@ -4,6 +4,7 @@ import { KeycloakService } from 'keycloak-angular';
 import { firstValueFrom } from 'rxjs';
 import { Settings } from 'apps/common-lib/src/public-api';
 import { ISettingsService } from './interface-settings.service';
+import { NGXLogger, NgxLoggerLevel } from 'ngx-logger';
 
 export const SETTINGS = new InjectionToken<ISettingsService>('SETTINGS');
 
@@ -12,7 +13,8 @@ export class SettingsHttpService {
   constructor(
     private http: HttpClient,
     @Inject(SETTINGS) private settingsService: ISettingsService,
-    private keycloak: KeycloakService
+    private keycloak: KeycloakService,
+    private logger: NGXLogger,
   ) {}
 
   initializeApp(): Promise<any> {
@@ -25,7 +27,18 @@ export class SettingsHttpService {
         .catch((error) => {
           reject(error);
         });
-    }).then(async () => {
+    })
+    .then(async () => {
+      const is_in_production = this.settingsService.getSetting().production;
+      if (is_in_production) {
+        this.logger.partialUpdateConfig({ level: NgxLoggerLevel.WARN, disableFileDetails: true });
+      }
+      else {
+        this.logger.partialUpdateConfig({ level: NgxLoggerLevel.TRACE, enableSourceMaps: true });
+        this.logger.info("Application en mode développement. Les logs sont en mode trace");
+      }
+    })
+    .then(async () => {
       try {
         await this.keycloak.init({
           config: {

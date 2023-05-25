@@ -6,6 +6,7 @@ import {
   HTTP_INTERCEPTORS,
   HttpHeaders,
 } from '@angular/common/http';
+import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -143,6 +144,7 @@ registerLocaleData(localeFr);
     HttpClientModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    LoggerModule.forRoot({ level: NgxLoggerLevel.WARN }),
     MaterialModule,
     GroupingTableModule,
     MatDialogModule,

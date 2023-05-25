@@ -1,10 +1,10 @@
 import { BopModel } from './bop.models';
+import { TOrError } from './t-or-error.model';
 import { RefTheme } from './theme.models';
 
-/**
- * Model pour le resolvers
- */
-export interface FinancialDataResolverModel {
+export interface FinancialData {
   themes: RefTheme[];
   bop: BopModel[];
 }
+
+export type FinancialDataResolverModel = TOrError<FinancialData>

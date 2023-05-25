@@ -15,10 +15,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 
 import { FormControl } from '@angular/forms';
-import { debounceTime, Observable, Subject } from 'rxjs';
+import { debounceTime, Subject } from 'rxjs';
 import { GeoModel, TypeLocalisation } from '../../models/geo.models';
-import { GeoHttpService } from '../../services/geo-http.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { GeoLocalisationComponentService } from './geo.localisation.componentservice';
 
 @Component({
   selector: 'lib-localisation',
@@ -46,6 +46,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
       }
     `,
   ],
+  providers: [GeoLocalisationComponentService],
 })
 export class LocalisationComponent implements OnChanges, OnInit {
   public category: TypeLocalisation | undefined;
@@ -64,7 +65,7 @@ export class LocalisationComponent implements OnChanges, OnInit {
   @Input()
   public categorySelected: TypeLocalisation | null = null;
 
-  constructor(private geoService: GeoHttpService) {
+  constructor(private geo: GeoLocalisationComponentService) {
     this.searchGeoChanged.pipe(debounceTime(300)).subscribe(() => {
       this._search();
     });
@@ -94,7 +95,7 @@ export class LocalisationComponent implements OnChanges, OnInit {
     if (this.categorySelected != null) {
       this.control.setValue(null);
       this.searchGeo = '';
-      this._filterGeo(null, this.categorySelected).subscribe(
+      this.geo.filterGeo(null, this.categorySelected).subscribe(
         (response) => (this.filteredGeo = response)
       );
     }
@@ -105,7 +106,7 @@ export class LocalisationComponent implements OnChanges, OnInit {
    */
   private _search() {
     if (this.categorySelected != null) {
-      this._filterGeo(this.searchGeo, this.categorySelected).subscribe(
+      this.geo.filterGeo(this.searchGeo, this.categorySelected).subscribe(
         (response: GeoModel[]) => {
           if (this.control.value) {
             // pour ne pas perdre la sélection au filtre, on conserve les valeurs du controls.
@@ -124,24 +125,6 @@ export class LocalisationComponent implements OnChanges, OnInit {
           }
         }
       );
-    }
-  }
-
-  private _filterGeo(
-    value: string | null,
-    type: TypeLocalisation
-  ): Observable<GeoModel[]> {
-    switch (type) {
-      case TypeLocalisation.DEPARTEMENT:
-        return this.geoService.filterDepartement(value);
-      case TypeLocalisation.COMMUNE:
-        return this.geoService.filterCommune(value);
-      case TypeLocalisation.EPCI:
-        return this.geoService.filterEpci(value);
-      case TypeLocalisation.CRTE:
-        return this.geoService.filterCrte(value);
-      case TypeLocalisation.ARRONDISSEMENT:
-        return this.geoService.filterArrondissement(value);
     }
   }
 }
