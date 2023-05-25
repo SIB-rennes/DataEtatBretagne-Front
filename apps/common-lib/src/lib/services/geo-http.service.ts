@@ -18,9 +18,14 @@ export const API_GEO_PATH = new InjectionToken<string>('API GEO');
  */
 export const API_REF_PATH = new InjectionToken<string>('API REF');
 
+/** 
+ * Paramètres de recherche pour une localisation géographique à utiliser
+ * voir GeoHttpService.search
+ */
 interface SearchParams {
     [key: string]: any
 }
+
 
 @Injectable({
     providedIn: 'root'
@@ -37,13 +42,13 @@ export class GeoHttpService {
     ): Observable<GeoModel[]> {
 
         const base = this._baseUrl(type);
-        const str_params = _to_query_paramstr(search_param);
+        const str_params = this._to_query_paramstr(search_param);
 
         const url = `${base}?${str_params}`
 
         return this.http.get<GeoModel[]>(url)
             .pipe(map(payload => {
-                const mapped = _api_to_service_mapper(type, payload);
+                const mapped = this._api_to_service_mapper(type, payload);
                 return mapped;
             }));
     }
@@ -83,61 +88,77 @@ export class GeoHttpService {
                 throw new Error(`Non géré: ${type}`);
         }
 
-        return `${_remove_trailing_slash(base)}/${segment}`
+        return `${this._remove_trailing_slash(base)}/${segment}`
     }
-}
 
-function _remove_trailing_slash(s: string) {
+    private _remove_trailing_slash(s: string) {
 
-    if (s.endsWith('/'))
-        return s.slice(0, -1)
-    return s
-}
+        if (s.endsWith('/'))
+            return s.slice(0, -1)
+        return s
+    }
 
-function _to_query_paramstr(search_params: SearchParams) {
-    let params = new HttpParams()
+    private _to_query_paramstr(search_params: SearchParams) {
+        let params = new HttpParams()
 
-    for (const key in search_params) {
-        if (Object.prototype.hasOwnProperty.call(search_params, key)) {
-            const v = search_params[key];
+        for (const key in search_params) {
+            if (Object.prototype.hasOwnProperty.call(search_params, key)) {
+                const v = search_params[key];
 
-            params = params.set(key, v);
+                params = params.set(key, v);
+            }
         }
+
+        const str_params = params.toString();
+        return str_params;
     }
 
-    const str_params = params.toString();
-    return str_params;
-}
+    private _api_to_service_mapper(type: TypeLocalisation, geos: GeoModel[]) {
 
-function _api_to_service_mapper(type: TypeLocalisation, geos: GeoModel[]) {
+        if (type === TypeLocalisation.ARRONDISSEMENT) {
+            let payload = geos as unknown as ReferentielResponse<GeoArrondissementModel>
 
-    if (type == TypeLocalisation.ARRONDISSEMENT) {
-        let payload = geos as unknown as ReferentielResponse<GeoArrondissementModel>
+            return payload.items.map(arr => {
+                return {
+                    nom: arr.label,
+                    code: arr.code,
+                    type: TypeLocalisation.ARRONDISSEMENT
+                } as GeoModel
+            })
+        }
 
-        return payload.items.map(arr => {
-            return {
-                nom: arr.label,
-                code: arr.code,
-                type: TypeLocalisation.ARRONDISSEMENT
-            } as GeoModel
-        })
+        return geos.map(geo => {
+            return { ...geo, type: type }
+        });
     }
-
-    return geos.map(geo => {
-        return { ...geo, type: type }
-    });
 }
+
+
+
 
 type _Term = string | null;
 
+
+/** Gère le paramètre de limite de SearchParams. A utiliser avec un ASearchParamsBuilder pour personnaliser le calcul de cet argument. */
 export type LimitHandler = (search_params: SearchParams, type: TypeLocalisation, default_limit: number) => SearchParams;
 
+/**
+ * Construit un SearchParams.
+ * 
+ * ```
+ * let builder = SearchParamsBuilder();
+ * let terme = 'Rennes';
+ * let type = TypeLocalisation.Commune;
+ * let searchParams = builder.search(terme, type)
+ * let response = geoService.search(searchParams, type)
+ * ```
+ */
 abstract class ASearchParamsBuilder {
     protected _defaultLimit = 100;
-    protected _handler: LimitHandler;
+    protected _limitHandler: LimitHandler;
 
     constructor() {
-        this._handler = (search) => {
+        this._limitHandler = (search) => {
             return { ...search, limit: this._defaultLimit };
         }
     }
@@ -148,16 +169,16 @@ abstract class ASearchParamsBuilder {
     }
 
     public withLimitHandler(handler: LimitHandler) {
-        this._handler = handler;
+        this._limitHandler = handler;
         return this;
     }
 
     search(term: _Term, type: TypeLocalisation): SearchParams {
 
         let params = this.make_search_params(term, type);
-        params = this._handler(params, type, this._defaultLimit);
+        params = this._limitHandler(params, type, this._defaultLimit);
 
-        if (type == TypeLocalisation.COMMUNE)
+        if (type === TypeLocalisation.COMMUNE)
             params = this.add_fields_commune(params);
 
         return params;
@@ -170,6 +191,18 @@ abstract class ASearchParamsBuilder {
     }
 }
 
+/** 
+ * Construit les SearchParams pour une recherche geo.
+ * 'Devine' les paramètres de recherche selon le terme recherché.
+ * 
+ * Exemple:
+ *   FuzzySearchParamsBuilder().search(35, TypeLocalisation.Commune)
+ *      On considèrera le terme recherché comme étant un code de département.
+ *   FuzzySearchParamsBuilder().search(35000, TypeLocalisation.Commune)
+ *      On considèrera le terme recherché comme étant un code postal.
+ * 
+ * Ce builder est adapté pour les recherches faites par un utilisateur sur les emplacements géographiques.
+ */
 export class FuzzySearchParamsBuilder extends ASearchParamsBuilder {
 
     override make_search_params(term: _Term, type: TypeLocalisation): SearchParams {
@@ -217,7 +250,7 @@ export class FuzzySearchParamsBuilder extends ASearchParamsBuilder {
         if (!isNaN(Number(term))) {
             if (term.length <= 2) {
                 params = { codeDepartement: term }
-            } else if (term.length == 5) {
+            } else if (term.length === 5) {
                 params = { codePostal: term };
             } else {
                 params = { code: term };
@@ -268,6 +301,11 @@ export class FuzzySearchParamsBuilder extends ASearchParamsBuilder {
     }
 }
 
+/**
+ * Construit les SearchParams pour une recherche geo.
+ * 
+ * Recherche sur le cog (code officiel géographique). Adapté pour les API.
+ */
 export class SearchByCodeParamsBuilder extends ASearchParamsBuilder {
 
     override make_search_params(term: _Term, type: TypeLocalisation): SearchParams {
