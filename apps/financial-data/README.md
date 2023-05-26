@@ -8,7 +8,7 @@ Utilise les API de la [plateforme data éta en bretagne](https://github.com/SIB-
 
 Il est possible de diriger un utilisateur vers des données financières filtrèes en utilisant des paramètres d'url, exemple:
 
-`http://localhost:4200/?programmes=101,102&niveau_geo=Epci&code_geo=200000172`
+[https://DOMAINE/?programmes=101,102&niveau_geo=Epci&code_geo=200000172](https://DOMAINE/?programmes=101,102&niveau_geo=Epci&code_geo=200000172)
 
 Voici les paramètres pris en charge:
 
