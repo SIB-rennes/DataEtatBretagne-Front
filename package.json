@@ -33,6 +33,7 @@
     "graphql": "^16.6.0",
     "keycloak-angular": "^13.0.0",
     "keycloak-js": "~20.0.5",
+    "ngx-logger": "^5.0.12",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
@@ -51,6 +52,7 @@
     "@graphql-codegen/typescript-apollo-angular": "3.5.6",
     "@graphql-codegen/typescript-operations": "^3.0.4",
     "@graphql-codegen/typescript-resolvers": "^3.2.1",
+    "@playwright/test": "^1.33.0",
     "@storybook/addon-essentials": "^7.0.2",
     "@storybook/addon-interactions": "^7.0.2",
     "@storybook/addon-links": "^7.0.2",

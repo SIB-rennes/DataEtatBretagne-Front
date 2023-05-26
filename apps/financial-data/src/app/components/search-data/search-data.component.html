@@ -24,7 +24,9 @@
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
-      <mat-form-field class="field-25-width" appearance="fill" matTooltipPosition="above"
+      <mat-form-field 
+        data-test-id="programmes-form-field" 
+        class="field-25-width" appearance="fill" matTooltipPosition="above"
         matTooltip="Saisir un nom ou un numéro de programme (Exemple : 102 ou Accès et retour à l’emploi)">
         <mat-label>Programme</mat-label>
         <mat-select formControlName="bops" multiple>

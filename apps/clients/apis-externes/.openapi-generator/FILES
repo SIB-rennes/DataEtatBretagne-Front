@@ -1,4 +1,5 @@
 .gitignore
+.openapi-generator-ignore
 README.md
 api.module.ts
 api/api.ts
@@ -24,6 +25,7 @@ model/modelError.ts
 model/models.ts
 model/numeroTvaHolder.ts
 model/qualification.ts
+model/query.ts
 model/representantLegal.ts
 model/subvention.ts
 model/uniteLegale.ts

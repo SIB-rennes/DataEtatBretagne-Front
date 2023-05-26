@@ -2,10 +2,8 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnChanges,
   OnInit,
   Output,
-  SimpleChanges,
 } from '@angular/core';
 import {
   FormControl,
@@ -13,7 +11,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Data } from '@angular/router';
 import {
   switchMap,
   of,
@@ -22,6 +20,7 @@ import {
   finalize,
   BehaviorSubject,
   debounceTime,
+  Subscription,
 } from 'rxjs';
 import { BopModel } from '@models//bop.models';
 import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
@@ -39,13 +38,18 @@ import {
   GeoModel,
   TypeLocalisation,
 } from 'apps/common-lib/src/public-api';
+import { Bop } from '@models/search/bop.model';
+import { Theme } from '@models/search/theme.model';
+import { Beneficiaire } from '@models/search/beneficiaire.model';
+import { PreFilter } from '@models/search/prefilter.model';
+import { PrefilterResolverModel } from '../../resolvers/pre-filter.resolver';
 
 @Component({
   selector: 'financial-search-data',
   templateUrl: './search-data.component.html',
   styleUrls: ['./search-data.component.scss'],
 })
-export class SearchDataComponent implements OnInit, OnChanges {
+export class SearchDataComponent implements OnInit {
   public readonly TypeLocalisation = TypeLocalisation;
   public searchForm!: FormGroup;
 
@@ -53,6 +57,7 @@ export class SearchDataComponent implements OnInit, OnChanges {
   public themes: RefTheme[] = [];
 
   public filteredBeneficiaire: Observable<RefSiret[]> | null | undefined = null;
+
   public filteredBop: BopModel[] | undefined = undefined;
 
   /**
@@ -81,99 +86,81 @@ export class SearchDataComponent implements OnInit, OnChanges {
    */
   @Output() currentFilter = new EventEmitter<Preference>();
 
-  @Input()
-  preFilter: JSONObject | null = null;
+  @Input() public set preFilter(value: PreFilter | undefined) {
+    this._apply_prefilters(value);
+  }
 
   constructor(
     private route: ActivatedRoute,
     private datePipe: DatePipe,
     private alertService: AlertService,
     private service: FinancialDataHttpService
-  ) {}
+  ) {
+    // formulaire
+    this.searchForm = new FormGroup({
+      year: new FormControl<number[]>([], {
+        validators: [
+          Validators.min(2000),
+          Validators.max(new Date().getFullYear()),
+        ],
+      }),
 
-  /**
-   * Applique le filtre par défaut
-   * @param _changes
-   */
-  ngOnChanges(_changes: SimpleChanges): void {
-    if (this.preFilter !== null) {
-      this.searchForm.controls['location'].setValue(this.preFilter['location']);
-      if (this.preFilter['year']) {
-        this.searchForm.controls['year'].setValue(
-          Array.isArray(this.preFilter['year'])
-            ? this.preFilter['year']
-            : [this.preFilter['year']]
-        );
-      }
+      filterBop: new FormControl<string>(''), // controls pour le filtre des bops
 
-      if (this.preFilter['theme']) {
-        const preFilterTheme = Array.isArray(this.preFilter['theme'])
-          ? (this.preFilter['theme'] as unknown as RefTheme[])
-          : ([this.preFilter['theme']] as unknown as RefTheme[]);
-        const themeSelected = this.themes?.filter(
-          (theme) =>
-            preFilterTheme.findIndex(
-              (themeFilter) => themeFilter.Id === theme.Id
-            ) !== -1
-        );
-        this.searchForm.controls['theme'].setValue(themeSelected);
-      }
-
-      this.searchForm.controls['beneficiaire'].setValue(
-        this.preFilter['beneficiaire'] ?? null
-      );
-
-      // Application du bops
-      // Il faut rechercher dans les filtres "this.filteredBop"
-      if (this.preFilter['bops']) {
-        const prefilterBops = this.preFilter['bops'] as unknown as BopModel[];
-        const bopSelect = this.filteredBop?.filter(
-          (bop) =>
-            prefilterBops.findIndex(
-              (bopFilter) => bop.Code === bopFilter.Code
-            ) !== -1
-        );
-        this.searchForm.controls['bops'].setValue(bopSelect);
-      }
-      // lance la recherche pour afficher les resultats
-      this.doSearch();
-    }
+      bops: new FormControl<Bop | null>(null),
+      theme: new FormControl<Theme | null>(null),
+      beneficiaire: new FormControl<Beneficiaire | null>(null),
+      location: new FormControl({ value: null, disabled: false }, []),
+    });
   }
 
   ngOnInit(): void {
     // récupération des themes dans le resolver
     this.route.data.subscribe(
-      (response: { financial: FinancialDataResolverModel | Error } | any) => {
-        if ('themes' in response.financial) {
-          this.displayError = false;
-          this.themes = response.financial.themes;
-          this.bop = response.financial.bop;
+      (data: Data) => {
+        let response = data as { financial: FinancialDataResolverModel, preFilter: PrefilterResolverModel }
 
-          this.filteredBop = this.bop;
-        } else {
+        let error = response.financial.error || response.preFilter?.error
+
+        if (error) {
           this.displayError = true;
-          this.error = response.financial as Error;
+          this.error = error;
+          return;
         }
+
+        let financial = response.financial.data!
+        let prefilter = response.preFilter?.data
+
+        this.displayError = false;
+        this.themes = financial.themes;
+        this.bop = financial.bop;
+
+        this.filteredBop = this.bop;
+
+        if (prefilter)
+          this.preFilter = prefilter;
       }
     );
-    this._onFilter();
+
+    this._setupFilters();
   }
 
   /**
    * Change la valeur du bop pour déclencher une nouvelle recherche de BOP associé aux themes
    */
   public onSelectTheme(_event: any): void {
-    this.searchForm.controls['filterBop'].setValue('');
-    this.searchForm.controls['bops'].setValue(null);
+    this.searchForm.patchValue( { filterBop: '', bops: null } );
   }
 
   /**
    * Action déclenché quand on annule le theme
    */
   public cancelTheme(): void {
-    this.searchForm.controls['theme'].setValue(null);
-    this.searchForm.controls['filterBop'].setValue('');
-    this.searchForm.controls['bops'].setValue(null);
+    this.searchForm.patchValue({
+      theme: null,
+      filterBop: '',
+      bops: null,
+    });
   }
 
   public onSelectBeneficiaire(benef: RefSiret): void {
@@ -231,37 +218,39 @@ export class SearchDataComponent implements OnInit, OnChanges {
   /**
    * lance la recherche des lignes d'engagement financière
    */
+  private _search_subscription?: Subscription;
   public doSearch(): void {
-    if (!this.searchInProgress.value) {
-      const formValue = this.searchForm.value;
-      this.searchInProgress.next(true);
-      this.service
-        .search(
-          formValue.beneficiaire,
-          formValue.bops,
-          formValue.theme,
-          formValue.year,
-          formValue.location
-        )
-        .pipe(
-          finalize(() => {
-            this.searchInProgress.next(false);
-          })
-        )
-        .subscribe({
-          next: (response: FinancialDataModel[] | Error) => {
-            this.searchFinish = true;
-            this.currentFilter.next(this._buildPreference(formValue));
-            this.searchResults.next(response as FinancialDataModel[]);
-          },
-          error: (err: Error) => {
-            this.searchFinish = true;
-            this.currentFilter.next(this._buildPreference(formValue));
-            this.searchResults.next([]);
-            this.alertService.openAlertError(err.message, 8);
-          },
-        });
-    }
+
+    this._search_subscription?.unsubscribe();
+
+    const formValue = this.searchForm.value;
+    this.searchInProgress.next(true);
+    this._search_subscription = this.service
+      .search(
+        formValue.beneficiaire,
+        formValue.bops,
+        formValue.theme,
+        formValue.year,
+        formValue.location
+      )
+      .pipe(
+        finalize(() => {
+          this.searchInProgress.next(false);
+        })
+      )
+      .subscribe({
+        next: (response: FinancialDataModel[] | Error) => {
+          this.searchFinish = true;
+          this.currentFilter.next(this._buildPreference(formValue));
+          this.searchResults.next(response as FinancialDataModel[]);
+        },
+        error: (err: Error) => {
+          this.searchFinish = true;
+          this.currentFilter.next(this._buildPreference(formValue));
+          this.searchResults.next([]);
+          this.alertService.openAlertError(err.message, 8);
+        },
+      });
   }
 
   /**
@@ -347,28 +336,10 @@ export class SearchDataComponent implements OnInit, OnChanges {
   /**
    * filtrage des données des formulaires pour les autocomplete
    */
-  private _onFilter(): void {
-    // formulaire
-    this.searchForm = new FormGroup({
-      year: new FormControl('', {
-        validators: [
-          Validators.min(2000),
-          Validators.max(new Date().getFullYear()),
-        ],
-      }),
-      bops: new FormControl(null),
-      theme: new FormControl(null),
-      beneficiaire: new FormControl(null),
-      filterBop: new FormControl(null), // controls pour le filtre des bops
-      location: new FormControl({ value: null, disabled: false }, []),
-    });
+  private _setupFilters(): void {
 
-    this.searchForm.controls['filterBop'].valueChanges.subscribe((value) => {
-      if (typeof value === 'string') {
-        this.filteredBop = this._filterBop(value ? value : '');
-      } else {
-        this.filteredBop = this._filterBop(value ? value?.Label : '');
-      }
+    this.searchForm.controls['filterBop'].valueChanges.subscribe((value: string) => {
+      this.filteredBop = this._filterBop(value ? value : '');
     });
 
     // filtre beneficiaire
@@ -428,5 +399,51 @@ export class SearchDataComponent implements OnInit, OnChanges {
     let arr = Array(8).fill(new Date().getFullYear());
     arr = arr.map((_val, index) => max_year - index);
     return arr;
+  }
+
+  private _apply_prefilters(preFilter?: PreFilter) {
+    if (preFilter == null)
+      return
+
+    this.searchForm.controls['location'].setValue(preFilter.location);
+    if (preFilter.year) {
+      this.searchForm.controls['year'].setValue(
+        Array.isArray(preFilter.year)
+          ? preFilter.year
+          : [preFilter.year]
+      );
+    }
+
+    if (preFilter.theme) {
+      const preFilterTheme = Array.isArray(preFilter.theme)
+        ? (preFilter.theme as unknown as RefTheme[])
+        : ([preFilter.theme] as unknown as RefTheme[]);
+      const themeSelected = this.themes?.filter(
+        (theme) =>
+          preFilterTheme.findIndex(
+            (themeFilter) => themeFilter.Id === theme.Id
+          ) !== -1
+      );
+      this.searchForm.controls['theme'].setValue(themeSelected);
+    }
+
+    this.searchForm.controls['beneficiaire'].setValue(
+      preFilter.beneficiaire ?? null
+    );
+
+    // Application du bops
+    // Il faut rechercher dans les filtres "this.filteredBop"
+    if (preFilter.bops) {
+      const prefilterBops = preFilter.bops as unknown as BopModel[];
+      const bopSelect = this.filteredBop?.filter(
+        (bop) =>
+          prefilterBops.findIndex(
+            (bopFilter) => bop.Code === bopFilter.Code
+          ) !== -1
+      );
+      this.searchForm.controls['bops'].setValue(bopSelect);
+    }
+    // lance la recherche pour afficher les resultats
+    this.doSearch();
   }
 }

@@ -23,7 +23,6 @@ import { HttpContext, HttpErrorResponse } from '@angular/common/http';
 import { BYPASS_ALERT_INTERCEPTOR } from 'apps/common-lib/src/public-api';
 import { Demarche } from '@models/demarche_simplifie/demarche-graphql';
 import { DemarcheHttpService } from '@services/demarche.service';
-import { DemarcheLight } from './models/DemarcheLight';
 
 function fromInfoApiEntreprise(info: InfoApiEntreprise): EntrepriseFull {
   return {

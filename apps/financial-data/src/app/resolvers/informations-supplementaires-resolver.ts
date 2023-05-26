@@ -1,17 +1,9 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
+import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { InformationsSupplementairesResolverModel } from '@models/informations-supplementiares-resolver.model';
-import { catchError, forkJoin, Observable, of } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 
-@Injectable({ providedIn: 'root' })
-export class InformationsSupplementairesResolver
-  implements Resolve<InformationsSupplementairesResolverModel | Error>
-{
-  constructor() {}
-
-  resolve(
-    route: ActivatedRouteSnapshot
-  ): Observable<InformationsSupplementairesResolverModel | Error> {
+export const resolveInformationsSupplementaires: ResolveFn<InformationsSupplementairesResolverModel | Error> =
+  (route: ActivatedRouteSnapshot) => {
     let ej = route.params['ej'];
     let poste_ej = route.params['poste_ej'];
 
@@ -27,4 +19,3 @@ export class InformationsSupplementairesResolver
       })
     );
   }
-}

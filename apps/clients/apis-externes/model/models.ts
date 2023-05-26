@@ -14,6 +14,7 @@ export * from './infoApiSubvention';
 export * from './modelError';
 export * from './numeroTvaHolder';
 export * from './qualification';
+export * from './query';
 export * from './representantLegal';
 export * from './subvention';
 export * from './uniteLegale';

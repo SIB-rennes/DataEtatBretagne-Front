@@ -1,26 +1,28 @@
-import { Injectable } from '@angular/core';
-import { Resolve } from '@angular/router';
+import { inject } from '@angular/core';
+import { ResolveFn } from '@angular/router';
 import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
 import { FinancialDataHttpService } from '@services/financial-data-http.service';
-import { catchError, forkJoin, Observable, of } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-@Injectable({ providedIn: 'root' })
-export class FinancialDataResolver
-  implements Resolve<FinancialDataResolverModel | Error>
-{
-  constructor(private service: FinancialDataHttpService) {}
+export const resolveFinancialData: ResolveFn<FinancialDataResolverModel> =
+  () => {
 
-  resolve(): Observable<FinancialDataResolverModel | Error> {
+    let service = inject(FinancialDataHttpService);
+
     return forkJoin({
-      themes: this.service.getTheme(),
-      bop: this.service.getBop(),
+      themes: service.getTheme(),
+      bop: service.getBop(),
     }).pipe(
+      map(data => {
+        return { data }
+      }),
       catchError((_error) => {
-        return of({
-          name: 'Erreur',
-          message: 'Erreurs lors de la récupération des données.',
-        });
+        return of(
+          {
+            error: new Error("Erreur lors de la récupération des données")
+          }
+        );
       })
     );
-  }
-}
+  };
