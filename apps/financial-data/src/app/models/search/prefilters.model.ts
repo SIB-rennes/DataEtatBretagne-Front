@@ -5,7 +5,7 @@ import { Bop, BopCode } from "./bop.model"
 export type ThemePreFilter = ThemeId | Theme | null
 export type BopsPreFilter = Bop | BopCode | null
 
-export interface PreFilter {
+export interface PreFilters {
   year?: number | number[]
 
   theme?: ThemePreFilter | ThemePreFilter[]

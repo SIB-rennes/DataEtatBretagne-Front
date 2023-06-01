@@ -6,4 +6,7 @@ export enum QueryParam {
 
     Niveau_geo = 'niveau_geo',
     Code_geo = 'code_geo',
+
+    Annee_min = 'annee_min',
+    Annee_max = 'annee_max',
 }
