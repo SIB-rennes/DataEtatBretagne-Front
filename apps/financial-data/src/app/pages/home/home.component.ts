@@ -103,7 +103,7 @@ export class HomeComponent implements OnInit {
         name: 'montant_cp',
         label: 'Montant payé',
         renderFn: (row, col) =>
-          row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
+          row[col.name] > 0 ? moneyFormat.format(row[col.name]) : "",
         aggregateReducer: AggregatorFns.sum,
         aggregateRenderFn: (aggregateValue) =>
           aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,

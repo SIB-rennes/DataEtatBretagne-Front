@@ -133,7 +133,14 @@ export class FinancialDataHttpService extends NocodbHttpService {
 
     return this.http.get<FinancialPagination>(`${this._apiFinancialAe}/ae?${params}`).pipe(
       map( (data: FinancialPagination) => {
-        console.log(data);
+        if (!data) {
+          return [];
+        }
+        if (data.pageInfo && data.pageInfo.totalRows > data.pageInfo.pageSize) {
+          throw new Error(
+            `La limite de lignes de résultat est atteinte. Veuillez affiner vos filtres afin d'obtenir un résultat complet.`
+          );
+        }
         return data.items
       })
     )
@@ -179,30 +186,27 @@ export class FinancialDataHttpService extends NocodbHttpService {
   ): string {
     let params ='limit=5000';
     if (beneficiaire) {
-      params += `&siret_beneficiaire=${beneficiaire}`;
+      params += `&siret_beneficiaire=${beneficiaire.Code}`;
     }
     if (bops) {
       params += `&code_programme=${bops
         .filter((bop) => bop.Code)
         .map((bop) => bop.Code)
-        .join(',')})`;
+        .join(',')}`;
     } else if (themes) {
       params += `&theme=${themes
         .map((theme) => theme.Label)
-        .join(',')})`;
+        .join(',')}`;
     }
 
     if (location && location.length > 0) {
-      // on est toujours sur le même type
-
       const listCode = location.map((l) => l.code).join(',');
       params += `&code_geo=${listCode}`
 
     }
 
     if (year && year.length > 0) {
-      params += `&annee=${year
-        .join(',')})`;
+      params += `&annee=${year.join(',')}`;
     }
     return params;
   }
