@@ -80,9 +80,13 @@ export class HomeComponent implements OnInit {
     });
 
     this.columnsMetaData = new ColumnsMetaData([
-      { name: 'nom_beneficiaire', label: 'Bénéficiaire' },
+      { name: 'siret',
+        label: 'Bénéficiaire',
+        renderFn: (row, col) =>
+            row[col.name] ?  row[col.name]['nom_beneficiare'] : ''
+      },
       {
-        name: 'Montant',
+        name: 'montant_ae',
         label: 'Montant engagé',
         renderFn: (row, col) =>
           row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
@@ -109,32 +113,35 @@ export class HomeComponent implements OnInit {
           'flex-grow': '0',
         },
       },
-      { name: 'Theme', label: 'Thème' },
+      { name: 'theme',
+        label: 'Thème',
+        renderFn: (row, _col) => row['programme']['theme'] ?? '',
+      },
       {
         name: 'nom_programme',
         label: 'Programme',
-        renderFn: (row, _col) =>
-          row['code_programme'] + ' - ' + row['nom_programme'],
+        renderFn: (row, _col) => row['programme']['code'] +' - '+ row['programme']['label'] ?? '',
       },
       {
         name: 'domaine',
         label: 'Domaine fonctionnel',
-        renderFn: (row, _col) => row['code_domaine'] + ' - ' + row['domaine'],
+        renderFn: (row, _col) => row['domaine_fonctionnel']['code'] + ' - ' + row['domaine_fonctionnel']['label'],
       },
       {
         name: 'ref_programmation',
         label: 'Ref Programmation',
         renderFn: (row, _col) =>
-          row['code_ref_programmation'] + ' - ' + row['ref_programmation'],
+           row['referentiel_programmation']['code'] + ' - ' + ( row['referentiel_programmation']['label'] ?? ''),
       },
       {
         name: 'label_commune',
         label: 'Commune',
-        renderFn: (row, _col) => row['label_commune'],
+        renderFn: (row, _col) => row['commune']['label'],
       },
       {
-        name: 'code_siret',
+        name: 'siret',
         label: 'Siret',
+        renderFn: (row, col) => row[col.name] ?  row[col.name]['code'] : '',
         columnStyle: {
           'min-width': '16ex',
           'flex-grow': '0',
@@ -144,7 +151,7 @@ export class HomeComponent implements OnInit {
         name: 'type_etablissement',
         label: `Type d'établissement`,
         renderFn: (row, col) =>
-          row[col.name] !== null ? row[col.name] : 'Non renseigné',
+          row['siret']['categorie_juridique'] !== null ? row['siret']['categorie_juridique'] : 'Non renseigné',
       },
       {
         name: 'date_cp',
@@ -153,7 +160,7 @@ export class HomeComponent implements OnInit {
          row[col.name] ? new Date(row[col.name]).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric'}): '',
       },
       {
-        name: 'Annee',
+        name: 'annee',
         label: 'Année d\'engagement',
         columnStyle: {
           'min-width': '18ex',
