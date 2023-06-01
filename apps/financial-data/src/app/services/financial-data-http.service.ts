@@ -88,7 +88,6 @@ export class FinancialDataHttpService extends NocodbHttpService {
     poste_ej: string | number
   ): Observable<FinancialDataModel | undefined> {
     let params = `&limit=1&where=(NEj,eq,${ej})~and(NPosteEj,eq,${poste_ej})`;
-
     let answer$ = this.mapNocoDbReponse(
       this.http.get<NocoDbResponse<FinancialDataModel>>(
         `${this._apiFinancialNocoDb}?${params}`
