@@ -148,10 +148,10 @@ function annees_min_max({ preFilters, route, logger }: _FilterFnParams): PreFilt
     }
   }
 
-  let annee_min = _parse_annee(p_annee_min);
-  let annee_max = _parse_annee(p_annee_max);
-  annee_min = (annee_min <= annee_max)? annee_min: annee_max;
-  annee_max = (annee_min <= annee_max)? annee_max: annee_min;
+  let i_annee_min = _parse_annee(p_annee_min);
+  let i_annee_max = _parse_annee(p_annee_max);
+  let annee_min = (i_annee_min <= i_annee_max)? i_annee_min: i_annee_max;
+  let annee_max = (i_annee_min <= i_annee_max)? i_annee_max: i_annee_min;
   
   let pf_annees = []
   for (let annee = annee_min; annee <= annee_max; annee++)
