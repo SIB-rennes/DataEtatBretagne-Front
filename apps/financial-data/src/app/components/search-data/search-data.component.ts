@@ -75,7 +75,7 @@ export class SearchDataComponent implements OnInit {
    * Affiche une erreur
    */
   public displayError = false;
-  public error: Error | null = null;
+  public error: Error | any | null = null;
 
   /**
    * Resultats de la recherche.
@@ -92,7 +92,7 @@ export class SearchDataComponent implements OnInit {
       this._apply_prefilters(value);
     } catch(e) {
       this.displayError = true;
-      this.error = e as unknown as Error;
+      this.error = e;
     }
   }
 
@@ -422,7 +422,7 @@ export class SearchDataComponent implements OnInit {
     if (preFilter.year) {
       let years = Array.isArray(preFilter.year) ? preFilter.year : [preFilter.year];
       let choices = this.generateArrayOfYears();
-      if (!_isArrayIncluded(years, choices))
+      if (!this._isArrayIncluded(years, choices))
         throw Error(`Vous devez selectionner des années comprises entrer ${choices[choices.length - 1]} et ${choices[0]}`);
 
       this.searchForm.controls['year'].setValue(
@@ -464,8 +464,12 @@ export class SearchDataComponent implements OnInit {
     // lance la recherche pour afficher les resultats
     this.doSearch();
   }
-}
 
-function _isArrayIncluded(a1: number[], a2: number[]): boolean {
-  return a1.every((num) => a2.includes(num));
+  //region: Fonctions utilitaires
+
+  private _isArrayIncluded(a1: number[], a2: number[]): boolean {
+    return a1.every((num) => a2.includes(num));
+  }
+
+  //endregion
 }

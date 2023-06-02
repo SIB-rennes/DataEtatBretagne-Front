@@ -15,6 +15,7 @@ export interface MarqueBlancheParsedParams {
 }
 export type MarqueBlancheParsedParamsResolverModel = TOrError<MarqueBlancheParsedParams | null>
 
+/** Resolver qui parse les paramètres de la marque blanche */
 export const resolveMarqueBlancheParsedParams: ResolveFn<MarqueBlancheParsedParamsResolverModel> = _passing_errors(_resolver)
 
 const niveauxLocalisationLegaux = [
@@ -23,6 +24,7 @@ const niveauxLocalisationLegaux = [
   TypeLocalisation.COMMUNE,
 ]
 
+/** Paramètres pour une fonction qui calcul les pré-filtres*/
 interface _FilterFnParams {
   preFilters: PreFilters,
   route: ActivatedRouteSnapshot,
@@ -37,35 +39,28 @@ function _resolver(route: ActivatedRouteSnapshot) {
   let logger = inject(NGXLogger);
   let api_geo = inject(GeoHttpService)
 
-  const empty: MarqueBlancheParsedParamsResolverModel = { data: null }
-
+  let has_marqueblanche_params: boolean = false;
   let preFilters: PreFilters = {};
 
   let uuid = route.queryParamMap.get(QueryParam.Uuid);
 
   if (uuid) {
     logger.debug("Paramètre UUID présent. on ne calcule pas les filtres marque blanche");
-    return of(empty);
+    return of(
+      { data: { preFilters, has_marqueblanche_params } }
+    );
   }
 
-  let has_marqueblanche_params: boolean = false;
   for (const p_name of Object.values(QueryParam)) {
     has_marqueblanche_params = has_marqueblanche_params || route.queryParamMap.has(p_name);
   }
-  
-
   let model = of(preFilters)
     .pipe(
       mergeMap(preFilters => programmes({ preFilters, route, logger })),
       mergeMap(preFilters => localisation({ api_geo, route, preFilters, logger })),
       map(preFilters => annees_min_max({ preFilters, route, logger })),
       map(preFilters => {
-        if (Object.keys(preFilters).length === 0)
-          return empty;
-
-        return {
-          data: { preFilters, has_marqueblanche_params }
-        }
+        return { data: { preFilters, has_marqueblanche_params } }
       })
     )
 
@@ -179,6 +174,8 @@ function filterGeo(api_geo: GeoHttpService, code_geo: string, niveau_geo: TypeLo
   return api_geo.search(niveau_geo, search_params);
 }
 
+//region fonctions utilitaires
+
 /** Resolver angular qui transforme les exceptions en valeur de retour. */
 function _passing_errors(fn: ResolveFn<MarqueBlancheParsedParamsResolverModel>): ResolveFn<MarqueBlancheParsedParamsResolverModel> {
   return (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
@@ -215,3 +212,5 @@ function _parse_annee(annee: string | null): number {
 
   throw new Error(`L'année ${annee} est invalide`);
 }
+
+//endregion

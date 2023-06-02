@@ -48,7 +48,9 @@
           [categorySelected]="locationControls.value ? locationControls.value[0].type : null"></lib-localisation>
       </div>
 
-      <mat-form-field class="field-9-width" appearance="fill">
+      <mat-form-field 
+        data-test-id="annees-form-field"
+        class="field-9-width" appearance="fill">
         <mat-label>Année</mat-label>
         <mat-select formControlName="year" multiple>
           <mat-option *ngFor="let year of generateArrayOfYears()" [value]="year">
