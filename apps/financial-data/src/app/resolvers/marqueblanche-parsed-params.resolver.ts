@@ -58,6 +58,7 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
     .pipe(
       mergeMap(previous => programmes(previous, handlerCtx)),
       mergeMap(previous => localisation(previous, handlerCtx)),
+      map(previous => group_by(previous, handlerCtx)),
       map(previous => annees_min_max(previous, handlerCtx)),
       map(result => {
         return { data: result }
@@ -67,7 +68,7 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
   return model;
 };
 
-/** Gère le filtre des programmes */
+/** Gère le préfiltre des programmes */
 function programmes(
   { preFilters, has_marqueblanche_params, group_by }: MarqueBlancheParsedParams,
   { route, logger }: _HandlerContext,
@@ -134,7 +135,7 @@ function localisation(
   return result;
 }
 
-// function annees_min_max({ preFilters, route, logger }: _HandlerContext): PreFilters {
+/** Gère le préfiltre des années */
 function annees_min_max(
   previous: MarqueBlancheParsedParams,
   { route, logger }: _HandlerContext,
@@ -184,6 +185,25 @@ function annees_min_max(
   return { ...previous, preFilters: _preFilters };
 }
 
+/** Gère le group by*/
+function group_by(
+  previous: MarqueBlancheParsedParams,
+  { route, logger }: _HandlerContext,
+): MarqueBlancheParsedParams {
+  
+  let p_group_by = route.queryParamMap.get(QueryParam.Group_by);
+
+  if (!p_group_by)
+    return previous;
+  
+  let group_by = p_group_by.split(',');
+  logger.debug(`Application du paramètre ${QueryParam.Group_by}: ${group_by}`)
+
+  return {
+    ...previous,
+    group_by
+  }
+}
 
 //region fonctions utilitaires
 function filterGeo(api_geo: GeoHttpService, code_geo: string, niveau_geo: TypeLocalisation) {

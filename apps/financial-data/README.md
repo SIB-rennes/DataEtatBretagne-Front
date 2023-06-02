@@ -32,3 +32,9 @@ Voici les paramètres pris en charge:
 | ------------- | ----------- | ----------------------- | --------------------------------------------------------------------------------- |
 | Année minimum | A partir de | Une année. (ie: `2019`) | [`annee_min=2021`](https://budget.databretagne.fr/?annee_min=2019&annee_max=2020) |
 | Année maximum | jusqu'à     | Une année. (ie: `2020`) | [`annee_max=2023`](https://budget.databretagne.fr/?annee_min=2019&annee_max=2020) |
+
+- Group by
+
+| Paramètre   | Description         | Valeurs acceptées                                     | Exemple                                                                                                                         |
+| ----------- | ------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Grouper par | Grouper par colonne | TODO: recolter et documenter les colonnes disponibles | [`group_by=siret,theme`](https://budget.databretagne.fr/?programmes=101,102&annee_min=2019&annee_max=2019&group_by=siret,theme) |

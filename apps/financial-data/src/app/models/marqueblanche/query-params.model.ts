@@ -9,4 +9,6 @@ export enum QueryParam {
 
     Annee_min = 'annee_min',
     Annee_max = 'annee_max',
+
+    Group_by = 'group_by',
 }

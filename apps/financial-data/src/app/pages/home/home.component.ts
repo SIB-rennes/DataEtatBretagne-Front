@@ -9,7 +9,7 @@ import {
 import {
   Preference,
 } from 'apps/preference-users/src/lib/models/preference.models';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Data } from '@angular/router';
 import { AlertService } from 'apps/common-lib/src/public-api';
 import { GridInFullscreenStateService } from 'apps/common-lib/src/lib/services/grid-in-fullscreen-state.service';
 import {
@@ -23,7 +23,8 @@ import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/compo
 import { InformationsSupplementairesDialogComponent } from '../../modules/informations-supplementaires/informations-supplementaires-dialog/informations-supplementaires-dialog.component';
 import { AuditHttpService } from '@services/http/audit.service';
 import { QueryParam } from '@models/marqueblanche/query-params.model';
-import { PreFilters } from '@models/search/prefilters.model';
+import { MarqueBlancheParsedParamsResolverModel } from '../../resolvers/marqueblanche-parsed-params.resolver';
+import { NGXLogger } from 'ngx-logger';
 
 @Component({
   selector: 'financial-home',
@@ -72,7 +73,8 @@ export class HomeComponent implements OnInit {
     private alertService: AlertService,
     private preferenceService: PreferenceUsersHttpService,
     private auditService: AuditHttpService,
-    private _gridFullscreen: GridInFullscreenStateService
+    private _gridFullscreen: GridInFullscreenStateService,
+    private _logger: NGXLogger,
   ) {
     const moneyFormat = new Intl.NumberFormat('fr-FR', {
       style: 'currency',
@@ -193,7 +195,25 @@ export class HomeComponent implements OnInit {
           });
       }
     });
-    this.auditService.getLastDateUpdateData().subscribe((response: { date: string | null; }) => {
+
+    this.route.data.subscribe((data: Data) => {
+
+      let response = data as { mb_parsed_params: MarqueBlancheParsedParamsResolverModel }
+
+      let mb_has_params = response.mb_parsed_params?.data?.has_marqueblanche_params;
+      let mb_group_by = response.mb_parsed_params?.data?.group_by;
+
+      if (!mb_has_params || !mb_group_by || mb_group_by?.length == 0)
+        return;
+      
+      this._logger.debug(`Reception du paramètre group_by de la marque blanche, application des groupes: ${mb_group_by}`);
+      let _groupingColumns: GroupingColumn[] = mb_group_by?.map(col_name => { 
+        return {columnName: col_name } as GroupingColumn;
+      });
+      this.groupingColumns = _groupingColumns;
+    })
+
+    this.auditService.getLastDateUpdateData().subscribe((response) => {
       if (response.date) {
         this.lastImportDate = response.date;
       }
