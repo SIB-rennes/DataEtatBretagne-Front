@@ -20,14 +20,12 @@ export interface InformationsSupplementairesDialogData {
 })
 export class InformationsSupplementairesDialogComponent {
 
-  private dialog = inject(MatDialog)
 
   public ej: string
   public poste_ej: number
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: InformationsSupplementairesDialogData) {
-
-    this.ej = data.row['NEj']
-    this.poste_ej = parseInt(data.row['NPosteEj'])
+    this.ej = data.row['n_ej']
+    this.poste_ej = parseInt(data.row['n_poste_ej'])
   }
 }

@@ -36,7 +36,7 @@ export class UserHttpService {
     pageNumber: number = 1,
     limit: number = 100
   ): Observable<UsersPagination> {
-    const params = `pageNumber=${pageNumber}&limit=${limit}&only_disable=${only_disable}`;
+    const params = `page_number=${pageNumber}&limit=${limit}&only_disable=${only_disable}`;
 
     return this.http.get<UsersPagination>(`${this.apiPath}/users?${params}`);
   }

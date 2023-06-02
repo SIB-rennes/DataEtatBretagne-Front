@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SettingsService } from '../../environments/settings.service';
 import { RefTheme } from '@models/theme.models';
-import { FinancialDataModel } from '@models/financial-data.models';
+import { FinancialDataModel, FinancialDataModelV2, FinancialPagination } from '@models/financial-data.models';
 import { RefSiret } from '@models/RefSiret';
 import {
   GeoModel,
@@ -21,10 +21,12 @@ import { DataType } from '@models/audit/audit-update-data.models';
   providedIn: 'root',
 })
 export class FinancialDataHttpService extends NocodbHttpService {
-  private _apiFinancial!: string;
+  private _apiFinancialNocoDb!: string;
   private _apiTheme!: string;
   private _apiSiret!: string;
   private _apiProgramme!: string;
+
+  private _apiFinancialAe! : string
 
   constructor(
     private http: HttpClient,
@@ -35,11 +37,13 @@ export class FinancialDataHttpService extends NocodbHttpService {
     let base_uri = this.settings.nocodbProxy?.base_uri;
     if (project && base_uri) {
       base_uri += project.table + '/';
-      this._apiFinancial = base_uri + project.views.financial;
+      this._apiFinancialNocoDb = base_uri + project.views.financial;
       this._apiProgramme = base_uri + project.views.programmes;
       this._apiTheme = base_uri + project.views.themes;
       this._apiSiret = base_uri + project.views.siret;
     }
+
+    this._apiFinancialAe = this.settings.apiFinancialData
   }
 
   public getBop(): Observable<BopModel[]> {
@@ -84,10 +88,9 @@ export class FinancialDataHttpService extends NocodbHttpService {
     poste_ej: string | number
   ): Observable<FinancialDataModel | undefined> {
     let params = `&limit=1&where=(NEj,eq,${ej})~and(NPosteEj,eq,${poste_ej})`;
-
     let answer$ = this.mapNocoDbReponse(
       this.http.get<NocoDbResponse<FinancialDataModel>>(
-        `${this._apiFinancial}?${params}`
+        `${this._apiFinancialNocoDb}?${params}`
       )
     ).pipe(map((lignes) => lignes[0]));
 
@@ -109,7 +112,7 @@ export class FinancialDataHttpService extends NocodbHttpService {
     themes: RefTheme[] | null,
     year: number[] | null,
     location: GeoModel[] | null
-  ): Observable<FinancialDataModel[]> {
+  ): Observable<FinancialDataModelV2[]> {
     if (
       bops == null &&
       themes == null &&
@@ -119,20 +122,32 @@ export class FinancialDataHttpService extends NocodbHttpService {
     )
       return of();
 
-    const params = this._buildparams(
+    const params = this._buildparamsV2(
       beneficiaire,
       bops,
       themes,
       year,
       location
     );
-    return this.mapNocoDbReponse(
-      this.http.get<NocoDbResponse<FinancialDataModel>>(
-        `${this._apiFinancial}?${params}`
-      )
-    );
+
+    return this.http.get<FinancialPagination>(`${this._apiFinancialAe}/ae?${params}`).pipe(
+      map( (data: FinancialPagination) => {
+        if (!data) {
+          return [];
+        }
+        if (data.pageInfo && data.pageInfo.totalRows > data.pageInfo.pageSize) {
+          throw new Error(
+            `La limite de lignes de résultat est atteinte. Veuillez affiner vos filtres afin d'obtenir un résultat complet.`
+          );
+        }
+        return data.items
+      })
+    )
   }
 
+  /**
+   * @deprecated A migrer vers la nouvelle API budget
+  */
   public getCsv(
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
@@ -156,11 +171,48 @@ export class FinancialDataHttpService extends NocodbHttpService {
       year,
       location
     );
-    return this.http.get(`${this._apiFinancial}/csv?${params}`, {
+    return this.http.get(`${this._apiFinancialNocoDb}/csv?${params}`, {
       responseType: 'blob',
     });
   }
 
+
+  private _buildparamsV2( beneficiaire: RefSiret | null,
+    bops: BopModel[] | null,
+    themes: RefTheme[] | null,
+    year: number[] | null,
+    location: GeoModel[] | null
+  ): string {
+    let params ='limit=5000';
+    if (beneficiaire) {
+      params += `&siret_beneficiaire=${beneficiaire.Code}`;
+    }
+    if (bops) {
+      params += `&code_programme=${bops
+        .filter((bop) => bop.Code)
+        .map((bop) => bop.Code)
+        .join(',')}`;
+    } else if (themes) {
+      params += `&theme=${themes
+        .map((theme) => theme.Label)
+        .join(',')}`;
+    }
+
+    if (location && location.length > 0) {
+      const listCode = location.map((l) => l.code).join(',');
+      params += `&code_geo=${listCode}`
+
+    }
+
+    if (year && year.length > 0) {
+      params += `&annee=${year.join(',')}`;
+    }
+    return params;
+  }
+
+  /**
+   * @deprecated A migrer vers buildparamsV2
+   */
   private _buildparams(
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
