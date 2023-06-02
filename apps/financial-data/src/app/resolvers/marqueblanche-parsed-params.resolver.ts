@@ -11,6 +11,7 @@ import { Observable, catchError, map, mergeMap, of } from 'rxjs';
 
 export interface MarqueBlancheParsedParams {
   preFilters: PreFilters,
+  group_by: string[],
   has_marqueblanche_params: boolean,
 }
 export type MarqueBlancheParsedParamsResolverModel = TOrError<MarqueBlancheParsedParams | null>
@@ -24,43 +25,42 @@ const niveauxLocalisationLegaux = [
   TypeLocalisation.COMMUNE,
 ]
 
-/** Paramètres pour une fonction qui calcul les pré-filtres*/
-interface _FilterFnParams {
-  preFilters: PreFilters,
+/** Paramètres pour une fonction qui calcule les pré-filtres*/
+interface _HandlerContext {
   route: ActivatedRouteSnapshot,
   logger: NGXLogger,
-}
-interface _LocalisationFnParams extends _FilterFnParams {
   api_geo: GeoHttpService,
 }
 
-function _resolver(route: ActivatedRouteSnapshot) {
+function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlancheParsedParams }> {
 
   let logger = inject(NGXLogger);
   let api_geo = inject(GeoHttpService)
 
-  let has_marqueblanche_params: boolean = false;
-  let preFilters: PreFilters = {};
+  let empty: MarqueBlancheParsedParams = { preFilters: {}, group_by: [], has_marqueblanche_params: false }
 
   let uuid = route.queryParamMap.get(QueryParam.Uuid);
 
   if (uuid) {
     logger.debug("Paramètre UUID présent. on ne calcule pas les filtres marque blanche");
     return of(
-      { data: { preFilters, has_marqueblanche_params } }
+      { data: empty }
     );
   }
 
+  let has_marqueblanche_params = false;
   for (const p_name of Object.values(QueryParam)) {
     has_marqueblanche_params = has_marqueblanche_params || route.queryParamMap.has(p_name);
   }
-  let model = of(preFilters)
+
+  let handlerCtx = { api_geo, route, logger };
+  let model = of({ ...empty, has_marqueblanche_params })
     .pipe(
-      mergeMap(preFilters => programmes({ preFilters, route, logger })),
-      mergeMap(preFilters => localisation({ api_geo, route, preFilters, logger })),
-      map(preFilters => annees_min_max({ preFilters, route, logger })),
-      map(preFilters => {
-        return { data: { preFilters, has_marqueblanche_params } }
+      mergeMap(previous => programmes(previous, handlerCtx)),
+      mergeMap(previous => localisation(previous, handlerCtx)),
+      map(previous => annees_min_max(previous, handlerCtx)),
+      map(result => {
+        return { data: result }
       })
     )
 
@@ -68,7 +68,10 @@ function _resolver(route: ActivatedRouteSnapshot) {
 };
 
 /** Gère le filtre des programmes */
-function programmes({ preFilters, route, logger }: _FilterFnParams): Observable<PreFilters> {
+function programmes(
+  { preFilters, has_marqueblanche_params, group_by }: MarqueBlancheParsedParams,
+  { route, logger }: _HandlerContext,
+): Observable<MarqueBlancheParsedParams> {
 
   let programmes = route.queryParamMap.get(QueryParam.Programmes);
   if (programmes) {
@@ -84,11 +87,16 @@ function programmes({ preFilters, route, logger }: _FilterFnParams): Observable<
     }
   }
 
-  return of(preFilters);
+  return of(
+    { preFilters, has_marqueblanche_params, group_by }
+  );
 }
 
 /** Gère le préfiltre de localisation*/
-function localisation({ api_geo, preFilters, route, logger }: _LocalisationFnParams): Observable<PreFilters> {
+function localisation(
+  previous: MarqueBlancheParsedParams,
+  { api_geo, route, logger }: _HandlerContext,
+): Observable<MarqueBlancheParsedParams> {
 
   let p_niveau_geo = route.queryParamMap.get(QueryParam.Niveau_geo);
   let p_code_geo = route.queryParamMap.get(QueryParam.Code_geo);
@@ -96,7 +104,7 @@ function localisation({ api_geo, preFilters, route, logger }: _LocalisationFnPar
   if (_xor(p_niveau_geo, p_code_geo))
     throw Error("Vous devez utiliser `niveau_geo` et `code_geo` ensemble.")
   if (!p_niveau_geo) // Aucun paramètre renseigné
-    return of(preFilters);
+    return of(previous);
 
   let niveau_geo = p_niveau_geo! as TypeLocalisation;
   let code_geo = p_code_geo!;
@@ -107,11 +115,14 @@ function localisation({ api_geo, preFilters, route, logger }: _LocalisationFnPar
   function handle_geo(geo: GeoModel[]) {
     if (geo.length !== 1)
       throw new Error(`Impossible de trouver une localisation pour ${niveau_geo}: ${code_geo}`);
-    let result = {
-      ...preFilters,
+    let _preFilters: PreFilters = {
+      ...previous.preFilters,
       location: [geo[0]] as unknown as JSONObject[] // XXX: Ici, on ne gère qu'un seul code_geo
     }
-    return result;
+    return { 
+      ...previous, 
+      preFilters: _preFilters 
+    };
   }
 
   logger.debug(`Application des paramètres ${QueryParam.Niveau_geo}: ${niveau_geo} et ${QueryParam.Code_geo}: ${code_geo}`);
@@ -123,7 +134,11 @@ function localisation({ api_geo, preFilters, route, logger }: _LocalisationFnPar
   return result;
 }
 
-function annees_min_max({ preFilters, route, logger }: _FilterFnParams): PreFilters {
+// function annees_min_max({ preFilters, route, logger }: _HandlerContext): PreFilters {
+function annees_min_max(
+  previous: MarqueBlancheParsedParams,
+  { route, logger }: _HandlerContext,
+): MarqueBlancheParsedParams {
 
   const annee_courante = new Date().getFullYear();
 
@@ -137,9 +152,13 @@ function annees_min_max({ preFilters, route, logger }: _FilterFnParams): PreFilt
     // Par défaut, l'année en cours
     logger.debug(`Application du paramètre d'année: année courante (${annee_courante})`);
 
-    return preFilters = {
-      ...preFilters,
+    let _preFilters = {
+      ...previous.preFilters,
       year: [annee_courante],
+    }
+    return {
+      ...previous,
+      preFilters: _preFilters,
     }
   }
 
@@ -157,14 +176,16 @@ function annees_min_max({ preFilters, route, logger }: _FilterFnParams): PreFilt
   if (annee_max > annee_courante)
     throw new Error(`Veuillez spécifier une année max correcte (<= année en cours)`);
 
-  preFilters = {
-    ...preFilters,
+  let _preFilters = {
+    ...previous.preFilters,
     year: pf_annees,
   }
   
-  return preFilters;
+  return { ...previous, preFilters: _preFilters };
 }
 
+
+//region fonctions utilitaires
 function filterGeo(api_geo: GeoHttpService, code_geo: string, niveau_geo: TypeLocalisation) {
 
   let search_params = new SearchByCodeParamsBuilder()
@@ -173,8 +194,6 @@ function filterGeo(api_geo: GeoHttpService, code_geo: string, niveau_geo: TypeLo
 
   return api_geo.search(niveau_geo, search_params);
 }
-
-//region fonctions utilitaires
 
 /** Resolver angular qui transforme les exceptions en valeur de retour. */
 function _passing_errors(fn: ResolveFn<MarqueBlancheParsedParamsResolverModel>): ResolveFn<MarqueBlancheParsedParamsResolverModel> {
