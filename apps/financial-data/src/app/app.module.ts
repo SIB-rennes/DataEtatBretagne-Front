@@ -46,6 +46,9 @@ import {
   aeConfigurationParameters,
 } from 'apps/clients/apis-externes';
 import { ApolloLink, InMemoryCache } from '@apollo/client';
+import { MY_INTERFACE_TOKEN } from '@services/budget.service';
+import { FinancialDataHttpService } from '@services/http/financial-data-http.service';
+import { AdemeDataHttpService } from '@services/http/ademe-data-http.service';
 
 export function apiConfigFactory(
   settingsService: SettingsService
@@ -71,6 +74,16 @@ registerLocaleData(localeFr);
     {
       provide: SETTINGS,
       useClass: SettingsService,
+    },
+    {
+      provide: MY_INTERFACE_TOKEN,
+      useClass: FinancialDataHttpService,
+      multi: true,
+    },
+    {
+      provide: MY_INTERFACE_TOKEN,
+      useClass: AdemeDataHttpService,
+      multi: true,
     },
     {
       provide: APP_INITIALIZER,

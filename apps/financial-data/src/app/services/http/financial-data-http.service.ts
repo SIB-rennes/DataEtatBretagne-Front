@@ -4,11 +4,12 @@ import { HttpClient } from '@angular/common/http';
 import { BopModel } from '@models/bop.models';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { SettingsService } from '../../environments/settings.service';
+import { SettingsService } from '../../../environments/settings.service';
 import { RefTheme } from '@models/theme.models';
 import { FinancialDataModel, FinancialDataModelV2, FinancialPagination } from '@models/financial-data.models';
 import { RefSiret } from '@models/RefSiret';
 import {
+  DataHttpService,
   GeoModel,
   NocodbHttpService,
   TypeLocalisation,
@@ -20,10 +21,9 @@ import { DataType } from '@models/audit/audit-update-data.models';
 @Injectable({
   providedIn: 'root',
 })
-export class FinancialDataHttpService extends NocodbHttpService {
+export class FinancialDataHttpService extends NocodbHttpService implements DataHttpService {
   private _apiFinancialNocoDb!: string;
   private _apiTheme!: string;
-  private _apiSiret!: string;
   private _apiProgramme!: string;
 
   private _apiFinancialAe! : string
@@ -40,10 +40,12 @@ export class FinancialDataHttpService extends NocodbHttpService {
       this._apiFinancialNocoDb = base_uri + project.views.financial;
       this._apiProgramme = base_uri + project.views.programmes;
       this._apiTheme = base_uri + project.views.themes;
-      this._apiSiret = base_uri + project.views.siret;
     }
 
     this._apiFinancialAe = this.settings.apiFinancialData
+  }
+  getById(key: any, ...options: any[]): Observable<FinancialDataModelV2> {
+    throw new Error('Method not implemented.');
   }
 
   public getBop(): Observable<BopModel[]> {
@@ -65,23 +67,6 @@ export class FinancialDataHttpService extends NocodbHttpService {
       .pipe(map((response) => response.list));
   }
 
-  public filterRefSiret(nomOuSiret: string): Observable<RefSiret[]> {
-    let whereClause = this._filterRefSiretWhereClause(nomOuSiret);
-
-    return this.http
-      .get<NocoDbResponse<RefSiret>>(
-        `${this._apiSiret}?fields=Code,Denomination&sort=Code&${whereClause}`
-      )
-      .pipe(map((response) => response.list));
-  }
-
-  private _filterRefSiretWhereClause(nomOuSiret: string): string {
-    nomOuSiret = encodeURIComponent(nomOuSiret);
-    let is_number = /^\d+$/.test(nomOuSiret);
-
-    if (is_number) return `where=(Code,like,${nomOuSiret}%)`;
-    else return `where=(Denomination,like,${nomOuSiret})`;
-  }
 
   public get(
     ej: string,
@@ -108,10 +93,10 @@ export class FinancialDataHttpService extends NocodbHttpService {
    */
   public search(
     beneficiaire: RefSiret | null,
+    year: number[] | null,
+    location: GeoModel[] | null,
     bops: BopModel[] | null,
     themes: RefTheme[] | null,
-    year: number[] | null,
-    location: GeoModel[] | null
   ): Observable<FinancialDataModelV2[]> {
     if (
       bops == null &&

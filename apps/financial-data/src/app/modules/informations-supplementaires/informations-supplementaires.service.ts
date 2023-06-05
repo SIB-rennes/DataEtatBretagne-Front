@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FinancialDataModel } from '@models/financial-data.models';
-import { FinancialDataHttpService } from '@services/financial-data-http.service';
+import { FinancialDataHttpService } from '@services/http/financial-data-http.service';
 import {
   ExternalAPIsService,
   InfoApiEntreprise,
@@ -22,7 +22,7 @@ import { SubventionLight } from './models/SubventionLight';
 import { HttpContext, HttpErrorResponse } from '@angular/common/http';
 import { BYPASS_ALERT_INTERCEPTOR } from 'apps/common-lib/src/public-api';
 import { Demarche } from '@models/demarche_simplifie/demarche-graphql';
-import { DemarcheHttpService } from '@services/demarche.service';
+import { DemarcheHttpService } from '@services/http/demarche.service';
 
 function fromInfoApiEntreprise(info: InfoApiEntreprise): EntrepriseFull {
   return {

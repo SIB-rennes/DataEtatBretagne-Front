@@ -32,7 +32,7 @@ export interface FinancialDataModelV2 {
   montant_cp: number;
   commune: Commune;
 
-  domaine_fonctionnel: any;
+  domaine_fonctionnel?: any;
   programme: any;
   referentiel_programmation: any
 
@@ -42,6 +42,7 @@ export interface FinancialDataModelV2 {
   annee: number;
 
   siret: Siret;
+  date_cp: string;
 }
 
 

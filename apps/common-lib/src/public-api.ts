@@ -7,6 +7,7 @@ export * from './lib/models/geo.models';
 export * from './lib/models/nocodb-response';
 export * from './lib/models/pagination/pagesize.models';
 export * from './lib/services/geo-http.service';
+export * from './lib/services/interface-data.service';
 export * from './lib/services/alert-service';
 export * from './lib/services/session.service';
 export * from './lib/services/loader.service';
