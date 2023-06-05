@@ -26,7 +26,7 @@ import { BopModel } from '@models//bop.models';
 import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
 import { RefTheme } from '@models//theme.models';
 import { FinancialDataHttpService } from '../../services/financial-data-http.service';
-import { FinancialDataModel, FinancialDataModelV2 } from '@models/financial-data.models';
+import { FinancialDataModelV2 } from '@models/financial-data.models';
 import { DatePipe } from '@angular/common';
 import { RefSiret } from '@models/RefSiret';
 import {
@@ -41,8 +41,9 @@ import {
 import { Bop } from '@models/search/bop.model';
 import { Theme } from '@models/search/theme.model';
 import { Beneficiaire } from '@models/search/beneficiaire.model';
-import { PreFilter } from '@models/search/prefilter.model';
-import { PrefilterResolverModel } from '../../resolvers/pre-filter.resolver';
+import { PreFilters } from '@models/search/prefilters.model';
+import { MarqueBlancheParsedParamsResolverModel } from '../../resolvers/marqueblanche-parsed-params.resolver';
+import { NGXLogger } from 'ngx-logger';
 
 @Component({
   selector: 'financial-search-data',
@@ -74,7 +75,7 @@ export class SearchDataComponent implements OnInit {
    * Affiche une erreur
    */
   public displayError = false;
-  public error: Error | null = null;
+  public error: Error | any | null = null;
 
   /**
    * Resultats de la recherche.
@@ -86,15 +87,21 @@ export class SearchDataComponent implements OnInit {
    */
   @Output() currentFilter = new EventEmitter<Preference>();
 
-  @Input() public set preFilter(value: PreFilter | undefined) {
-    this._apply_prefilters(value);
+  @Input() public set preFilter(value: PreFilters | undefined) {
+    try {
+      this._apply_prefilters(value);
+    } catch(e) {
+      this.displayError = true;
+      this.error = e;
+    }
   }
 
   constructor(
     private route: ActivatedRoute,
     private datePipe: DatePipe,
     private alertService: AlertService,
-    private service: FinancialDataHttpService
+    private service: FinancialDataHttpService,
+    private logger: NGXLogger,
   ) {
     // formulaire
     this.searchForm = new FormGroup({
@@ -118,9 +125,9 @@ export class SearchDataComponent implements OnInit {
     // récupération des themes dans le resolver
     this.route.data.subscribe(
       (data: Data) => {
-        let response = data as { financial: FinancialDataResolverModel, preFilter: PrefilterResolverModel }
+        let response = data as { financial: FinancialDataResolverModel, mb_parsed_params: MarqueBlancheParsedParamsResolverModel }
 
-        let error = response.financial.error || response.preFilter?.error
+        let error = response.financial.error || response.mb_parsed_params?.error
 
         if (error) {
           this.displayError = true;
@@ -128,8 +135,10 @@ export class SearchDataComponent implements OnInit {
           return;
         }
 
-        let financial = response.financial.data!
-        let prefilter = response.preFilter?.data
+        let financial = response.financial.data!;
+
+        let mb_prefilter = response.mb_parsed_params?.data?.preFilters;
+        let mb_has_params = response.mb_parsed_params?.data?.has_marqueblanche_params;
 
         this.displayError = false;
         this.themes = financial.themes;
@@ -137,8 +146,10 @@ export class SearchDataComponent implements OnInit {
 
         this.filteredBop = this.bop;
 
-        if (prefilter)
-          this.preFilter = prefilter;
+        if (mb_has_params && mb_prefilter) {
+          this.logger.debug(`Mode marque blanche. On applique les filtres demandés.`);
+          this.preFilter = mb_prefilter;
+        }
       }
     );
 
@@ -401,12 +412,19 @@ export class SearchDataComponent implements OnInit {
     return arr;
   }
 
-  private _apply_prefilters(preFilter?: PreFilter) {
+  /** Applique les filtres selectionnés au préalable*/
+  private _apply_prefilters(preFilter?: PreFilters) {
     if (preFilter == null)
       return
 
     this.searchForm.controls['location'].setValue(preFilter.location);
+
     if (preFilter.year) {
+      let years = Array.isArray(preFilter.year) ? preFilter.year : [preFilter.year];
+      let choices = this.generateArrayOfYears();
+      if (!this._isArrayIncluded(years, choices))
+        throw Error(`Vous devez selectionner des années comprises entrer ${choices[choices.length - 1]} et ${choices[0]}`);
+
       this.searchForm.controls['year'].setValue(
         Array.isArray(preFilter.year)
           ? preFilter.year
@@ -446,4 +464,12 @@ export class SearchDataComponent implements OnInit {
     // lance la recherche pour afficher les resultats
     this.doSearch();
   }
+
+  //region: Fonctions utilitaires
+
+  private _isArrayIncluded(a1: number[], a2: number[]): boolean {
+    return a1.every((num) => a2.includes(num));
+  }
+
+  //endregion
 }

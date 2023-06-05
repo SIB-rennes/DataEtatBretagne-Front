@@ -8,7 +8,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { PreferenceComponent } from './pages/preference/preference.component';
 import { resolveFinancialData } from './resolvers/financial-data.resolver';
 import { router_template_path_full as info_supplementaires_path } from './modules/informations-supplementaires/routes';
-import { resolvePreFilter } from './resolvers/pre-filter.resolver';
+import { resolveMarqueBlancheParsedParams } from './resolvers/marqueblanche-parsed-params.resolver';
 
 const routes: Routes = [
   {
@@ -18,7 +18,7 @@ const routes: Routes = [
     runGuardsAndResolvers: 'always',
     resolve: {
       financial: resolveFinancialData,
-      preFilter: resolvePreFilter,
+      mb_parsed_params: resolveMarqueBlancheParsedParams,
     },
   },
   {

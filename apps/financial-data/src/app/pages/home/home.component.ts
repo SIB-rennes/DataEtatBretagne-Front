@@ -22,7 +22,7 @@ import {
 import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
 import { InformationsSupplementairesDialogComponent } from '../../modules/informations-supplementaires/informations-supplementaires-dialog/informations-supplementaires-dialog.component';
 import { AuditHttpService } from '@services/audit.service';
-import { PreFilter } from '@models/search/prefilter.model';
+import { PreFilters } from '@models/search/prefilters.model';
 import { QueryParam } from '@models/marqueblanche/query-params.model';
 
 @Component({
@@ -46,7 +46,7 @@ export class HomeComponent implements OnInit {
   /**
    * Filtre à appliquer sur la recherche
    */
-  preFilter?: PreFilter;
+  preFilter?: PreFilters;
 
   lastImportDate: string | null = null;
 
