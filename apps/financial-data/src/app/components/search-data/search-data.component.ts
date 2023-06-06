@@ -81,7 +81,12 @@ export class SearchDataComponent implements OnInit {
   /**
    * Resultats de la recherche.
    */
-  @Output() searchResults = new EventEmitter<FinancialDataModelV2[]>();
+  @Output() searchResultsEventEmitter = new EventEmitter<FinancialDataModelV2[]>();
+
+  /**
+   * Les donnees de la recherche
+   */
+  private _searchResult: FinancialDataModelV2[] | null = null;
 
   /**
    * Resultats de la recherche.
@@ -254,12 +259,14 @@ export class SearchDataComponent implements OnInit {
         next: (response: FinancialDataModelV2[] | Error) => {
           this.searchFinish = true;
           this.currentFilter.next(this._buildPreference(formValue));
-          this.searchResults.next(response as FinancialDataModelV2[]);
+          this._searchResult = response as FinancialDataModelV2[];
+          this.searchResultsEventEmitter.next(this._searchResult);
         },
         error: (err: Error) => {
           this.searchFinish = true;
+          this._searchResult = [];
           this.currentFilter.next(this._buildPreference(formValue));
-          this.searchResults.next([]);
+          this.searchResultsEventEmitter.next(this._searchResult);
           this.alertService.openAlertError(err.message, 8);
         },
       });
@@ -287,31 +294,20 @@ export class SearchDataComponent implements OnInit {
 
   public downloadCsv(): void {
     this.searchForm.markAllAsTouched(); // pour notifier les erreurs sur le formulaire
-    if (this.searchForm.valid && !this.searchInProgress.value) {
+    if (this.searchForm.valid && !this.searchInProgress.value ) {
       const formValue = this.searchForm.value;
       this.searchInProgress.next(true);
-      //  TODO
-    //   this.budgetService
-    //     .getCsv(
-    //       formValue.beneficiaire,
-    //       formValue.bops,
-    //       formValue.theme,
-    //       formValue.year,
-    //       formValue.location
-    //     )
-    //     .pipe(
-    //       finalize(() => {
-    //         this.searchInProgress.next(false);
-    //       })
-    //     )
-    //     .subscribe((response: Blob) => {
-    //       var url = URL.createObjectURL(response);
-    //       var a = document.createElement('a');
-    //       a.href = url;
-    //       a.download = this._filenameCsv();
-    //       document.body.appendChild(a);
-    //       a.click();
-    //     });
+      const csvdata = this.budgetService.getCsv(this._searchResult ?? []);
+
+      console.log(csvdata);
+       var url = URL.createObjectURL(csvdata);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = this._filenameCsv();
+          document.body.appendChild(a);
+          a.click();
+
+          this.searchInProgress.next(false);
     }
   }
 

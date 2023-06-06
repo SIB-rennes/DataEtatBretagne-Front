@@ -12,7 +12,6 @@ import {
   DataHttpService,
   GeoModel,
   NocodbHttpService,
-  TypeLocalisation,
 } from 'apps/common-lib/src/public-api';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { NocoDbResponse } from 'apps/common-lib/src/lib/models/nocodb-response';
@@ -111,7 +110,7 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
     )
       return of();
 
-    const params = this._buildparamsV2(
+    const params = this._buildparams(
       beneficiaire,
       bops,
       themes,
@@ -134,39 +133,8 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
     )
   }
 
-  /**
-   * @deprecated A migrer vers la nouvelle API budget
-  */
-  public getCsv(
-    beneficiaire: RefSiret | null,
-    bops: BopModel[] | null,
-    themes: RefTheme[] | null,
-    year: number[] | null,
-    location: GeoModel[] | null
-  ): Observable<Blob> {
-    if (
-      bops == null &&
-      themes == null &&
-      year == null &&
-      location == null &&
-      beneficiaire == null
-    )
-      return of();
 
-    const params = this._buildparams(
-      beneficiaire,
-      bops,
-      themes,
-      year,
-      location
-    );
-    return this.http.get(`${this._apiFinancialNocoDb}/csv?${params}`, {
-      responseType: 'blob',
-    });
-  }
-
-
-  private _buildparamsV2( beneficiaire: RefSiret | null,
+  private _buildparams( beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
     themes: RefTheme[] | null,
     year: number[] | null,
@@ -195,61 +163,6 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
 
     if (year && year.length > 0) {
       params += `&annee=${year.join(',')}`;
-    }
-    return params;
-  }
-
-  /**
-   * @deprecated A migrer vers buildparamsV2
-   */
-  private _buildparams(
-    beneficiaire: RefSiret | null,
-    bops: BopModel[] | null,
-    themes: RefTheme[] | null,
-    year: number[] | null,
-    location: GeoModel[] | null
-  ): string {
-    let params ='limit=5000&where=';
-    if (beneficiaire) {
-      params += `~and(code_siret,eq,${beneficiaire.Code})`;
-    }
-    if (bops) {
-      params += `~and(code_programme,in,${bops
-        .filter((bop) => bop.Code)
-        .map((bop) => bop.Code)
-        .join(',')})`;
-    } else if (themes) {
-      params += `~and(Theme,in,${themes
-        .map((theme) => theme.Label)
-        .join(',')})`;
-    }
-
-    if (location && location.length > 0) {
-      // on est toujours sur le même type
-
-      const listCode = location.map((l) => l.code).join(',');
-      switch (location[0].type) {
-        case TypeLocalisation.DEPARTEMENT:
-          params += `~and(code_departement,in,${listCode})`;
-          break;
-        case TypeLocalisation.COMMUNE:
-          params += `~and(commune,in,${listCode})`;
-          break;
-        case TypeLocalisation.EPCI:
-          params += `~and(code_epci,in,${listCode})`;
-          break;
-        case TypeLocalisation.CRTE:
-          params += `~and(code_crte,in,${listCode})`;
-          break;
-        case TypeLocalisation.ARRONDISSEMENT:
-          params += `~and(code_arrondissement,in,${listCode})`;
-          break;
-      }
-    }
-
-    if (year && year.length > 0) {
-      params += `~and(Annee,in,${year
-        .join(',')})`;
     }
     return params;
   }

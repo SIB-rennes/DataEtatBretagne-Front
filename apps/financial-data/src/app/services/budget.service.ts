@@ -1,6 +1,6 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import {
-  FinancialDataModelV2,
+  FinancialDataModelV2, HEADERS_CSV_FINANCIAL,
 } from '@models/financial/financial-data.models';
 import { DataHttpService, GeoModel, NocoDbResponse } from 'apps/common-lib/src/public-api';
 import { RefSiret } from '@models/refs/RefSiret';
@@ -67,6 +67,33 @@ export class BudgetService {
         `${this._apiSiret}?fields=Code,Denomination&sort=Code&${whereClause}`
       )
       .pipe(map((response) => response.list));
+  }
+
+
+  public getCsv(financialData: FinancialDataModelV2[]): Blob {
+    const csvRows = [];
+    csvRows.push(HEADERS_CSV_FINANCIAL.join(','));
+    for (const item of financialData) {
+
+      const values = [
+        item.n_ej,
+        item.n_poste_ej,
+        item.montant_ae,
+        item.montant_cp,
+        item.programme.theme ?? '',
+        item.programme.code  ?? '',
+        item.programme.label.replace(/"/g, '""') ?? '',
+        item.referentiel_programmation.label.replace(/"/g, '""') ?? '',
+        item.commune.label ?? '',
+        item.siret.code,
+        item.siret.nom_beneficiare.replace(/"/g, '""') ?? '',
+        item.siret.categorie_juridique ?? '',
+        item.date_cp,
+        item.annee
+      ];
+      csvRows.push(values.join(','));
+    }
+    return  new Blob( [csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
   }
 
   private _filterRefSiretWhereClause(nomOuSiret: string): string {
