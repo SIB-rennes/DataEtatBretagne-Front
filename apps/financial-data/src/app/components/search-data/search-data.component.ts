@@ -22,12 +22,12 @@ import {
   debounceTime,
   Subscription,
 } from 'rxjs';
-import { BopModel } from '@models//bop.models';
-import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
-import { RefTheme } from '@models//theme.models';
-import { FinancialDataModelV2 } from '@models/financial-data.models';
+import { BopModel } from '@models/refs/bop.models';
+import { FinancialDataResolverModel } from '@models/financial/financial-data-resolvers.models';
+import { RefTheme } from '@models/refs/theme.models';
+import { FinancialDataModelV2 } from '@models/financial/financial-data.models';
 import { DatePipe } from '@angular/common';
-import { RefSiret } from '@models/RefSiret';
+import { RefSiret } from '@models/refs/RefSiret';
 import {
   JSONObject,
   Preference,

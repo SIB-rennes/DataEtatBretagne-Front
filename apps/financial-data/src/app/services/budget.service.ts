@@ -1,17 +1,17 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import {
   FinancialDataModelV2,
-} from '@models/financial-data.models';
+} from '@models/financial/financial-data.models';
 import { DataHttpService, GeoModel, NocoDbResponse } from 'apps/common-lib/src/public-api';
-import { RefSiret } from '@models/RefSiret';
-import { BopModel } from '@models/bop.models';
-import { RefTheme } from '@models/theme.models';
-import { Observable, forkJoin, map, of } from 'rxjs';
+import { RefSiret } from '@models/refs/RefSiret';
+import { BopModel } from '@models/refs/bop.models';
+import { RefTheme } from '@models/refs/theme.models';
+import { Observable, forkJoin, map } from 'rxjs';
 import { SettingsService } from '../../environments/settings.service';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { HttpClient } from '@angular/common/http';
 
-export const MY_INTERFACE_TOKEN = new InjectionToken<DataHttpService>(
+export const DATA_HTTP_SERVICE = new InjectionToken<DataHttpService<any, FinancialDataModelV2>>(
   'DataHttpService'
 );
 
@@ -25,7 +25,7 @@ export class BudgetService {
 
   constructor(
     private http: HttpClient,
-    @Inject(MY_INTERFACE_TOKEN) private services: DataHttpService[],
+    @Inject(DATA_HTTP_SERVICE) private services: DataHttpService<any, FinancialDataModelV2>[],
     @Inject(SETTINGS) readonly settings: SettingsService
   ) {
     const project = this.settings.projectFinancial;
@@ -46,7 +46,10 @@ export class BudgetService {
     location: GeoModel[] | null
   ): Observable<FinancialDataModelV2[]> {
     const search$: Observable<FinancialDataModelV2[]>[] = this.services.map(
-      (service) => service.search(beneficiaire,  year, location, bops, themes)
+      (service) =>
+        service
+          .search(beneficiaire, year, location, bops, themes)
+          .pipe(map((resultSearch) => resultSearch.map(data => service.mapToGeneric(data))))
     );
 
     return forkJoin(search$).pipe(

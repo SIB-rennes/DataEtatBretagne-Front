@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FinancialDataModel } from '@models/financial-data.models';
+import { FinancialDataModel } from '@models/financial/financial-data.models';
 import { FinancialDataHttpService } from '@services/http/financial-data-http.service';
 import {
   ExternalAPIsService,

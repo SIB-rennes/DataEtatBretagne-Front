@@ -1,13 +1,13 @@
 import { Injectable, Inject } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-import { BopModel } from '@models/bop.models';
+import { BopModel } from '@models/refs/bop.models';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SettingsService } from '../../../environments/settings.service';
-import { RefTheme } from '@models/theme.models';
-import { FinancialDataModel, FinancialDataModelV2, FinancialPagination } from '@models/financial-data.models';
-import { RefSiret } from '@models/RefSiret';
+import { RefTheme } from '@models/refs/theme.models';
+import { FinancialDataModel, FinancialDataModelV2, FinancialPagination } from '@models/financial/financial-data.models';
+import { RefSiret } from '@models/refs/RefSiret';
 import {
   DataHttpService,
   GeoModel,
@@ -21,7 +21,7 @@ import { DataType } from '@models/audit/audit-update-data.models';
 @Injectable({
   providedIn: 'root',
 })
-export class FinancialDataHttpService extends NocodbHttpService implements DataHttpService {
+export class FinancialDataHttpService extends NocodbHttpService implements DataHttpService<FinancialDataModelV2,FinancialDataModelV2> {
   private _apiFinancialNocoDb!: string;
   private _apiTheme!: string;
   private _apiProgramme!: string;
@@ -44,6 +44,10 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
 
     this._apiFinancialAe = this.settings.apiFinancialData
   }
+  mapToGeneric(object: FinancialDataModelV2): FinancialDataModelV2 {
+    return object;
+  }
+
   getById(key: any, ...options: any[]): Observable<FinancialDataModelV2> {
     throw new Error('Method not implemented.');
   }

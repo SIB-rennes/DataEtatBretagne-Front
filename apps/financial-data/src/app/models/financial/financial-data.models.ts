@@ -23,11 +23,13 @@ export interface FinancialDataModel {
 
 
 export interface FinancialPagination {
-  items: FinancialDataModelV2[];
+  items:  FinancialDataModelV2[];
   pageInfo?: PageSize;
 }
 
+
 export interface FinancialDataModelV2 {
+
   montant_ae: number;
   montant_cp: number;
   commune: Commune;
@@ -44,7 +46,6 @@ export interface FinancialDataModelV2 {
   siret: Siret;
   date_cp: string;
 }
-
 
 export interface Siret {
   code: string;

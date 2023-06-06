@@ -1,3 +1,3 @@
-import { RefSiret } from "@models/RefSiret";
+import { RefSiret } from "@models/refs/RefSiret";
 
 export type Beneficiaire = RefSiret
