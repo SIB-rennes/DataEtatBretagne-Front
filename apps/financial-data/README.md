@@ -35,6 +35,6 @@ Voici les paramètres pris en charge:
 
 - Group by
 
-| Paramètre   | Description         | Valeurs acceptées                                     | Exemple                                                                                                                         |
-| ----------- | ------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Grouper par | Grouper par colonne | TODO: recolter et documenter les colonnes disponibles | [`group_by=siret,theme`](https://budget.databretagne.fr/?programmes=101,102&annee_min=2019&annee_max=2019&group_by=siret,theme) |
+| Paramètre   | Description         | Valeurs acceptées                                                                                                                                                 | Exemple                                                                                                                         |
+| ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Grouper par | Grouper par colonne | `siret`, `montant_ae`, `montant_cp`, `theme`, `nom_programme`, `domaine`, `ref_programmation`, `label_commune`, `siret`, `type_etablissement`, `date_cp`, `annee` | [`group_by=siret,theme`](https://budget.databretagne.fr/?programmes=101,102&annee_min=2019&annee_max=2019&group_by=siret,theme) |

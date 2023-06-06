@@ -32,7 +32,6 @@ import { NGXLogger } from 'ngx-logger';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  private datePipe = inject(DatePipe);
   private dialog = inject(MatDialog);
 
   columnsMetaData: ColumnsMetaData;
