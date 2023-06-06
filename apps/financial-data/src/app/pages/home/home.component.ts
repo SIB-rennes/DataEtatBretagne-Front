@@ -1,6 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
 
-import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import {
   PreferenceUsersHttpService,
@@ -25,6 +24,7 @@ import { AuditHttpService } from '@services/http/audit.service';
 import { QueryParam } from '@models/marqueblanche/query-params.model';
 import { MarqueBlancheParsedParamsResolverModel } from '../../resolvers/marqueblanche-parsed-params.resolver';
 import { NGXLogger } from 'ngx-logger';
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'financial-home',
@@ -195,22 +195,29 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    this.route.data.subscribe((data: Data) => {
+    this.route.data
+    .pipe(delay(0))
+    .subscribe((data: Data) => {
 
       let response = data as { mb_parsed_params: MarqueBlancheParsedParamsResolverModel }
 
       let mb_has_params = response.mb_parsed_params?.data?.has_marqueblanche_params;
       let mb_group_by = response.mb_parsed_params?.data?.group_by;
+      let mb_fullscreen = response.mb_parsed_params?.data?.fullscreen;
 
-      if (!mb_has_params || !mb_group_by || mb_group_by?.length == 0)
+      if (!mb_has_params)
         return;
-      
-      this._logger.debug(`Reception du paramètre group_by de la marque blanche, application des groupes: ${mb_group_by}`);
-      let _groupingColumns: GroupingColumn[] = mb_group_by?.map(col_name => { 
-        return {columnName: col_name } as GroupingColumn;
-      });
-      this.groupingColumns = _groupingColumns;
-    })
+
+      if (mb_group_by && mb_group_by?.length > 0) {
+        this._logger.debug(`Reception du paramètre group_by de la marque blanche, application des groupes: ${mb_group_by}`);
+        let _groupingColumns: GroupingColumn[] = mb_group_by?.map(col_name => { 
+          return {columnName: col_name } as GroupingColumn;
+        });
+        this.groupingColumns = _groupingColumns;
+      }
+
+      if (mb_fullscreen) this.toggle_grid_fullscreen();
+    });
 
     this.auditService.getLastDateUpdateData().subscribe((response) => {
       if (response.date) {

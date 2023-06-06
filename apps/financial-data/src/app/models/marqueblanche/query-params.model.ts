@@ -11,4 +11,5 @@ export enum QueryParam {
     Annee_max = 'annee_max',
 
     Group_by = 'group_by',
+    Fullscreen = 'plein_ecran',
 }

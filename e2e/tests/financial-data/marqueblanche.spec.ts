@@ -41,13 +41,25 @@ test.describe("Lorsque l'on spécifie une année min/max", () => {
   test("Les filtres sont pré remplis", async ({ page }) => {
     await _navigate(page, `/${urlparam}`);
 
-    let annees = page.locator('[data-test-id="annees-form-field"]')
+    let annees = page.locator('[data-test-id="annees-form-field"]');
 
     await expect(annees).toContainText("2019");
     await expect(annees).toContainText("2020");
     await expect(annees).not.toContainText("2023");
   });
 });
+
+test.describe("Lorsque l'on spécifie le plein écran", () => {
+  const urlparam = `?programmes=107&plein_ecran=true`
+
+  test("Les filtres sont pré-remplis", async ({page}) => {
+    await _navigate(page, `/${urlparam}`);
+
+    let toggle_fullscreen_btn = page.locator('[data-test-id="toggle-grid-fullscreen-btn"]')
+
+    await expect(toggle_fullscreen_btn).toContainText("Rétrécir");
+  })
+})
 
 
 async function _navigate(page: Page, url: string) {

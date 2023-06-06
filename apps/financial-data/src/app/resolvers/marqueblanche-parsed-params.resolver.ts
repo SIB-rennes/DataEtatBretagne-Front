@@ -12,6 +12,7 @@ import { Observable, catchError, map, mergeMap, of } from 'rxjs';
 export interface MarqueBlancheParsedParams {
   preFilters: PreFilters,
   group_by: string[],
+  fullscreen: boolean,
   has_marqueblanche_params: boolean,
 }
 export type MarqueBlancheParsedParamsResolverModel = TOrError<MarqueBlancheParsedParams | null>
@@ -37,7 +38,7 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
   let logger = inject(NGXLogger);
   let api_geo = inject(GeoHttpService)
 
-  let empty: MarqueBlancheParsedParams = { preFilters: {}, group_by: [], has_marqueblanche_params: false }
+  let empty: MarqueBlancheParsedParams = { preFilters: {}, group_by: [], has_marqueblanche_params: false, fullscreen: false }
 
   let uuid = route.queryParamMap.get(QueryParam.Uuid);
 
@@ -60,6 +61,7 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
       mergeMap(previous => localisation(previous, handlerCtx)),
       map(previous => group_by(previous, handlerCtx)),
       map(previous => annees_min_max(previous, handlerCtx)),
+      map(previous => fullscreen(previous, handlerCtx)),
       map(result => {
         return { data: result }
       })
@@ -70,7 +72,7 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
 
 /** Gère le préfiltre des programmes */
 function programmes(
-  { preFilters, has_marqueblanche_params, group_by }: MarqueBlancheParsedParams,
+  { preFilters, has_marqueblanche_params, group_by, fullscreen }: MarqueBlancheParsedParams,
   { route, logger }: _HandlerContext,
 ): Observable<MarqueBlancheParsedParams> {
 
@@ -89,7 +91,7 @@ function programmes(
   }
 
   return of(
-    { preFilters, has_marqueblanche_params, group_by }
+    { preFilters, has_marqueblanche_params, group_by, fullscreen }
   );
 }
 
@@ -205,6 +207,19 @@ function group_by(
   }
 }
 
+function fullscreen(
+  previous: MarqueBlancheParsedParams,
+  { route, logger }: _HandlerContext,
+): MarqueBlancheParsedParams {
+  let p_fullscreen = route.queryParamMap.get(QueryParam.Fullscreen);
+
+  logger.debug(`Application du paramètre ${QueryParam.Fullscreen}: ${p_fullscreen}`);
+  return {
+    ...previous,
+    fullscreen: _parse_bool(p_fullscreen),
+  }
+}
+
 //region fonctions utilitaires
 function filterGeo(api_geo: GeoHttpService, code_geo: string, niveau_geo: TypeLocalisation) {
 
@@ -250,6 +265,15 @@ function _parse_annee(annee: string | null): number {
   }
 
   throw new Error(`L'année ${annee} est invalide`);
+}
+
+function _parse_bool(s: string | null): boolean {
+  if ("true" === s)
+    return true
+  if ("false" === s)
+    return false
+  
+  return Boolean(s)
 }
 
 //endregion
