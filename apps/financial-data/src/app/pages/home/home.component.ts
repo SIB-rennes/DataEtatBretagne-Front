@@ -25,6 +25,7 @@ import { QueryParam } from '@models/marqueblanche/query-params.model';
 import { MarqueBlancheParsedParamsResolverModel } from '../../resolvers/marqueblanche-parsed-params.resolver';
 import { NGXLogger } from 'ngx-logger';
 import { delay } from 'rxjs';
+import { PreFilters } from '@models/search/prefilters.model';
 
 @Component({
   selector: 'financial-home',
