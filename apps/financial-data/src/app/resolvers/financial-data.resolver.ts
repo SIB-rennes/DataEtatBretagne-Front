@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
-import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
-import { FinancialDataHttpService } from '@services/financial-data-http.service';
+import { FinancialDataResolverModel } from '@models/financial/financial-data-resolvers.models';
+import { FinancialDataHttpService } from '@services/http/financial-data-http.service';
 import { catchError, forkJoin, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 

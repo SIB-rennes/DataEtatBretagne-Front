@@ -1,4 +1,4 @@
-import { RefTheme, RefThemeId } from "@models/theme.models";
+import { RefTheme, RefThemeId } from "@models/refs/theme.models";
 
 
 export type ThemeId = RefThemeId

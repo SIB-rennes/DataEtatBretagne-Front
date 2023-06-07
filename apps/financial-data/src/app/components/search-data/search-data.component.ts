@@ -22,13 +22,12 @@ import {
   debounceTime,
   Subscription,
 } from 'rxjs';
-import { BopModel } from '@models//bop.models';
-import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
-import { RefTheme } from '@models//theme.models';
-import { FinancialDataHttpService } from '../../services/financial-data-http.service';
-import { FinancialDataModelV2 } from '@models/financial-data.models';
+import { BopModel } from '@models/refs/bop.models';
+import { FinancialDataResolverModel } from '@models/financial/financial-data-resolvers.models';
+import { RefTheme } from '@models/refs/theme.models';
+import { FinancialDataModelV2 } from '@models/financial/financial-data.models';
 import { DatePipe } from '@angular/common';
-import { RefSiret } from '@models/RefSiret';
+import { RefSiret } from '@models/refs/RefSiret';
 import {
   JSONObject,
   Preference,
@@ -41,9 +40,11 @@ import {
 import { Bop } from '@models/search/bop.model';
 import { Theme } from '@models/search/theme.model';
 import { Beneficiaire } from '@models/search/beneficiaire.model';
+import { BudgetService } from '@services/budget.service';
+import { NGXLogger } from 'ngx-logger';
 import { PreFilters } from '@models/search/prefilters.model';
 import { MarqueBlancheParsedParamsResolverModel } from '../../resolvers/marqueblanche-parsed-params.resolver';
-import { NGXLogger } from 'ngx-logger';
+
 
 @Component({
   selector: 'financial-search-data',
@@ -80,7 +81,12 @@ export class SearchDataComponent implements OnInit {
   /**
    * Resultats de la recherche.
    */
-  @Output() searchResults = new EventEmitter<FinancialDataModelV2[]>();
+  @Output() searchResultsEventEmitter = new EventEmitter<FinancialDataModelV2[]>();
+
+  /**
+   * Les donnees de la recherche
+   */
+  private _searchResult: FinancialDataModelV2[] | null = null;
 
   /**
    * Resultats de la recherche.
@@ -100,7 +106,7 @@ export class SearchDataComponent implements OnInit {
     private route: ActivatedRoute,
     private datePipe: DatePipe,
     private alertService: AlertService,
-    private service: FinancialDataHttpService,
+    private budgetService: BudgetService,
     private logger: NGXLogger,
   ) {
     // formulaire
@@ -236,7 +242,7 @@ export class SearchDataComponent implements OnInit {
 
     const formValue = this.searchForm.value;
     this.searchInProgress.next(true);
-    this._search_subscription = this.service
+    this._search_subscription = this.budgetService
       .search(
         formValue.beneficiaire,
         formValue.bops,
@@ -253,12 +259,14 @@ export class SearchDataComponent implements OnInit {
         next: (response: FinancialDataModelV2[] | Error) => {
           this.searchFinish = true;
           this.currentFilter.next(this._buildPreference(formValue));
-          this.searchResults.next(response as FinancialDataModelV2[]);
+          this._searchResult = response as FinancialDataModelV2[];
+          this.searchResultsEventEmitter.next(this._searchResult);
         },
         error: (err: Error) => {
           this.searchFinish = true;
+          this._searchResult = [];
           this.currentFilter.next(this._buildPreference(formValue));
-          this.searchResults.next([]);
+          this.searchResultsEventEmitter.next(this._searchResult);
           this.alertService.openAlertError(err.message, 8);
         },
       });
@@ -286,30 +294,20 @@ export class SearchDataComponent implements OnInit {
 
   public downloadCsv(): void {
     this.searchForm.markAllAsTouched(); // pour notifier les erreurs sur le formulaire
-    if (this.searchForm.valid && !this.searchInProgress.value) {
+    if (this.searchForm.valid && !this.searchInProgress.value ) {
       const formValue = this.searchForm.value;
       this.searchInProgress.next(true);
-      this.service
-        .getCsv(
-          formValue.beneficiaire,
-          formValue.bops,
-          formValue.theme,
-          formValue.year,
-          formValue.location
-        )
-        .pipe(
-          finalize(() => {
-            this.searchInProgress.next(false);
-          })
-        )
-        .subscribe((response: Blob) => {
-          var url = URL.createObjectURL(response);
+      const csvdata = this.budgetService.getCsv(this._searchResult ?? []);
+
+      console.log(csvdata);
+       var url = URL.createObjectURL(csvdata);
           var a = document.createElement('a');
           a.href = url;
           a.download = this._filenameCsv();
           document.body.appendChild(a);
           a.click();
-        });
+
+          this.searchInProgress.next(false);
     }
   }
 
@@ -361,7 +359,7 @@ export class SearchDataComponent implements OnInit {
       debounceTime(300),
       switchMap((value) => {
         if (value && value.length > 3) {
-          return this.service.filterRefSiret(value);
+          return this.budgetService.filterRefSiret(value);
         }
         return of([]);
       })

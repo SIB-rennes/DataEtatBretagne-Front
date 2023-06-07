@@ -21,9 +21,9 @@ import {
 } from 'apps/grouping-table/src/lib/components/grouping-table/group-utils';
 import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
 import { InformationsSupplementairesDialogComponent } from '../../modules/informations-supplementaires/informations-supplementaires-dialog/informations-supplementaires-dialog.component';
-import { AuditHttpService } from '@services/audit.service';
-import { PreFilters } from '@models/search/prefilters.model';
+import { AuditHttpService } from '@services/http/audit.service';
 import { QueryParam } from '@models/marqueblanche/query-params.model';
+import { PreFilters } from '@models/search/prefilters.model';
 
 @Component({
   selector: 'financial-home',
@@ -125,7 +125,8 @@ export class HomeComponent implements OnInit {
       {
         name: 'domaine',
         label: 'Domaine fonctionnel',
-        renderFn: (row, _col) => row['domaine_fonctionnel']['code'] + ' - ' + row['domaine_fonctionnel']['label'],
+        renderFn: (row, _col) => row['domaine_fonctionnel'] ?
+        row['domaine_fonctionnel']['code'] + ' - ' + row['domaine_fonctionnel']['label'] : '',
       },
       {
         name: 'ref_programmation',
@@ -150,7 +151,7 @@ export class HomeComponent implements OnInit {
       {
         name: 'type_etablissement',
         label: `Type d'établissement`,
-        renderFn: (row, col) =>
+        renderFn: (row, _col) =>
           row['siret']['categorie_juridique'] !== null ? row['siret']['categorie_juridique'] : 'Non renseigné',
       },
       {
@@ -192,7 +193,7 @@ export class HomeComponent implements OnInit {
           });
       }
     });
-    this.auditService.getLastDateUpdateData().subscribe((response) => {
+    this.auditService.getLastDateUpdateData().subscribe((response: { date: string | null; }) => {
       if (response.date) {
         this.lastImportDate = response.date;
       }

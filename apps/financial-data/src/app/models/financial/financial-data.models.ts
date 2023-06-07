@@ -23,31 +23,51 @@ export interface FinancialDataModel {
 
 
 export interface FinancialPagination {
-  items: FinancialDataModelV2[];
+  items:  FinancialDataModelV2[];
   pageInfo?: PageSize;
 }
 
-export interface FinancialDataModelV2 {
-  montant_ae: number;
-  montant_cp: number;
-  commune: Commune;
 
-  domaine_fonctionnel: any;
-  programme: any;
-  referentiel_programmation: any
+export const HEADERS_CSV_FINANCIAL = [
+  'n_ej',
+  'poste_ej',
+  'montant engagement',
+  'montant payé',
+  'theme',
+  'code programme',
+  'programme',
+  'referentiel_programmation',
+  'commune',
+  'siret',
+  'nom beneficiaire',
+  "type d'établissement",
+  'dater dernier paiement',
+  'année engagement',
+];
+
+export interface FinancialDataModelV2 {
 
   n_ej: string;
   n_poste_ej: number;
 
+  montant_ae: number;
+  montant_cp: number;
+  commune: Commune;
+
+  domaine_fonctionnel?: any;
+  programme: any;
+  referentiel_programmation: any
+
   annee: number;
 
   siret: Siret;
+  date_cp: string;
 }
-
 
 export interface Siret {
   code: string;
-  nom_beneficiare: string
+  nom_beneficiare: string,
+  categorie_juridique?: string
 }
 
 export interface Commune {
