@@ -1,4 +1,5 @@
 
+/** Nom des paramètres de requête que l'application supporte */
 export enum QueryParam {
     Uuid = 'uuid',
 

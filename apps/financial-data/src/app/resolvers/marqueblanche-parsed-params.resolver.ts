@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn, RouterStateSnapshot } from '@angular/router';
-import { QueryParam } from '@models/marqueblanche/query-params.model';
+import { QueryParam } from '@models/marqueblanche/query-params.enum';
 import { PreFilters } from '@models/search/prefilters.model';
 import { TOrError } from '@models/t-or-error.model';
 import { GeoHttpService, SearchByCodeParamsBuilder } from 'apps/common-lib/src/lib/services/geo-http.service';
