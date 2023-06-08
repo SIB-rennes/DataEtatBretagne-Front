@@ -1,5 +1,5 @@
+import { TOrError } from 'apps/common-lib/src/lib/models/marqueblanche/t-or-error.model';
 import { BopModel } from '../refs/bop.models';
-import { TOrError } from '../t-or-error.model';
 import { RefTheme } from '../refs/theme.models';
 
 export interface FinancialData {

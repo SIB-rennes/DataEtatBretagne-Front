@@ -1,8 +1,7 @@
+import { QueryParam as CommonQueryParam, QueryParam_values as common_values } from "apps/common-lib/src/lib/models/marqueblanche/query-params.enum";
 
-/** Nom des paramètres de requête que l'application supporte */
-export enum QueryParam {
-    Uuid = 'uuid',
-
+/** Nom des paramètres supportés par financial */
+export enum FinancialQueryParam {
     Programmes = 'programmes',
 
     Niveau_geo = 'niveau_geo',
@@ -10,7 +9,8 @@ export enum QueryParam {
 
     Annee_min = 'annee_min',
     Annee_max = 'annee_max',
-
-    Group_by = 'group_by',
-    Fullscreen = 'plein_ecran',
 }
+const values_FinancialQueryParam = Object.values(FinancialQueryParam);
+
+export type QueryParam = CommonQueryParam | FinancialQueryParam;
+export const QueryParam_values = [...common_values, ...values_FinancialQueryParam];

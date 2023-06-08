@@ -20,12 +20,12 @@ import {
 import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
 import { InformationsSupplementairesDialogComponent } from '../../modules/informations-supplementaires/informations-supplementaires-dialog/informations-supplementaires-dialog.component';
 import { AuditHttpService } from '@services/http/audit.service';
-import { QueryParam } from '@models/marqueblanche/query-params.enum';
 import { MarqueBlancheParsedParamsResolverModel } from '../../resolvers/marqueblanche-parsed-params.resolver';
 import { NGXLogger } from 'ngx-logger';
 import { delay } from 'rxjs';
 import { PreFilters } from '@models/search/prefilters.model';
 import { colonnes } from '@models/tableau/colonnes.model';
+import { QueryParam } from 'apps/common-lib/src/lib/models/marqueblanche/query-params.enum';
 
 @Component({
   selector: 'financial-home',
@@ -102,28 +102,25 @@ export class HomeComponent implements OnInit {
     });
 
     this.route.data
-    .pipe(delay(0))
-    .subscribe((data: Data) => {
+      .pipe(delay(0))
+      .subscribe((data: Data) => {
 
-      let response = data as { mb_parsed_params: MarqueBlancheParsedParamsResolverModel }
+        let response = data as { mb_parsed_params: MarqueBlancheParsedParamsResolverModel }
 
-      let mb_has_params = response.mb_parsed_params?.data?.has_marqueblanche_params;
-      let mb_group_by = response.mb_parsed_params?.data?.group_by;
-      let mb_fullscreen = response.mb_parsed_params?.data?.fullscreen;
+        let mb_has_params = response.mb_parsed_params?.data?.has_marqueblanche_params;
+        let mb_group_by = response.mb_parsed_params?.data?.group_by;
+        let mb_fullscreen = response.mb_parsed_params?.data?.fullscreen;
 
-      if (!mb_has_params)
-        return;
+        if (!mb_has_params)
+          return;
 
-      if (mb_group_by && mb_group_by?.length > 0) {
-        this._logger.debug(`Reception du paramètre group_by de la marque blanche, application des groupes: ${mb_group_by}`);
-        let _groupingColumns: GroupingColumn[] = mb_group_by?.map(col_name => { 
-          return {columnName: col_name } as GroupingColumn;
-        });
-        this.groupingColumns = _groupingColumns;
-      }
+        if (mb_group_by && mb_group_by?.length > 0) {
+          this._logger.debug(`Reception du paramètre group_by de la marque blanche, application des groupes: ${mb_group_by}`);
+          this.groupingColumns = mb_group_by;
+        }
 
-      if (mb_fullscreen) this.toggle_grid_fullscreen();
-    });
+        if (mb_fullscreen) this.toggle_grid_fullscreen();
+      });
 
     this.auditService.getLastDateUpdateData().subscribe((response) => {
       if (response.date) {

@@ -1,6 +1,34 @@
 import { test, expect, Page } from "@playwright/test"
 import { __await } from "tslib";
 
+test.describe("Lorsque l'on définit le paramètre `grouper_par`", () => {
+  const urlparam = "?programmes=107&grouper_par=theme,beneficiaire";
+
+  test("Les colonnes de grouping sont pré-remplies", async ({ page }) => {
+    await _navigate(page, `/${urlparam}`)
+
+    let group_by_btn = page.locator('[data-test-id="group-by-btn"]')
+    await group_by_btn.click()
+
+    let group_choices = page.locator('[data-test-id="group-choice-dialog"]')
+
+    await expect(group_choices).toContainText("Thème")
+    await expect(group_choices).toContainText("Siret")
+    await expect(group_choices).not.toContainText("Programme")
+  })
+});
+
+test.describe("Lorsque l'on définit le paramètre `grouper_par` invalide", () => {
+  const urlparam = "?programmes=107&grouper_par=inexistant";
+
+  test("Une erreur s'affiche avec un message compréhensible", async ({ page }) => {
+    await _navigate(page, `/${urlparam}`)
+
+    let error_message = page.locator('[data-test-id="search-cmp-error-msg"]')
+
+    await expect(error_message).toContainText("inexistant n'est pas un membre de")
+  })
+});
 
 test.describe("Lorsque l'on spécifie deux programmes", () => {
   const urlparam = `?programmes=101,102`;
