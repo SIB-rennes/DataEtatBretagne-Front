@@ -10,7 +10,6 @@ git_push.sh
 index.ts
 model/acheminementPostal.ts
 model/actionProposee.ts
-model/activitePrincipale.ts
 model/adresse.ts
 model/certificationQualibat.ts
 model/certificationRge.ts

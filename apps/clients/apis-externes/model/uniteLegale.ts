@@ -9,12 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ActivitePrincipale } from './activitePrincipale';
 import { FormeJuridique } from './formeJuridique';
 
 
 export interface UniteLegale { 
-    activite_principale: ActivitePrincipale;
+    activite_principale: object;
     forme_juridique: FormeJuridique;
     personne_morale_attributs: object;
     tranche_effectif_salarie: object;
