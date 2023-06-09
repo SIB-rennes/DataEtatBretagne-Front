@@ -4,10 +4,11 @@
     <ng-container *ngTemplateOutlet="titre; context:{ libelle: 'Informations supplémentaires' }"></ng-container>
 
     <div>
-      <ng-container *ngTemplateOutlet="entrepriseLight; context:{ info: api_entreprise_light$ | async }"></ng-container>
+      <ng-container *ngTemplateOutlet="entrepriseLight; context:{ info: entreprise_light }"></ng-container>
       <hr>
       <ng-container *ngTemplateOutlet="subventionLight; context:{ info: api_subvention_light$ | async }"></ng-container>
       <hr>
+      <!-- POC DS -->
       <ng-container
         *ngTemplateOutlet="demarcheSimplifie; context:{ info: api_demarche_simplifie_light$ | async }"></ng-container>
     </div>
@@ -170,8 +171,7 @@
 </ng-template>
 
 <ng-template #loading_entreprise_light>
-  <financial-informations-supplementaires-chargement-ou-erreur nom_service_distant="entreprise.api.gouv.fr"
-    [erreur]="vService.api_entreprise_light_error">
+  <financial-informations-supplementaires-chargement-ou-erreur nom_service_distant="entreprise.api.gouv.fr">
   </financial-informations-supplementaires-chargement-ou-erreur>
 </ng-template>
 

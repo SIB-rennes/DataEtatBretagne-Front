@@ -11,7 +11,7 @@ import {
 } from 'apps/common-lib/src/public-api';
 import { RefSiret } from '@models/refs/RefSiret';
 import { BopModel } from '@models/refs/bop.models';
-import { FinancialDataModelV2 } from '@models/financial/financial-data.models';
+import { FinancialDataModelV2 , SourceFinancialData} from '@models/financial/financial-data.models';
 /**
  * POC de l'inégratoin des données ADEME
  */
@@ -60,7 +60,7 @@ export class AdemeDataHttpService implements DataHttpService<AdemeData,Financial
     );
   }
 
-  getById(key: any, ...options: any[]): Observable<AdemeData> {
+  getById(id: any, ...options: any[]): Observable<AdemeData> {
     throw new Error('Method not implemented.');
   }
 
@@ -68,10 +68,12 @@ export class AdemeDataHttpService implements DataHttpService<AdemeData,Financial
     const date_versement = ademe.dates_periode_versement.split("_")
 
     return {
+      id: -1,
+      source: SourceFinancialData.ADEME,
       montant_ae: ademe.montant,
       montant_cp:  ademe.montant,
       commune: {label: 'Departement 35', code : "35"},
-      programme: {label : 'ADEME', code: 'ADEME'},
+      programme: {label : 'ADEME', code: 'ADEME', theme:""},
       referentiel_programmation: {
         label: ademe.objet,
         code : ''
@@ -86,5 +88,9 @@ export class AdemeDataHttpService implements DataHttpService<AdemeData,Financial
 
       date_cp: date_versement[date_versement.length - 1]
     }
+  }
+
+  getSource(): string {
+    return SourceFinancialData.ADEME;
   }
 }

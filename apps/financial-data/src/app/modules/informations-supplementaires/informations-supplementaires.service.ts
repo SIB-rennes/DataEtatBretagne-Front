@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FinancialDataModel } from '@models/financial/financial-data.models';
-import { FinancialDataHttpService } from '@services/http/financial-data-http.service';
+import { SourceFinancialData, FinancialDataModelV2 } from '@models/financial/financial-data.models';
 import {
   ExternalAPIsService,
   InfoApiEntreprise,
@@ -10,7 +9,7 @@ import {
   Subvention,
 } from 'apps/clients/apis-externes';
 import { forkJoin, Observable, of } from 'rxjs';
-import { catchError, map, mergeMap, shareReplay } from 'rxjs/operators';
+import { catchError, map, shareReplay } from 'rxjs/operators';
 import { _path_full } from './routes';
 import { SubventionFull } from './models/SubventionFull';
 import { EntrepriseFull } from './models/EntrepriseFull';
@@ -21,7 +20,6 @@ import { EtablissementLight } from './models/EtablissementLight';
 import { SubventionLight } from './models/SubventionLight';
 import { HttpContext, HttpErrorResponse } from '@angular/common/http';
 import { BYPASS_ALERT_INTERCEPTOR } from 'apps/common-lib/src/public-api';
-import { Demarche } from '@models/demarche_simplifie/demarche-graphql';
 import { DemarcheHttpService } from '@services/http/demarche.service';
 
 function fromInfoApiEntreprise(info: InfoApiEntreprise): EntrepriseFull {
@@ -46,26 +44,20 @@ export class InformationSupplementairesViewService {
     context: new HttpContext().set(BYPASS_ALERT_INTERCEPTOR, true),
   };
 
-  private _ligne_chorus$:
-    | Observable<FinancialDataModel | undefined>
-    | undefined;
   private _api_subvention$:
     | Observable<InfoApiSubvention | undefined>
     | undefined;
-  private _api_demarche_simplifie$: Observable<Demarche> | undefined;
   private _api_entreprise_info$: Observable<InfoApiEntreprise> | undefined;
 
   constructor(
-    private financial: FinancialDataHttpService,
     private demarcheService: DemarcheHttpService,
     private ae: ExternalAPIsService,
-    private ej: string,
-    private poste_ej: number
+    private financial: FinancialDataModelV2
   ) {}
 
   open_in_newtab() {
-    let poste = '' + this.poste_ej;
-    window.open(_path_full(this.ej, poste));
+    let id = '' + this.financial.id;
+    window.open(_path_full(this.financial.source, id));
   }
 
   _map_subvention_light(
@@ -109,84 +101,74 @@ export class InformationSupplementairesViewService {
     return actual;
   }
 
-  api_entreprise_light_error: ModelError | null = null;
-  api_entreprise_light$(): Observable<EtablissementLight> {
-    return this.ligne_chorus$.pipe(
-      map((ligne) => {
-        let actual = ligne!;
-        return {
-          siret: actual.code_siret,
-          nom: actual.nom_beneficiaire,
-        };
-      }),
-      catchError((err) => {
-        this.api_entreprise_light_error = this._extract_error(err);
-        throw err;
-      })
-    );
+  entreprise_light(): EtablissementLight {
+    return {
+      siret: this.financial.siret.code,
+      nom: this.financial.siret.nom_beneficiare,
+    } as EtablissementLight;
   }
-
+  // POC DS
   api_demarche_light$(): Observable<{
     has_more_info: boolean;
     title?: string;
   }> {
-    return this.ligne_chorus$.pipe(
-      mergeMap((ligne) => {
-        let actual = ligne!;
-        // FIXME - POC API DEMARCHE_SIMPLIFIE
-        // DEMARCHE 49721 pour le 29, Annee 2022 sur programmation DTER
-        if (
-          actual.code_departement === '29' &&
-          actual.Annee === 2022 &&
-          actual.code_ref_programmation === '0119010101A6'
-        ) {
-          return this.demarcheService.getDemarcheLight(49721).pipe(
-            map((demarche) => {
-              return { has_more_info: true, title: demarche?.title };
-            })
-          );
-        }
-        return of({ has_more_info: false });
-      }),
-      shareReplay(1)
-    );
+    const code_depart = this.financial.commune.code.substring(0, 2);
+    const annee = this.financial.annee;
+    const code_ref = this.financial.referentiel_programmation.code;
+
+    // FIXME - POC API DEMARCHE_SIMPLIFIE
+    // DEMARCHE 49721 pour le 29, Annee 2022 sur programmation DTER
+    if (code_depart === '29' && annee === 2022 && code_ref === '0119010101A6') {
+      return this.demarcheService.getDemarcheLight(49721).pipe(
+        map((demarche) => {
+          return { has_more_info: true, title: demarche?.title };
+        })
+      );
+    }
+    return of({ has_more_info: false });
   }
 
   api_demarche_error: ModelError | null = null;
   api_find_dossier_demarche_simplifie$() {
-    return this.ligne_chorus$.pipe(
-      mergeMap((ligne) => {
-        const montant = ligne!.Montant;
-        const siret = ligne!.code_siret;
+    if (this.financial.source !== SourceFinancialData.CHORUS) {
+      this.api_demarche_error = {
+        code: 'NOT_FOUND',
+        message: "Aucun dossier correspondant n'a été trouvé dans la démarche",
+      } as ModelError;
+      throw Error(
+        "Aucun dossier correspondant n'a été trouvé dans la démarche"
+      );
+    }
 
-        // FIXME - POC API DEMARCHE_SIMPLIFIE
-        // DEMARCHE 49721 pour le 29, Annee 2022 sur programmation DTER
+    const montant = this.financial.montant_ae;
+    const siret = this.financial.siret.code;
 
-        return this.demarcheService
-          .foundDossierWithDemarche(49721, siret, montant)
-          .pipe(
-            map((dossier) => {
-              if (dossier === null) {
-                this.api_demarche_error = {
-                  code: 'NOT_FOUND',
-                  message:
-                    "Aucun dossier correspondant n'a été trouvé dans la démarche",
-                } as ModelError;
-                throw new Error();
-              }
-              return dossier;
-            }),
-            catchError((err) => {
-              this.api_demarche_error = {
-                code: 'NOT_FOUND',
-                message:
-                  "Aucun dossier correspondant n'a été trouvé dans la démarche",
-              } as ModelError;
-              throw err;
-            })
-          );
-      })
-    );
+    // FIXME - POC API DEMARCHE_SIMPLIFIE
+    // DEMARCHE 49721 pour le 29, Annee 2022 sur programmation DTER
+
+    return this.demarcheService
+      .foundDossierWithDemarche(49721, siret, montant)
+      .pipe(
+        map((dossier) => {
+          if (dossier === null) {
+            this.api_demarche_error = {
+              code: 'NOT_FOUND',
+              message:
+                "Aucun dossier correspondant n'a été trouvé dans la démarche",
+            } as ModelError;
+            throw new Error();
+          }
+          return dossier;
+        }),
+        catchError((err) => {
+          this.api_demarche_error = {
+            code: 'NOT_FOUND',
+            message:
+              "Aucun dossier correspondant n'a été trouvé dans la démarche",
+          } as ModelError;
+          throw err;
+        })
+      );
   }
 
   api_subvention_light_error: ModelError | null = null;
@@ -207,7 +189,7 @@ export class InformationSupplementairesViewService {
   api_subvention_full_error: ModelError | null = null;
   api_subvention_full$(): Observable<SubventionFull> {
     let full = forkJoin({
-      siret: this.ligne_chorus$.pipe(map((ligne) => ligne?.code_siret!)),
+      siret: this.financial.siret.code,
       subvention: this.api_subvention_subvention$,
       contact: this.api_subvention_president$,
     }).pipe(
@@ -240,16 +222,11 @@ export class InformationSupplementairesViewService {
 
   private get api_entreprise_info$() {
     if (this._api_entreprise_info$ == undefined) {
-      this._api_entreprise_info$ = this.ligne_chorus$.pipe(
-        mergeMap((ligne) => {
-          let siret = ligne?.code_siret;
-          return this.ae.getInfoEntrepriseCtrl(
-            siret!,
-            'body',
-            false,
-            this._options
-          );
-        })
+      this._api_entreprise_info$ = this.ae.getInfoEntrepriseCtrl(
+        this.financial.siret.code,
+        'body',
+        false,
+        this._options
       );
     }
 
@@ -257,58 +234,41 @@ export class InformationSupplementairesViewService {
   }
 
   private get api_subvention_subvention$() {
-    return forkJoin({
-      ligne_chorus: this.ligne_chorus$,
-      subvention: this.api_subvention$,
-    }).pipe(
-      map((joined) => {
-        let ej = joined.ligne_chorus?.NEj;
-
-        let filtered =
-          joined.subvention?.subventions.filter((s) => s?.ej === ej) || [];
-        if (filtered.length >= 1) {
-          let subvention = filtered[0];
-          return subvention;
-        } else return null;
-      })
-    );
+    if (this.financial.source === SourceFinancialData.CHORUS) {
+      return this.api_subvention$.pipe(
+        map((subvention) => {
+          const ej = this.financial.n_ej;
+          let filtered =
+            subvention?.subventions.filter((s) => s?.ej === ej) || [];
+          if (filtered.length >= 1) {
+            let subvention = filtered[0];
+            return subvention;
+          } else return null;
+        })
+      );
+    }
+    return of(null);
   }
 
   private get api_subvention_representants_legaux$() {
-    return forkJoin({
-      ligne_chorus: this.ligne_chorus$,
-      subvention: this.api_subvention$,
-    }).pipe(
-      map((joined) => {
-        return joined.subvention?.contacts || [];
-      })
-    );
+    if (this.financial.source === SourceFinancialData.CHORUS) {
+      this.api_subvention$.pipe(
+        map((subvention) => {
+          return subvention?.contacts || [];
+        })
+      );
+    }
+    return of([]);
   }
 
   private get api_subvention$() {
-    if (this._api_subvention$ == undefined) {
-      this._api_subvention$ = this.ligne_chorus$.pipe(
-        mergeMap((ligne) => {
-          let siret = ligne?.code_siret;
-          return this.ae.getInfoSubventionCtrl(
-            siret!,
-            'body',
-            false,
-            this._options
-          );
-        }),
-        shareReplay(1)
-      );
+    if (this._api_subvention$ === undefined) {
+      let siret = this.financial.siret.code;
+      return this.ae
+        .getInfoSubventionCtrl(siret!, 'body', false, this._options)
+        .pipe(shareReplay(1));
     }
     return this._api_subvention$;
-  }
-
-  public get ligne_chorus$() {
-    if (this._ligne_chorus$ == undefined)
-      this._ligne_chorus$ = this.financial
-        .get(this.ej, this.poste_ej)
-        .pipe(shareReplay(1));
-    return this._ligne_chorus$;
   }
 
   subvention_full_has_no_info(info: SubventionFull | null) {
@@ -328,18 +288,15 @@ export class InformationsSupplementairesService {
   }
 
   constructor(
-    private financial: FinancialDataHttpService,
     private demarche: DemarcheHttpService,
     private ea: ExternalAPIsService
   ) {}
 
-  setupViewModelService(ej: string, poste_ej: number) {
+  setupViewModelService(financial_data: FinancialDataModelV2) {
     let viewService = new InformationSupplementairesViewService(
-      this.financial,
       this.demarche,
       this.ea,
-      ej,
-      poste_ej
+      financial_data
     );
     this._viewService = viewService;
   }

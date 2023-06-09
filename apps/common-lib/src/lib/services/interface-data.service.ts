@@ -12,8 +12,10 @@ export interface DataHttpService<T,M> {
     location: any[] | null,  bops: any[] | null,
     themes: any[] | null,): Observable<T[]>;
 
-  getById(key: any, ...options: any[]): Observable<T>;
+  getById(id: any, ...options: any[]): Observable<T>;
 
 
   mapToGeneric(object: T): M;
+
+  getSource(): string;
 }

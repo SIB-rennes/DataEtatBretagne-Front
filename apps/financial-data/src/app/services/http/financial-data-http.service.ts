@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SettingsService } from '../../../environments/settings.service';
 import { RefTheme } from '@models/refs/theme.models';
-import { FinancialDataModel, FinancialDataModelV2, FinancialPagination } from '@models/financial/financial-data.models';
+import { SourceFinancialData, FinancialDataModelV2, FinancialPagination } from '@models/financial/financial-data.models';
 import { RefSiret } from '@models/refs/RefSiret';
 import {
   DataHttpService,
@@ -44,11 +44,15 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
     this._apiFinancialAe = this.settings.apiFinancialData
   }
   mapToGeneric(object: FinancialDataModelV2): FinancialDataModelV2 {
-    return object;
+    return {...object, source: SourceFinancialData.CHORUS};
   }
 
-  getById(key: any, ...options: any[]): Observable<FinancialDataModelV2> {
-    throw new Error('Method not implemented.');
+  getSource(): string {
+    return SourceFinancialData.CHORUS;
+  }
+
+  public getById(id: number): Observable<FinancialDataModelV2> {
+    return this.http.get<FinancialDataModelV2>(`${this._apiFinancialAe}/ae/${id}`);
   }
 
   public getBop(): Observable<BopModel[]> {
@@ -70,20 +74,6 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
       .pipe(map((response) => response.list));
   }
 
-
-  public get(
-    ej: string,
-    poste_ej: string | number
-  ): Observable<FinancialDataModel | undefined> {
-    let params = `&limit=1&where=(NEj,eq,${ej})~and(NPosteEj,eq,${poste_ej})`;
-    let answer$ = this.mapNocoDbReponse(
-      this.http.get<NocoDbResponse<FinancialDataModel>>(
-        `${this._apiFinancialNocoDb}?${params}`
-      )
-    ).pipe(map((lignes) => lignes[0]));
-
-    return answer$;
-  }
 
   /**
    *

@@ -1,12 +1,12 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import {
-  FinancialDataModelV2, HEADERS_CSV_FINANCIAL,
+  FinancialDataModelV2, HEADERS_CSV_FINANCIAL, SourceFinancialData,
 } from '@models/financial/financial-data.models';
 import { DataHttpService, GeoModel, NocoDbResponse } from 'apps/common-lib/src/public-api';
 import { RefSiret } from '@models/refs/RefSiret';
 import { BopModel } from '@models/refs/bop.models';
 import { RefTheme } from '@models/refs/theme.models';
-import { Observable, forkJoin, map } from 'rxjs';
+import { Observable, forkJoin, map, of } from 'rxjs';
 import { SettingsService } from '../../environments/settings.service';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { HttpClient } from '@angular/common/http';
@@ -94,6 +94,13 @@ export class BudgetService {
       csvRows.push(values.join(','));
     }
     return  new Blob( [csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  }
+
+  public getById(source: SourceFinancialData, id: number) :Observable<FinancialDataModelV2> {
+    const service = this.services.find(s => s.getSource() === source);
+    if (service === undefined) return of()
+
+    return service.getById(id);
   }
 
   private _filterRefSiretWhereClause(nomOuSiret: string): string {

@@ -1,7 +1,8 @@
-export function _path_full(ej: string, poste_ej: string) {
-  return `detail_ligne/${ej}/${poste_ej}`;
+
+export function _path_full(source:string, id: string) {
+  return `detail_ligne/${source}/${id}`;
 }
 
 export function router_template_path_full() {
-  return _path_full(':ej', ':poste_ej')
+  return _path_full(':source', ':id')
 }

@@ -21,6 +21,11 @@ export interface FinancialDataModel {
   Annee: number;
 }
 
+export enum SourceFinancialData {
+  ADEME = 'ADEME',
+  CHORUS = 'CHORUS'
+}
+
 
 export interface FinancialPagination {
   items:  FinancialDataModelV2[];
@@ -47,6 +52,9 @@ export const HEADERS_CSV_FINANCIAL = [
 
 export interface FinancialDataModelV2 {
 
+  id: number;
+  source: SourceFinancialData;
+
   n_ej: string;
   n_poste_ej: number;
 
@@ -55,13 +63,19 @@ export interface FinancialDataModelV2 {
   commune: Commune;
 
   domaine_fonctionnel?: any;
-  programme: any;
+  programme: Programme;
   referentiel_programmation: any
 
   annee: number;
 
   siret: Siret;
   date_cp: string;
+}
+
+export interface Programme {
+  code: string;
+  label: string;
+  theme: string;
 }
 
 export interface Siret {
