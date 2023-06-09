@@ -30,6 +30,7 @@
         <ul class="fr-btns-group--inline">
           <li>
             <button *ngIf="!grid_fullscreen && newFilter"
+              data-test-id="group-by-btn"
               class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left fr-icon-menu-2-fill"
               (click)="openGroupConfigDialog()" aria-label="Grouper les lignes par">
               Grouper les lignes par
@@ -51,7 +52,9 @@
           </li>
           <li>
 
-            <button class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left"
+            <button 
+              data-test-id="toggle-grid-fullscreen-btn"
+              class="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-left"
               [ngClass]="{ 'fr-icon-subtract-line': grid_fullscreen, 'fr-icon-fullscreen-line': !grid_fullscreen }"
               (click)="toggle_grid_fullscreen()" aria-label="Bouton de contrôle du plein écran">
               {{fullscreen_label}}

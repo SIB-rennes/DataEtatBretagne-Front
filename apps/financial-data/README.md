@@ -32,3 +32,15 @@ Voici les paramètres pris en charge:
 | ------------- | ----------- | ----------------------- | --------------------------------------------------------------------------------- |
 | Année minimum | A partir de | Une année. (ie: `2019`) | [`annee_min=2021`](https://budget.databretagne.fr/?annee_min=2019&annee_max=2020) |
 | Année maximum | jusqu'à     | Une année. (ie: `2020`) | [`annee_max=2023`](https://budget.databretagne.fr/?annee_min=2019&annee_max=2020) |
+
+- Group by
+
+| Paramètre   | Description         | Valeurs acceptées                                                                                                                             | Exemple                                                                                                                                             |
+| ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Grouper par | Grouper par colonne | `beneficiaire`, `theme`, `programme`, `domaine_fonctionnel`, `referentiel_programmation`, `commune`, `type_etablissement`, `annee_engagement` | [`grouper_par=beneficiaire,theme`](https://budget.databretagne.fr/?programmes=101,102&annee_min=2019&annee_max=2019&grouper_par=beneficiaire,theme) |
+
+- Plein écran
+
+| Paramètre   | Description                                    | Valeurs acceptées | Exemple                                                                               |
+| ----------- | ---------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------- |
+| Plein écran | Affiche le tableau de résultats en plein écran | `true` ou `false` | [`plein_ecran=true`](https://budget.databretagne.fr/?programmes=107&plein_ecran=true) |
