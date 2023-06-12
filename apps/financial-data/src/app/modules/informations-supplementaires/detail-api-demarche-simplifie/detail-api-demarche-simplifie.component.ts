@@ -47,9 +47,9 @@ export class DetailApiDemarcheSimplifieComponent {
       .api_find_dossier_demarche_simplifie$()
       .subscribe((dossier) => (this.dossier = dossier));
 
-    // service.viewService
-    //   .api_demarche_light$()
-    //   .subscribe((demarche) => (this.title_demarche = demarche.title));
+    service.viewService
+      .api_demarche_light$()
+      .subscribe((demarche) => (this.title_demarche = demarche.title));
   }
 
   get vService() {

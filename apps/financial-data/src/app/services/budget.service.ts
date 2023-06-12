@@ -1,6 +1,6 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import {
-  FinancialDataModelV2, HEADERS_CSV_FINANCIAL, SourceFinancialData,
+  FinancialDataModel, HEADERS_CSV_FINANCIAL, SourceFinancialData,
 } from '@models/financial/financial-data.models';
 import { DataHttpService, GeoModel, NocoDbResponse } from 'apps/common-lib/src/public-api';
 import { RefSiret } from '@models/refs/RefSiret';
@@ -11,7 +11,7 @@ import { SettingsService } from '../../environments/settings.service';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { HttpClient } from '@angular/common/http';
 
-export const DATA_HTTP_SERVICE = new InjectionToken<DataHttpService<any, FinancialDataModelV2>>(
+export const DATA_HTTP_SERVICE = new InjectionToken<DataHttpService<any, FinancialDataModel>>(
   'DataHttpService'
 );
 
@@ -25,7 +25,7 @@ export class BudgetService {
 
   constructor(
     private http: HttpClient,
-    @Inject(DATA_HTTP_SERVICE) private services: DataHttpService<any, FinancialDataModelV2>[],
+    @Inject(DATA_HTTP_SERVICE) private services: DataHttpService<any, FinancialDataModel>[],
     @Inject(SETTINGS) readonly settings: SettingsService
   ) {
     const project = this.settings.projectFinancial;
@@ -44,8 +44,8 @@ export class BudgetService {
     themes: RefTheme[] | null,
     year: number[] | null,
     location: GeoModel[] | null
-  ): Observable<FinancialDataModelV2[]> {
-    const search$: Observable<FinancialDataModelV2[]>[] = this.services.map(
+  ): Observable<FinancialDataModel[]> {
+    const search$: Observable<FinancialDataModel[]>[] = this.services.map(
       (service) =>
         service
           .search(beneficiaire, year, location, bops, themes)
@@ -70,7 +70,7 @@ export class BudgetService {
   }
 
 
-  public getCsv(financialData: FinancialDataModelV2[]): Blob {
+  public getCsv(financialData: FinancialDataModel[]): Blob {
     const csvRows = [];
     csvRows.push(HEADERS_CSV_FINANCIAL.join(','));
     for (const item of financialData) {
@@ -96,7 +96,7 @@ export class BudgetService {
     return  new Blob( [csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
   }
 
-  public getById(source: SourceFinancialData, id: number) :Observable<FinancialDataModelV2> {
+  public getById(source: SourceFinancialData, id: number) :Observable<FinancialDataModel> {
     const service = this.services.find(s => s.getSource() === source);
     if (service === undefined) return of()
 

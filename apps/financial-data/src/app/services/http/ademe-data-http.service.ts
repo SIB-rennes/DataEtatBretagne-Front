@@ -11,14 +11,14 @@ import {
 } from 'apps/common-lib/src/public-api';
 import { RefSiret } from '@models/refs/RefSiret';
 import { BopModel } from '@models/refs/bop.models';
-import { FinancialDataModelV2 , SourceFinancialData} from '@models/financial/financial-data.models';
+import { FinancialDataModel , SourceFinancialData} from '@models/financial/financial-data.models';
 /**
  * POC de l'inégratoin des données ADEME
  */
 @Injectable({
   providedIn: 'root',
 })
-export class AdemeDataHttpService implements DataHttpService<AdemeData,FinancialDataModelV2> {
+export class AdemeDataHttpService implements DataHttpService<AdemeData,FinancialDataModel> {
 
 
   constructor(private http: HttpClient) {}
@@ -64,7 +64,7 @@ export class AdemeDataHttpService implements DataHttpService<AdemeData,Financial
     throw new Error('Method not implemented.');
   }
 
-  mapToGeneric(ademe: AdemeData): FinancialDataModelV2 {
+  mapToGeneric(ademe: AdemeData): FinancialDataModel {
     const date_versement = ademe.dates_periode_versement.split("_")
 
     return {

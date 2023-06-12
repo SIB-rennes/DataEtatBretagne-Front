@@ -2,9 +2,9 @@ import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { inject } from '@angular/core';
 import { BudgetService } from '@services/budget.service';
 import { catchError, of } from 'rxjs';
-import { FinancialDataModelV2 } from '@models/financial/financial-data.models';
+import { FinancialDataModel } from '@models/financial/financial-data.models';
 
-export const resolveInformationsSupplementaires: ResolveFn<FinancialDataModelV2 | Error> =
+export const resolveInformationsSupplementaires: ResolveFn<FinancialDataModel | Error> =
   (route: ActivatedRouteSnapshot) => {
     let source = route.params['source'];
     let id = route.params['id'];

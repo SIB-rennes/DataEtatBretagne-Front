@@ -25,7 +25,7 @@ import {
 import { BopModel } from '@models/refs/bop.models';
 import { FinancialDataResolverModel } from '@models/financial/financial-data-resolvers.models';
 import { RefTheme } from '@models/refs/theme.models';
-import { FinancialDataModelV2 } from '@models/financial/financial-data.models';
+import { FinancialDataModel } from '@models/financial/financial-data.models';
 import { DatePipe } from '@angular/common';
 import { RefSiret } from '@models/refs/RefSiret';
 import {
@@ -81,12 +81,12 @@ export class SearchDataComponent implements OnInit {
   /**
    * Resultats de la recherche.
    */
-  @Output() searchResultsEventEmitter = new EventEmitter<FinancialDataModelV2[]>();
+  @Output() searchResultsEventEmitter = new EventEmitter<FinancialDataModel[]>();
 
   /**
    * Les donnees de la recherche
    */
-  private _searchResult: FinancialDataModelV2[] | null = null;
+  private _searchResult: FinancialDataModel[] | null = null;
 
   /**
    * Resultats de la recherche.
@@ -256,10 +256,10 @@ export class SearchDataComponent implements OnInit {
         })
       )
       .subscribe({
-        next: (response: FinancialDataModelV2[] | Error) => {
+        next: (response: FinancialDataModel[] | Error) => {
           this.searchFinish = true;
           this.currentFilter.next(this._buildPreference(formValue));
-          this._searchResult = response as FinancialDataModelV2[];
+          this._searchResult = response as FinancialDataModel[];
           this.searchResultsEventEmitter.next(this._searchResult);
         },
         error: (err: Error) => {

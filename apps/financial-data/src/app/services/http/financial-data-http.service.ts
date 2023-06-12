@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SettingsService } from '../../../environments/settings.service';
 import { RefTheme } from '@models/refs/theme.models';
-import { SourceFinancialData, FinancialDataModelV2, FinancialPagination } from '@models/financial/financial-data.models';
+import { SourceFinancialData, FinancialDataModel, FinancialPagination } from '@models/financial/financial-data.models';
 import { RefSiret } from '@models/refs/RefSiret';
 import {
   DataHttpService,
@@ -20,7 +20,7 @@ import { DataType } from '@models/audit/audit-update-data.models';
 @Injectable({
   providedIn: 'root',
 })
-export class FinancialDataHttpService extends NocodbHttpService implements DataHttpService<FinancialDataModelV2,FinancialDataModelV2> {
+export class FinancialDataHttpService extends NocodbHttpService implements DataHttpService<FinancialDataModel,FinancialDataModel> {
   private _apiFinancialNocoDb!: string;
   private _apiTheme!: string;
   private _apiProgramme!: string;
@@ -43,7 +43,7 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
 
     this._apiFinancialAe = this.settings.apiFinancialData
   }
-  mapToGeneric(object: FinancialDataModelV2): FinancialDataModelV2 {
+  mapToGeneric(object: FinancialDataModel): FinancialDataModel {
     return {...object, source: SourceFinancialData.CHORUS};
   }
 
@@ -51,8 +51,8 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
     return SourceFinancialData.CHORUS;
   }
 
-  public getById(id: number): Observable<FinancialDataModelV2> {
-    return this.http.get<FinancialDataModelV2>(`${this._apiFinancialAe}/ae/${id}`);
+  public getById(id: number): Observable<FinancialDataModel> {
+    return this.http.get<FinancialDataModel>(`${this._apiFinancialAe}/ae/${id}`);
   }
 
   public getBop(): Observable<BopModel[]> {
@@ -90,7 +90,7 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
     location: GeoModel[] | null,
     bops: BopModel[] | null,
     themes: RefTheme[] | null,
-  ): Observable<FinancialDataModelV2[]> {
+  ): Observable<FinancialDataModel[]> {
     if (
       bops == null &&
       themes == null &&

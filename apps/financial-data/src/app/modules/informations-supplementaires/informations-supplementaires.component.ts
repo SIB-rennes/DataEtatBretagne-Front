@@ -21,7 +21,7 @@ import { EtablissementLight } from './models/EtablissementLight';
 import { SubventionLight } from './models/SubventionLight';
 import { DemarcheLight } from './models/DemarcheLight';
 import { DetailApiDemarcheSimplifieComponent } from './detail-api-demarche-simplifie/detail-api-demarche-simplifie.component';
-import { FinancialDataModelV2 } from '@models/financial/financial-data.models';
+import { FinancialDataModel } from '@models/financial/financial-data.models';
 
 export enum View {
   light = 'light',
@@ -58,7 +58,7 @@ export enum View {
 export class InformationsSupplementairesComponent implements OnInit {
   view: View = View.light;
 
-  private _financial: FinancialDataModelV2 | undefined = undefined;
+  private _financial: FinancialDataModel | undefined = undefined;
 
   get financial() {
     return this._financial!;
@@ -74,7 +74,7 @@ export class InformationsSupplementairesComponent implements OnInit {
   api_demarche_simplifie_light$: Observable<DemarcheLight | null> | undefined;
 
   ngOnInit() {
-    let data: FinancialDataModelV2 =
+    let data: FinancialDataModel =
       this.route.snapshot.data['financial_data'];
     this._init_from_resolver_model(data);
   }
@@ -98,7 +98,7 @@ export class InformationsSupplementairesComponent implements OnInit {
     this.api_subvention_light$ = this.vService.api_subvention_light$();
   }
 
-  _init_from_resolver_model(data: FinancialDataModelV2) {
+  _init_from_resolver_model(data: FinancialDataModel) {
     if (data === undefined) return;
 
     this.financial = data;

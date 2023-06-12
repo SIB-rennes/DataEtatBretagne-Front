@@ -1,25 +1,5 @@
 import { PageSize } from "apps/common-lib/src/lib/models/pagination/pagesize.models";
 
-export interface FinancialDataModel {
-  NEj: string;
-  NPosteEj: number;
-
-  DateModificationEj: Date;
-
-  Montant: number;
-
-  code_programme: string;
-  nom_programme: string;
-  Theme: string;
-  code_siret: string;
-  nom_beneficiaire: string;
-  type_etablissement: string;
-
-  code_commune: string;
-  code_departement: string;
-  code_ref_programmation: string;
-  Annee: number;
-}
 
 export enum SourceFinancialData {
   ADEME = 'ADEME',
@@ -28,7 +8,7 @@ export enum SourceFinancialData {
 
 
 export interface FinancialPagination {
-  items:  FinancialDataModelV2[];
+  items:  FinancialDataModel[];
   pageInfo?: PageSize;
 }
 
@@ -50,7 +30,7 @@ export const HEADERS_CSV_FINANCIAL = [
   'année engagement',
 ];
 
-export interface FinancialDataModelV2 {
+export interface FinancialDataModel {
 
   id: number;
   source: SourceFinancialData;

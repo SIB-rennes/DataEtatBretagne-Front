@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SourceFinancialData, FinancialDataModelV2 } from '@models/financial/financial-data.models';
+import { SourceFinancialData, FinancialDataModel } from '@models/financial/financial-data.models';
 import {
   ExternalAPIsService,
   InfoApiEntreprise,
@@ -52,7 +52,7 @@ export class InformationSupplementairesViewService {
   constructor(
     private demarcheService: DemarcheHttpService,
     private ae: ExternalAPIsService,
-    private financial: FinancialDataModelV2
+    private financial: FinancialDataModel
   ) {}
 
   open_in_newtab() {
@@ -292,7 +292,7 @@ export class InformationsSupplementairesService {
     private ea: ExternalAPIsService
   ) {}
 
-  setupViewModelService(financial_data: FinancialDataModelV2) {
+  setupViewModelService(financial_data: FinancialDataModel) {
     let viewService = new InformationSupplementairesViewService(
       this.demarche,
       this.ea,
