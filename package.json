@@ -15,6 +15,7 @@
     "lint": "ng lint",
     "codegen": "graphql-codegen --config codegen.ts"
   },
+  "env": {"browser": true, "node": true},
   "private": true,
   "dependencies": {
     "@angular/animations": "^15.2.6",

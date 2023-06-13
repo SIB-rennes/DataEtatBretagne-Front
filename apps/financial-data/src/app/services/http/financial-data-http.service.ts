@@ -3,87 +3,42 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BopModel } from '@models/refs/bop.models';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { SettingsService } from '../../../environments/settings.service';
-import { RefTheme } from '@models/refs/theme.models';
-import { FinancialDataModel, FinancialDataModelV2, FinancialPagination } from '@models/financial/financial-data.models';
+import { FinancialDataModel } from '@models/financial/financial-data.models';
 import { RefSiret } from '@models/refs/RefSiret';
 import {
   DataHttpService,
   GeoModel,
-  NocodbHttpService,
 } from 'apps/common-lib/src/public-api';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
-import { NocoDbResponse } from 'apps/common-lib/src/lib/models/nocodb-response';
 import { DataType } from '@models/audit/audit-update-data.models';
+import { SourceFinancialData } from '@models/financial/common.models';
+import { DataPagination } from 'apps/common-lib/src/lib/models/pagination/pagination.models';
 
 @Injectable({
   providedIn: 'root',
 })
-export class FinancialDataHttpService extends NocodbHttpService implements DataHttpService<FinancialDataModelV2,FinancialDataModelV2> {
-  private _apiFinancialNocoDb!: string;
-  private _apiTheme!: string;
-  private _apiProgramme!: string;
-
+export class FinancialDataHttpService  implements DataHttpService<FinancialDataModel,FinancialDataModel> {
   private _apiFinancialAe! : string
 
   constructor(
     private http: HttpClient,
     @Inject(SETTINGS) readonly settings: SettingsService
   ) {
-    super();
-    const project = this.settings.projectFinancial;
-    let base_uri = this.settings.nocodbProxy?.base_uri;
-    if (project && base_uri) {
-      base_uri += project.table + '/';
-      this._apiFinancialNocoDb = base_uri + project.views.financial;
-      this._apiProgramme = base_uri + project.views.programmes;
-      this._apiTheme = base_uri + project.views.themes;
-    }
-
     this._apiFinancialAe = this.settings.apiFinancialData
   }
-  mapToGeneric(object: FinancialDataModelV2): FinancialDataModelV2 {
-    return object;
+  mapToGeneric(object: FinancialDataModel): FinancialDataModel {
+    return {...object, source: SourceFinancialData.CHORUS};
   }
 
-  getById(key: any, ...options: any[]): Observable<FinancialDataModelV2> {
-    throw new Error('Method not implemented.');
+  getSource(): string {
+    return SourceFinancialData.CHORUS;
   }
 
-  public getBop(): Observable<BopModel[]> {
-    const params = 'limit=500&fields=Id,Label,Code,RefTheme&sort=Code';
-    return this.http
-      .get<NocoDbResponse<BopModel>>(`${this._apiProgramme}?${params}`)
-      .pipe(map((response) => response.list));
+  public getById(id: number): Observable<FinancialDataModel> {
+    return this.http.get<FinancialDataModel>(`${this._apiFinancialAe}/ae/${id}`);
   }
 
-  /**
-   * Récupère les themes de Chorus
-   * @returns les the
-   */
-  public getTheme(): Observable<RefTheme[]> {
-    return this.http
-      .get<NocoDbResponse<RefTheme>>(
-        `${this._apiTheme}?fields=Id,Label&sort=Label&limit=500`
-      )
-      .pipe(map((response) => response.list));
-  }
-
-
-  public get(
-    ej: string,
-    poste_ej: string | number
-  ): Observable<FinancialDataModel | undefined> {
-    let params = `&limit=1&where=(NEj,eq,${ej})~and(NPosteEj,eq,${poste_ej})`;
-    let answer$ = this.mapNocoDbReponse(
-      this.http.get<NocoDbResponse<FinancialDataModel>>(
-        `${this._apiFinancialNocoDb}?${params}`
-      )
-    ).pipe(map((lignes) => lignes[0]));
-
-    return answer$;
-  }
 
   /**
    *
@@ -99,8 +54,8 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
     year: number[] | null,
     location: GeoModel[] | null,
     bops: BopModel[] | null,
-    themes: RefTheme[] | null,
-  ): Observable<FinancialDataModelV2[]> {
+    themes: string[] | null,
+  ): Observable<DataPagination<FinancialDataModel>> {
     if (
       bops == null &&
       themes == null &&
@@ -118,47 +73,32 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
       location
     );
 
-    return this.http.get<FinancialPagination>(`${this._apiFinancialAe}/ae?${params}`).pipe(
-      map( (data: FinancialPagination) => {
-        if (!data) {
-          return [];
-        }
-        if (data.pageInfo && data.pageInfo.totalRows > data.pageInfo.pageSize) {
-          throw new Error(
-            `La limite de lignes de résultat est atteinte. Veuillez affiner vos filtres afin d'obtenir un résultat complet.`
-          );
-        }
-        return data.items
-      })
-    )
+    return this.http.get<DataPagination<FinancialDataModel>>(`${this._apiFinancialAe}/ae?${params}`);
   }
 
 
   private _buildparams( beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
-    themes: RefTheme[] | null,
+    themes: string[] | null,
     year: number[] | null,
     location: GeoModel[] | null
   ): string {
     let params ='limit=5000';
     if (beneficiaire) {
-      params += `&siret_beneficiaire=${beneficiaire.Code}`;
+      params += `&siret_beneficiaire=${beneficiaire.siret}`;
     }
     if (bops) {
       params += `&code_programme=${bops
-        .filter((bop) => bop.Code)
-        .map((bop) => bop.Code)
+        .filter((bop) => bop.code)
+        .map((bop) => bop.code)
         .join(',')}`;
     } else if (themes) {
-      params += `&theme=${themes
-        .map((theme) => theme.Label)
-        .join(',')}`;
+      params += `&theme=${themes.join(',')}`;
     }
 
     if (location && location.length > 0) {
       const listCode = location.map((l) => l.code).join(',');
       params += `&code_geo=${listCode}`
-
     }
 
     if (year && year.length > 0) {

@@ -1,22 +1,19 @@
+import { PageSize } from "apps/common-lib/src/public-api";
+import { Commune, Siret } from "./common.models";
+
+
 
 export interface AdemeData{
-  ademe: string;
-  id_attribuant: string;
+  id: number,
   date_convention: string;
-  reference_decision: string;
-  nom_beneficiaire: string;
-  siret: string;
-  objet: string;
+  dates_periode_versement: string;
   montant: number;
   nature: string;
-  conditions_versement: string;
-  dates_periode_versement: string;
   notification_ue: boolean;
+  conditions_versement: string;
+  objet: string;
   pourcentage_subvention: number;
-  departement: number;
-  naf1etlib: string;
-  naf2etlib: string;
-  naf3etlib: string
-  naf4etlib: string;
-  naf5etlib: string;
+  reference_decision: string;
+  siret_beneficiaire: Siret;
+  commune: Commune
 }

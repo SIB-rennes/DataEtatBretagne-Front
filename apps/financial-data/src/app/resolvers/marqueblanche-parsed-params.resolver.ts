@@ -79,7 +79,7 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
     )
 
   return model;
-};
+}
 
 /** Renseigne les {@link GroupingColumn} suivant {@link MarqueBlancheParsedParams.p_group_by}*/
 function group_by(
@@ -116,7 +116,7 @@ function programmes(
     let codes: string[] = programmes.split(',')
     logger.debug(`Application du paramètre ${FinancialQueryParam.Programmes}: ${codes}`);
     let bops = codes.map(code => {
-      return { 'Code': code }
+      return { 'code': code }
     });
 
     preFilters = {

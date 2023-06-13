@@ -19,11 +19,10 @@ export class PreferenceComponent {
       renderFn: (row: JSONObject) => row['Code'] + ' - ' + row['Label'],
     },
     year: {
-      label: 'Année',
+      label: 'Année'
     },
     theme: {
-      label: 'Thème',
-      renderFn: (row: JSONObject) => row['Label'],
+      label: 'Thème'
     },
     beneficiaire: {
       label: 'Bénéficiare',

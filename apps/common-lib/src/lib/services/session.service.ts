@@ -13,6 +13,7 @@ export class SessionService {
 
   constructor() {}
 
+  // eslint-disable-next-line no-undef
   public setAuthentication(info: Keycloak.KeycloakProfile, roles: any): void {
     this._userInfo = info as User;
     this._userInfo.roles = roles;

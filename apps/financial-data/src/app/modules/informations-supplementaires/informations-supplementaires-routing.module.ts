@@ -10,7 +10,7 @@ const routes: Routes = [
         component: InformationsSupplementairesComponent,
         runGuardsAndResolvers: 'always',
         resolve: {
-            ligne_id: resolveInformationsSupplementaires
+            financial_data: resolveInformationsSupplementaires
         }
     }
 ]

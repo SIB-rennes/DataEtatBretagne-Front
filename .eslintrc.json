@@ -3,6 +3,14 @@
   "ignorePatterns": [
     "apps/**/*"
   ],
+  "globals": {
+    "document": true,
+    "window": true
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
   "overrides": [
     {
       "files": [
@@ -15,10 +23,14 @@
         "createDefaultProgram": true
       },
       "extends": [
+        "eslint:recommended",
         "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
-      "rules": {}
+      "rules": {
+        "no-irregular-whitespace": "off",
+        "no-unused-vars": ["off", { "argsIgnorePattern": "^_" }]
+      }
     },
     {
       "files": [
