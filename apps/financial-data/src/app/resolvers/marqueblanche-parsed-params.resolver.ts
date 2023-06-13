@@ -79,7 +79,7 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
     )
 
   return model;
-};
+}
 
 /** Renseigne les {@link GroupingColumn} suivant {@link MarqueBlancheParsedParams.p_group_by}*/
 function group_by(

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SourceFinancialData, FinancialDataModel } from '@models/financial/financial-data.models';
+import { FinancialDataModel } from '@models/financial/financial-data.models';
 import {
   ExternalAPIsService,
   InfoApiEntreprise,
@@ -21,6 +21,7 @@ import { SubventionLight } from './models/SubventionLight';
 import { HttpContext, HttpErrorResponse } from '@angular/common/http';
 import { BYPASS_ALERT_INTERCEPTOR } from 'apps/common-lib/src/public-api';
 import { DemarcheHttpService } from '@services/http/demarche.service';
+import { SourceFinancialData } from '@models/financial/common.models';
 
 function fromInfoApiEntreprise(info: InfoApiEntreprise): EntrepriseFull {
   return {
@@ -112,6 +113,7 @@ export class InformationSupplementairesViewService {
     has_more_info: boolean;
     title?: string;
   }> {
+    console.log(this.financial);
     const code_depart = this.financial.commune.code.substring(0, 2);
     const annee = this.financial.annee;
     const code_ref = this.financial.referentiel_programmation.code;

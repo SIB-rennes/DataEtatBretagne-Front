@@ -1,6 +1,6 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 import {
-  FinancialDataModel, HEADERS_CSV_FINANCIAL, SourceFinancialData,
+  FinancialDataModel, HEADERS_CSV_FINANCIAL,
 } from '@models/financial/financial-data.models';
 import { DataHttpService, GeoModel, NocoDbResponse } from 'apps/common-lib/src/public-api';
 import { RefSiret } from '@models/refs/RefSiret';
@@ -10,6 +10,8 @@ import { Observable, forkJoin, map, of } from 'rxjs';
 import { SettingsService } from '../../environments/settings.service';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { HttpClient } from '@angular/common/http';
+import { DataPagination } from 'apps/common-lib/src/lib/models/pagination/pagination.models';
+import { SourceFinancialData } from '@models/financial/common.models';
 
 export const DATA_HTTP_SERVICE = new InjectionToken<DataHttpService<any, FinancialDataModel>>(
   'DataHttpService'
@@ -18,9 +20,7 @@ export const DATA_HTTP_SERVICE = new InjectionToken<DataHttpService<any, Financi
 @Injectable({ providedIn: 'root' })
 export class BudgetService {
 
-  private _apiTheme!: string;
   private _apiSiret!: string;
-  private _apiProgramme!: string;
 
 
   constructor(
@@ -32,8 +32,6 @@ export class BudgetService {
     let base_uri = this.settings.nocodbProxy?.base_uri;
     if (project && base_uri) {
       base_uri += project.table + '/';
-      this._apiProgramme = base_uri + project.views.programmes;
-      this._apiTheme = base_uri + project.views.themes;
       this._apiSiret = base_uri + project.views.siret;
     }
   }
@@ -45,12 +43,19 @@ export class BudgetService {
     year: number[] | null,
     location: GeoModel[] | null
   ): Observable<FinancialDataModel[]> {
-    const search$: Observable<FinancialDataModel[]>[] = this.services.map(
-      (service) =>
-        service
-          .search(beneficiaire, year, location, bops, themes)
-          .pipe(map((resultSearch) => resultSearch.map(data => service.mapToGeneric(data))))
+    const search$: Observable<FinancialDataModel[]>[] = this.services.map(service =>
+      service.search(beneficiaire, year, location, bops, themes).pipe(
+        map((resultPagination: DataPagination<any> | null) => {
+          if (resultPagination === null || resultPagination.pageInfo === undefined) return [];
+          if (resultPagination.pageInfo.totalRows > resultPagination.pageInfo.pageSize) {
+            throw new Error(`La limite de lignes de résultat est atteinte. Veuillez affiner vos filtres afin d'obtenir un résultat complet.`);
+          }
+          return resultPagination.items;
+        }),
+        map(items => items.map(data => service.mapToGeneric(data)))
+      )
     );
+
 
     return forkJoin(search$).pipe(
       map((response) => {
@@ -76,6 +81,7 @@ export class BudgetService {
     for (const item of financialData) {
 
       const values = [
+        item.source,
         item.n_ej,
         item.n_poste_ej,
         item.montant_ae,
@@ -100,7 +106,9 @@ export class BudgetService {
     const service = this.services.find(s => s.getSource() === source);
     if (service === undefined) return of()
 
-    return service.getById(id);
+    return service.getById(id).pipe(
+      map(data => service.mapToGeneric(data))
+    );
   }
 
   private _filterRefSiretWhereClause(nomOuSiret: string): string {

@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SettingsService } from '../../../environments/settings.service';
 import { RefTheme } from '@models/refs/theme.models';
-import { SourceFinancialData, FinancialDataModel, FinancialPagination } from '@models/financial/financial-data.models';
+import { FinancialDataModel } from '@models/financial/financial-data.models';
 import { RefSiret } from '@models/refs/RefSiret';
 import {
   DataHttpService,
@@ -16,12 +16,13 @@ import {
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { NocoDbResponse } from 'apps/common-lib/src/lib/models/nocodb-response';
 import { DataType } from '@models/audit/audit-update-data.models';
+import { SourceFinancialData } from '@models/financial/common.models';
+import { DataPagination } from 'apps/common-lib/src/lib/models/pagination/pagination.models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class FinancialDataHttpService extends NocodbHttpService implements DataHttpService<FinancialDataModel,FinancialDataModel> {
-  private _apiFinancialNocoDb!: string;
   private _apiTheme!: string;
   private _apiProgramme!: string;
 
@@ -36,7 +37,6 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
     let base_uri = this.settings.nocodbProxy?.base_uri;
     if (project && base_uri) {
       base_uri += project.table + '/';
-      this._apiFinancialNocoDb = base_uri + project.views.financial;
       this._apiProgramme = base_uri + project.views.programmes;
       this._apiTheme = base_uri + project.views.themes;
     }
@@ -90,7 +90,7 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
     location: GeoModel[] | null,
     bops: BopModel[] | null,
     themes: RefTheme[] | null,
-  ): Observable<FinancialDataModel[]> {
+  ): Observable<DataPagination<FinancialDataModel>> {
     if (
       bops == null &&
       themes == null &&
@@ -108,19 +108,7 @@ export class FinancialDataHttpService extends NocodbHttpService implements DataH
       location
     );
 
-    return this.http.get<FinancialPagination>(`${this._apiFinancialAe}/ae?${params}`).pipe(
-      map( (data: FinancialPagination) => {
-        if (!data) {
-          return [];
-        }
-        if (data.pageInfo && data.pageInfo.totalRows > data.pageInfo.pageSize) {
-          throw new Error(
-            `La limite de lignes de résultat est atteinte. Veuillez affiner vos filtres afin d'obtenir un résultat complet.`
-          );
-        }
-        return data.items
-      })
-    )
+    return this.http.get<DataPagination<FinancialDataModel>>(`${this._apiFinancialAe}/ae?${params}`);
   }
 
 

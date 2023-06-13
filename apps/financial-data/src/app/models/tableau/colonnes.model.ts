@@ -48,19 +48,17 @@ export const colonnes: ColumnMetaDataDef[] = [
     {
         name: 'nom_programme',
         label: 'Programme',
-        renderFn: (row, _col) => row['programme']['code'] + ' - ' + row['programme']['label'] ?? '',
+        renderFn: (row, _col) => _print_code_label(row['programme']['code'], row['programme']['label']),
     },
     {
         name: 'domaine',
         label: 'Domaine fonctionnel',
-        renderFn: (row, _col) => row['domaine_fonctionnel'] ?
-            row['domaine_fonctionnel']['code'] + ' - ' + row['domaine_fonctionnel']['label'] : '',
+        renderFn: (row, _col) => row['domaine_fonctionnel'] ? _print_code_label(row['domaine_fonctionnel']['code'], row['domaine_fonctionnel']['label']) : '',
     },
     {
         name: 'ref_programmation',
         label: 'Ref Programmation',
-        renderFn: (row, _col) =>
-            row['referentiel_programmation']['code'] + ' - ' + (row['referentiel_programmation']['label'] ?? ''),
+        renderFn: (row, _col) => _print_code_label(row['referentiel_programmation']['code'], row['referentiel_programmation']['label']),
     },
     {
         name: 'label_commune',
@@ -97,3 +95,10 @@ export const colonnes: ColumnMetaDataDef[] = [
         },
     },
 ]
+
+
+function _print_code_label(c: string | undefined, l : string | undefined): string {
+  const code = c ?? '';
+  const label = l ?? '';
+  return  code !== '' ? `${code} - ${label}` : label;
+}

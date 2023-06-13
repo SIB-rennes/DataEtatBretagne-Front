@@ -6,7 +6,7 @@ import { GeoModel } from "../models/geo.models";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 
-import { ReferentielResponse } from '../models/pagination/referentiel-response.models';
+import { DataPagination } from '../models/pagination/pagination.models';
 
 /**
  * Injection token for the API path.
@@ -18,7 +18,7 @@ export const API_GEO_PATH = new InjectionToken<string>('API GEO');
  */
 export const API_REF_PATH = new InjectionToken<string>('API REF');
 
-/** 
+/**
  * Paramètres de recherche pour une localisation géographique à utiliser
  * voir GeoHttpService.search
  */
@@ -116,7 +116,7 @@ export class GeoHttpService {
     private _api_to_service_mapper(type: TypeLocalisation, geos: GeoModel[]) {
 
         if (type === TypeLocalisation.ARRONDISSEMENT) {
-            let payload = geos as unknown as ReferentielResponse<GeoArrondissementModel>
+            let payload = geos as unknown as DataPagination<GeoArrondissementModel>
 
             return payload.items.map(arr => {
                 return {
@@ -144,7 +144,7 @@ export type LimitHandler = (search_params: SearchParams, type: TypeLocalisation,
 
 /**
  * Construit un SearchParams.
- * 
+ *
  * ```
  * let builder = SearchParamsBuilder();
  * let terme = 'Rennes';
@@ -191,16 +191,16 @@ abstract class ASearchParamsBuilder {
     }
 }
 
-/** 
+/**
  * Construit les SearchParams pour une recherche geo.
  * 'Devine' les paramètres de recherche selon le terme recherché.
- * 
+ *
  * Exemple:
  *   FuzzySearchParamsBuilder().search(35, TypeLocalisation.Commune)
  *      On considèrera le terme recherché comme étant un code de département.
  *   FuzzySearchParamsBuilder().search(35000, TypeLocalisation.Commune)
  *      On considèrera le terme recherché comme étant un code postal.
- * 
+ *
  * Ce builder est adapté pour les recherches faites par un utilisateur sur les emplacements géographiques.
  */
 export class FuzzySearchParamsBuilder extends ASearchParamsBuilder {
@@ -303,7 +303,7 @@ export class FuzzySearchParamsBuilder extends ASearchParamsBuilder {
 
 /**
  * Construit les SearchParams pour une recherche geo.
- * 
+ *
  * Recherche sur le cog (code officiel géographique). Adapté pour les API.
  */
 export class SearchByCodeParamsBuilder extends ASearchParamsBuilder {
@@ -331,7 +331,7 @@ export class SearchByCodeParamsBuilder extends ASearchParamsBuilder {
             default:
                 throw new Error(`Non géré: ${type}`);
         }
-        
+
         return search_params;
     }
 }

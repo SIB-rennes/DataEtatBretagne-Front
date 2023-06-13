@@ -1,17 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { AdemeData } from '@models/financial/ademe.models';
 import {
   DataHttpService,
   GeoModel,
-  TypeLocalisation,
 } from 'apps/common-lib/src/public-api';
 import { RefSiret } from '@models/refs/RefSiret';
 import { BopModel } from '@models/refs/bop.models';
-import { FinancialDataModel , SourceFinancialData} from '@models/financial/financial-data.models';
+import { FinancialDataModel } from '@models/financial/financial-data.models';
+import { SourceFinancialData } from '@models/financial/common.models';
+import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
+import { SettingsService } from 'apps/financial-data/src/environments/settings.service';
+import { DataPagination } from 'apps/common-lib/src/lib/models/pagination/pagination.models';
 /**
  * POC de l'inégratoin des données ADEME
  */
@@ -19,61 +21,54 @@ import { FinancialDataModel , SourceFinancialData} from '@models/financial/finan
   providedIn: 'root',
 })
 export class AdemeDataHttpService implements DataHttpService<AdemeData,FinancialDataModel> {
+  private _api! : string
 
-
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,  @Inject(SETTINGS) readonly settings: SettingsService) {
+    this._api = this.settings.apiFinancialData
+  }
 
   search(
-    _beneficiaire: RefSiret | null,
+    beneficiaire: RefSiret | null,
     year: number[] | null,
     locations: GeoModel[] | null,
     bops: BopModel[] | null
-  ): Observable<AdemeData[]> {
-    if (
-      locations?.findIndex(
-        (location) =>
-          location.type === TypeLocalisation.DEPARTEMENT &&
-          location.code === '35'
-      ) === -1 ||
-      bops?.findIndex((bop) => bop.Code === 'ADEME') === -1
-    ) {
-      return of([]);
+  ): Observable<DataPagination<AdemeData> | null> {
+    if (bops?.findIndex((bop) => bop.Code === 'ADEME') === -1) {
+      return of(null);
     }
 
-    return this._search(year);
+    let params ='limit=5000';
+    if (beneficiaire) {
+      params += `&siret_beneficiaire=${beneficiaire.Code}`;
+    }
+    if (locations && locations.length > 0) {
+      const listCode = locations.map((l) => l.code).join(',');
+      params += `&code_geo=${listCode}`
+
+    }
+
+    if (year && year.length > 0) {
+      params += `&annee=${year.join(',')}`;
+    }
+
+    return this.http.get<DataPagination<AdemeData>>(`${this._api}/ademe?${params}`);
   }
 
-  private _search(year: number[] | null): Observable<AdemeData[]> {
 
-    return this.http.get<AdemeData[]>('./assets/ademe_35.json').pipe(
-      map((data) => {
-        const ademes =  Object.values(data);
-        if (year && year.length > 0) {
-          return  ademes.filter(ademe =>  {
-            const annee = Number(ademe.date_convention.substring(0,4));
-            return year.findIndex( y => y === annee) !== -1;
-          });
-        }
-        return ademes;
-
-      })
-    );
-  }
-
-  getById(id: any, ...options: any[]): Observable<AdemeData> {
-    throw new Error('Method not implemented.');
+  getById(id: any): Observable<AdemeData> {
+    return this.http.get<AdemeData>(`${this._api}/ademe/${id}`);
   }
 
   mapToGeneric(ademe: AdemeData): FinancialDataModel {
     const date_versement = ademe.dates_periode_versement.split("_")
 
     return {
-      id: -1,
+      id: ademe.id,
       source: SourceFinancialData.ADEME,
       montant_ae: ademe.montant,
       montant_cp:  ademe.montant,
-      commune: {label: 'Departement 35', code : "35"},
-      programme: {label : 'ADEME', code: 'ADEME', theme:""},
+      commune: ademe.commune,
+      programme: {label : 'ADEME', theme:"Ecologie, développement et mobilité durables"},
       referentiel_programmation: {
         label: ademe.objet,
         code : ''
@@ -84,7 +79,7 @@ export class AdemeDataHttpService implements DataHttpService<AdemeData,Financial
 
       annee: Number(ademe.date_convention.substring(0,4)),
 
-      siret: {code: ademe.siret, nom_beneficiare: ademe.nom_beneficiaire},
+      siret: ademe.siret_beneficiaire,
 
       date_cp: date_versement[date_versement.length - 1]
     }

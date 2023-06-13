@@ -1,19 +1,8 @@
-import { PageSize } from "apps/common-lib/src/lib/models/pagination/pagesize.models";
-
-
-export enum SourceFinancialData {
-  ADEME = 'ADEME',
-  CHORUS = 'CHORUS'
-}
-
-
-export interface FinancialPagination {
-  items:  FinancialDataModel[];
-  pageInfo?: PageSize;
-}
+import { Commune, Programme, Siret, SourceFinancialData } from "./common.models";
 
 
 export const HEADERS_CSV_FINANCIAL = [
+  'source',
   'n_ej',
   'poste_ej',
   'montant engagement',
@@ -50,21 +39,4 @@ export interface FinancialDataModel {
 
   siret: Siret;
   date_cp: string;
-}
-
-export interface Programme {
-  code: string;
-  label: string;
-  theme: string;
-}
-
-export interface Siret {
-  code: string;
-  nom_beneficiare: string,
-  categorie_juridique?: string
-}
-
-export interface Commune {
-  label: string;
-  code: string;
 }
