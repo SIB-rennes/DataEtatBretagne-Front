@@ -5,7 +5,6 @@ import {
 import { DataHttpService, GeoModel, NocoDbResponse } from 'apps/common-lib/src/public-api';
 import { RefSiret } from '@models/refs/RefSiret';
 import { BopModel } from '@models/refs/bop.models';
-import { RefTheme } from '@models/refs/theme.models';
 import { Observable, forkJoin, map, of } from 'rxjs';
 import { SettingsService } from '../../environments/settings.service';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
@@ -20,7 +19,7 @@ export const DATA_HTTP_SERVICE = new InjectionToken<DataHttpService<any, Financi
 @Injectable({ providedIn: 'root' })
 export class BudgetService {
 
-  private _apiSiret!: string;
+  private _apiRef!: string;
 
 
   constructor(
@@ -28,18 +27,13 @@ export class BudgetService {
     @Inject(DATA_HTTP_SERVICE) private services: DataHttpService<any, FinancialDataModel>[],
     @Inject(SETTINGS) readonly settings: SettingsService
   ) {
-    const project = this.settings.projectFinancial;
-    let base_uri = this.settings.nocodbProxy?.base_uri;
-    if (project && base_uri) {
-      base_uri += project.table + '/';
-      this._apiSiret = base_uri + project.views.siret;
-    }
+    this._apiRef = this.settings.apiReferentiel;
   }
 
   public search(
     beneficiaire: RefSiret | null,
     bops: BopModel[] | null,
-    themes: RefTheme[] | null,
+    themes: string[] | null,
     year: number[] | null,
     location: GeoModel[] | null
   ): Observable<FinancialDataModel[]> {
@@ -65,13 +59,18 @@ export class BudgetService {
   }
 
   public filterRefSiret(nomOuSiret: string): Observable<RefSiret[]> {
-    let whereClause = this._filterRefSiretWhereClause(nomOuSiret);
 
+    const params = `limit=10&query=${nomOuSiret}`;
     return this.http
-      .get<NocoDbResponse<RefSiret>>(
-        `${this._apiSiret}?fields=Code,Denomination&sort=Code&${whereClause}`
-      )
-      .pipe(map((response) => response.list));
+      .get<DataPagination<RefSiret>>(`${this._apiRef}/beneficiaire?${params}`)
+      .pipe(map((response) => response.items));
+  }
+
+  public getBop(): Observable<BopModel[]> {
+    const params = 'limit=500';
+    return this.http
+      .get<DataPagination<BopModel>>(`${this._apiRef}/programme?${params}`)
+      .pipe(map((response) => response.items));
   }
 
 
@@ -89,10 +88,10 @@ export class BudgetService {
         item.programme.theme ?? '',
         item.programme.code  ?? '',
         item.programme.label.replace(/"/g, '""') ?? '',
-        item.referentiel_programmation.label.replace(/"/g, '""') ?? '',
+        item.referentiel_programmation.label?.replace(/"/g, '""') ?? '',
         item.commune.label ?? '',
         item.siret.code,
-        item.siret.nom_beneficiare.replace(/"/g, '""') ?? '',
+        item.siret.nom_beneficiare?.replace(/"/g, '""') ?? '',
         item.siret.categorie_juridique ?? '',
         item.date_cp,
         item.annee
@@ -109,13 +108,5 @@ export class BudgetService {
     return service.getById(id).pipe(
       map(data => service.mapToGeneric(data))
     );
-  }
-
-  private _filterRefSiretWhereClause(nomOuSiret: string): string {
-    nomOuSiret = encodeURIComponent(nomOuSiret);
-    let is_number = /^\d+$/.test(nomOuSiret);
-
-    if (is_number) return `where=(Code,like,${nomOuSiret}%)`;
-    else return `where=(Denomination,like,${nomOuSiret})`;
   }
 }

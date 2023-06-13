@@ -23,8 +23,7 @@ import {
   Subscription,
 } from 'rxjs';
 import { BopModel } from '@models/refs/bop.models';
-import { FinancialDataResolverModel } from '@models/financial/financial-data-resolvers.models';
-import { RefTheme } from '@models/refs/theme.models';
+import { FinancialData, FinancialDataResolverModel } from '@models/financial/financial-data-resolvers.models';
 import { FinancialDataModel } from '@models/financial/financial-data.models';
 import { DatePipe } from '@angular/common';
 import { RefSiret } from '@models/refs/RefSiret';
@@ -38,7 +37,6 @@ import {
   TypeLocalisation,
 } from 'apps/common-lib/src/public-api';
 import { Bop } from '@models/search/bop.model';
-import { Theme } from '@models/search/theme.model';
 import { Beneficiaire } from '@models/search/beneficiaire.model';
 import { BudgetService } from '@services/budget.service';
 import { NGXLogger } from 'ngx-logger';
@@ -56,7 +54,7 @@ export class SearchDataComponent implements OnInit {
   public searchForm!: FormGroup;
 
   public bop: BopModel[] = [];
-  public themes: RefTheme[] = [];
+  public themes: string[] = [];
 
   public filteredBeneficiaire: Observable<RefSiret[]> | null | undefined = null;
 
@@ -121,7 +119,7 @@ export class SearchDataComponent implements OnInit {
       filterBop: new FormControl<string>(''), // controls pour le filtre des bops
 
       bops: new FormControl<Bop | null>(null),
-      theme: new FormControl<Theme | null>(null),
+      theme: new FormControl<string | null>(null),
       beneficiaire: new FormControl<Beneficiaire | null>(null),
       location: new FormControl({ value: null, disabled: false }, []),
     });
@@ -141,8 +139,7 @@ export class SearchDataComponent implements OnInit {
           return;
         }
 
-        let financial = response.financial.data!;
-
+        let financial = response.financial.data! as FinancialData;
         let mb_prefilter = response.mb_parsed_params?.data?.preFilters;
         let mb_has_params = response.mb_parsed_params?.data?.has_marqueblanche_params;
 
@@ -185,8 +182,8 @@ export class SearchDataComponent implements OnInit {
   }
 
   public displayBeneficiaire(element: RefSiret): string {
-    let code = element?.Code;
-    let nom = element?.Denomination;
+    let code = element?.siret;
+    let nom = element?.denomination;
 
     if (code && nom) {
       return `${nom} (${code})`;
@@ -197,21 +194,6 @@ export class SearchDataComponent implements OnInit {
     }
   }
 
-  /**
-   * Fonction utile pour afficher le theme ou un bop
-   * @param theme
-   * @returns
-   */
-  public displayTheme(element: RefTheme): string {
-    if (element) {
-      return element.Label;
-    }
-    return '';
-  }
-
-  /**
-   *
-   */
   public get beneficiaireControls(): FormControl | null {
     return this.searchForm.get('beneficiaire') as FormControl;
   }
@@ -334,8 +316,8 @@ export class SearchDataComponent implements OnInit {
       filename +=
         '_bops-' +
         bops
-          .filter((bop) => bop.Code)
-          .map((bop) => bop.Code)
+          .filter((bop) => bop.code)
+          .map((bop) => bop.code)
           .join('-');
     }
 
@@ -368,20 +350,19 @@ export class SearchDataComponent implements OnInit {
 
   private _filterBop(value: string): BopModel[] {
     const filterValue = value ? value.toLowerCase() : '';
-    const themes = this.searchForm.controls['theme'].value as RefTheme[];
-    const themesId = themes ? themes.map((t) => t.Id) : null;
+    const themes = this.searchForm.controls['theme'].value as string[];
 
     let filterGeo = this.bop.filter((option) => {
-      if (themesId) {
+      if (themes) {
         return (
-          option.RefTheme != null &&
-          themesId.includes(option.RefTheme.Id) &&
-          option.Label?.toLowerCase().includes(filterValue)
+          option.label_theme != null &&
+          themes.includes(option.label_theme) &&
+          option.label?.toLowerCase().includes(filterValue)
         );
       }
       return (
-        option.Label?.toLowerCase().includes(filterValue) ||
-        option.Code.startsWith(filterValue)
+        option.label?.toLowerCase().includes(filterValue) ||
+        option.code.startsWith(filterValue)
       );
     });
 
@@ -394,7 +375,7 @@ export class SearchDataComponent implements OnInit {
         ...filterGeo.filter(
           (element) =>
             controlBop.findIndex(
-              (valueSelected: BopModel) => valueSelected.Code === element.Code
+              (valueSelected: BopModel) => valueSelected.code === element.code
             ) === -1 // on retire les doublons éventuels
         ),
       ];
@@ -432,12 +413,12 @@ export class SearchDataComponent implements OnInit {
 
     if (preFilter.theme) {
       const preFilterTheme = Array.isArray(preFilter.theme)
-        ? (preFilter.theme as unknown as RefTheme[])
-        : ([preFilter.theme] as unknown as RefTheme[]);
+        ? (preFilter.theme as unknown as string[])
+        : ([preFilter.theme] as unknown as string[]);
       const themeSelected = this.themes?.filter(
         (theme) =>
           preFilterTheme.findIndex(
-            (themeFilter) => themeFilter.Id === theme.Id
+            (themeFilter) =>  themeFilter  === theme
           ) !== -1
       );
       this.searchForm.controls['theme'].setValue(themeSelected);
@@ -454,7 +435,7 @@ export class SearchDataComponent implements OnInit {
       const bopSelect = this.filteredBop?.filter(
         (bop) =>
           prefilterBops.findIndex(
-            (bopFilter) => bop.Code === bopFilter.Code
+            (bopFilter) => bop.code === bopFilter.code
           ) !== -1
       );
       this.searchForm.controls['bops'].setValue(bopSelect);

@@ -1,11 +1,9 @@
-import { RefTheme } from './theme.models';
-
 export interface BopModelCode {
-  Code: string;
+  code: string;
 }
 
 export interface BopModel extends BopModelCode {
-  Id: number;
-  Label: string;
-  RefTheme: RefTheme;
+  label: string;
+  code_ministere: string;
+  label_theme: string;
 }

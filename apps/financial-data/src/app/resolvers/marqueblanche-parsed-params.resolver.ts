@@ -116,7 +116,7 @@ function programmes(
     let codes: string[] = programmes.split(',')
     logger.debug(`Application du paramètre ${FinancialQueryParam.Programmes}: ${codes}`);
     let bops = codes.map(code => {
-      return { 'Code': code }
+      return { 'code': code }
     });
 
     preFilters = {

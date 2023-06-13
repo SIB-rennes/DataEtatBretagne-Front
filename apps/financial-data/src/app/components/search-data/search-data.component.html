@@ -14,7 +14,7 @@
         <mat-label>Thème</mat-label>
         <mat-select formControlName="theme" multiple (selectionChange)="onSelectTheme($event)">
           <mat-option *ngFor="let theme of themes" [value]="theme">
-            {{theme.Label}}
+            {{theme}}
           </mat-option>
         </mat-select>
         <button *ngIf="searchForm.controls['theme'].value !== null" matSuffix mat-icon-button (click)="cancelTheme()">
@@ -24,8 +24,8 @@
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
-      <mat-form-field 
-        data-test-id="programmes-form-field" 
+      <mat-form-field
+        data-test-id="programmes-form-field"
         class="field-25-width" appearance="fill" matTooltipPosition="above"
         matTooltip="Saisir un nom ou un numéro de programme (Exemple : 102 ou Accès et retour à l’emploi)">
         <mat-label>Programme</mat-label>
@@ -34,7 +34,7 @@
             <mat-label>Filtrer</mat-label>
             <input type="text" class="fr-input" matInput formControlName="filterBop">
           </mat-form-field>
-          <mat-option *ngFor="let bop of filteredBop" [value]="bop"> {{bop.Code}} - {{bop.Label}}</mat-option>
+          <mat-option *ngFor="let bop of filteredBop" [value]="bop"> {{bop.code}} - {{bop.label === null ?  '' : bop.label}}</mat-option>
         </mat-select>
         <button *ngIf="searchForm.controls['bops'].value !== null" matSuffix mat-icon-button
           (click)="searchForm.controls['bops'].setValue(null)">
@@ -48,7 +48,7 @@
           [categorySelected]="locationControls.value ? locationControls.value[0].type : null"></lib-localisation>
       </div>
 
-      <mat-form-field 
+      <mat-form-field
         data-test-id="annees-form-field"
         class="field-9-width" appearance="fill">
         <mat-label>Année</mat-label>

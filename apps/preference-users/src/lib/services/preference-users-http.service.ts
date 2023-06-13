@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, InjectionToken } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { Preference, PreferenceWithShared } from '../models/preference.models';
 export const API_PREFERENCE_PATH = new InjectionToken<string>(
   'Helper service type'

@@ -33,13 +33,13 @@ export class AdemeDataHttpService implements DataHttpService<AdemeData,Financial
     locations: GeoModel[] | null,
     bops: BopModel[] | null
   ): Observable<DataPagination<AdemeData> | null> {
-    if (bops?.findIndex((bop) => bop.Code === 'ADEME') === -1) {
+    if (bops?.findIndex((bop) => bop.code === 'ADEME') === -1) {
       return of(null);
     }
 
     let params ='limit=5000';
     if (beneficiaire) {
-      params += `&siret_beneficiaire=${beneficiaire.Code}`;
+      params += `&siret_beneficiaire=${beneficiaire.siret}`;
     }
     if (locations && locations.length > 0) {
       const listCode = locations.map((l) => l.code).join(',');

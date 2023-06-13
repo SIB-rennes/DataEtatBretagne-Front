@@ -1,4 +1,4 @@
 export interface RefSiret {
-    Code: string,
-    Denomination: string,
+    siret: string,
+    denomination: string,
 }
