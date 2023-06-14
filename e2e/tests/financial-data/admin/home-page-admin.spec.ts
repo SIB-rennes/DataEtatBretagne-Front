@@ -6,8 +6,8 @@ test.describe("Page d'accueil", () => {
     const navigationPromise = page.waitForNavigation({
       waitUntil: 'networkidle',
     });
-    await page.goto('./');
     await mockRefApi(page);
+    await page.goto('./');
     await navigationPromise;
   });
 

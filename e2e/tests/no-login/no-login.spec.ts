@@ -33,12 +33,11 @@ test.describe("Page d'authentification", () => {
 });
 
 // attente de redirection vers keycloak
-async function waitingRedirectKeycloak(page) {
+async function waitingRedirectKeycloak(page: any) {
   const navigationPromise = page.waitForNavigation({
     url: /^https:\/\/auth.*/,
     waitUntil: 'networkidle',
   });
-
   await page.goto('./');
 
   await navigationPromise;

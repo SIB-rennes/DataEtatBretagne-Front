@@ -1,5 +1,6 @@
 import { test, expect, Page } from "@playwright/test"
 import { __await } from "tslib";
+import mockRefApi from "../utils/mock-api";
 
 test.describe("Lorsque l'on définit le paramètre `grouper_par`", () => {
   const urlparam = "?programmes=107&grouper_par=theme,beneficiaire";
@@ -8,7 +9,7 @@ test.describe("Lorsque l'on définit le paramètre `grouper_par`", () => {
     await _navigate(page, `/${urlparam}`)
 
     let group_by_btn = page.locator('[data-test-id="group-by-btn"]')
-    await group_by_btn.click()
+    await group_by_btn.click({ force: true })
 
     let group_choices = page.locator('[data-test-id="group-choice-dialog"]')
 
@@ -95,6 +96,8 @@ async function _navigate(page: Page, url: string) {
       waitUntil: 'networkidle',
       timeout: 30000,
     });
+    await mockRefApi(page);
+
     await page.goto(url);
-    return await navigationPromise;
+    await navigationPromise;
 }
