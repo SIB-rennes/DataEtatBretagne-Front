@@ -26,7 +26,7 @@ test.describe("Page d'accueil", () => {
       page
         .getByRole('listbox', { name: 'Thème' })
         .locator('.mdc-list-item__primary-text')
-    ).toHaveCount(18);
+    ).toHaveCount(16);
 
     await page.getByLabel('Programme').click({ force: true });
     await page.getByLabel('Programme').click({ force: true });
@@ -34,7 +34,7 @@ test.describe("Page d'accueil", () => {
       page
         .getByRole('listbox', { name: 'Programme' })
         .locator('.mdc-list-item__primary-text')
-    ).toHaveCount(132);
+    ).toHaveCount(26);
 
     // vérification des niveaux de localisation
     await expect(
