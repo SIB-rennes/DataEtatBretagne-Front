@@ -240,6 +240,7 @@ export class SearchDataComponent implements OnInit {
 
       domaines_fonctionnels: this.additional_searchparams?.domaines_fonctionnels || null,
       referentiels_programmation: this.additional_searchparams?.referentiels_programmation || null,
+      source_region: this.additional_searchparams?.sources_region || null,
     }
 
     this._search_subscription = this.budgetService
@@ -463,6 +464,10 @@ export class SearchDataComponent implements OnInit {
     let referentiels_programmation = preFilter?.referentiels_programmation
     if (referentiels_programmation)
       additional_searchparams = { ...additional_searchparams, referentiels_programmation }
+    
+    let sources_region = preFilter?.sources_region;
+    if (sources_region)
+      additional_searchparams = { ...additional_searchparams, sources_region }
     
     this.additional_searchparams = additional_searchparams;
 

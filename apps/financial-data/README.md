@@ -54,6 +54,13 @@ Voici les paramètres pris en charge:
 |                       |
 
 - Referentiels de programmation
+
 | Paramètre                  | Description                                                   | Valeurs acceptées                                                     | Exemple                                                                                                                                                                    |
 | -------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Referentiels programmation | Les referentiels de programmation à inclure dans la recherche | Code(s) de(s) referentiel(s) de programmation séparé par des virgules | [referentiels_programmation=0119010101A9,010101040101](https://budget.databretagne.fr/?referentiels_programmation=0119010101A9,010101040101&annee_min=2019&annee_max=2019) |
+
+- Source region
+
+| Paramètre     | Description                                    | Valeurs acceptées    | Exemple                                                                                                             |
+| ------------- | ---------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Source region | Les region sources à inclure dans la recherche | Code INSEE de region | [source_region=035](https://budget.databretagne.fr/?source_region=035&annee_min=2021&annee_max=2022&programmes=107) |

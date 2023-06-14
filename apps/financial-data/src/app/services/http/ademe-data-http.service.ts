@@ -27,13 +27,14 @@ export class AdemeDataHttpService implements DataHttpService<AdemeData,Financial
   }
 
   search(
-    { bops, beneficiaire, locations, years, domaines_fonctionnels, referentiels_programmation }: SearchParameters
+    { bops, beneficiaire, locations, years, domaines_fonctionnels, referentiels_programmation, source_region }: SearchParameters
   ): Observable<DataPagination<AdemeData> | null> {
 
     if (
       bops?.findIndex((bop) => bop.code === 'ADEME') === -1 
       || (!domaines_fonctionnels || domaines_fonctionnels.length === 0)
       || (!referentiels_programmation || referentiels_programmation.length === 0)
+      || (!source_region || source_region.length === 0)
     ) {
       this.logger.debug(`On ne recherche pas sur les données de l'ademe`);
       return of(null);

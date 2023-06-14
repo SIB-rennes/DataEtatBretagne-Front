@@ -120,3 +120,12 @@
     </span>
   </div>
 </ng-container>
+
+<ng-container *ngIf="additional_searchparams?.sources_region && additional_searchparams.sources_region.length > 0">
+  <div data-test-id="notif-additionnal-search-on-source-region">
+    <mat-icon aria-hidden="false" aria-label="information">information</mat-icon>
+    <span>
+      Attention, vous appliquez également un filtre sur la source region
+    </span>
+  </div>
+</ng-container>

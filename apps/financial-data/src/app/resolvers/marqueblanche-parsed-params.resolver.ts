@@ -5,7 +5,8 @@ import { GeoHttpService, SearchByCodeParamsBuilder } from 'apps/common-lib/src/l
 import { GeoModel, TypeLocalisation } from 'apps/common-lib/src/public-api';
 import { JSONObject } from 'apps/preference-users/src/lib/models/preference.models';
 import { NGXLogger } from 'ngx-logger';
-import { Observable, map, mergeMap, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { mergeMap, map } from 'rxjs/operators';
 
 import {
   MarqueBlancheParsedParams as Params,
@@ -67,9 +68,11 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
     .pipe(
       mergeMap(previous => programmes(previous, handlerCtx)),
       mergeMap(previous => localisation(previous, handlerCtx)),
-
+    )
+    .pipe(
       mergeMap(previous => domaines_fonctionnels(previous, handlerCtx)),
       mergeMap(previous => referentiels_programmation(previous, handlerCtx)),
+      mergeMap(previous => source_region(previous, handlerCtx)),
 
       mergeMap(previous => common_group_by(previous, handlerCtx)),
       mergeMap(previous => group_by(previous, handlerCtx)),
@@ -84,6 +87,26 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
   return model;
 }
 
+function source_region(
+  previous: MarqueBlancheParsedParams,
+  { route, logger }: _HandlerContext
+): Observable<MarqueBlancheParsedParams> {
+
+  let p_source_region = route.queryParamMap.get(FinancialQueryParam.SourceRegion);
+  if (!p_source_region)
+    return of(previous)
+  
+  let sources = p_source_region.split(',')
+  logger.debug(`Application du paramètre ${FinancialQueryParam.SourceRegion}: ${sources}`);
+
+  let preFilters: PreFilters = {
+    ...previous.preFilters,
+    sources_region: sources
+  }
+
+  return of({ ...previous, preFilters })
+}
+
 function domaines_fonctionnels(
   previous: MarqueBlancheParsedParams,
   { route, logger }: _HandlerContext
@@ -96,7 +119,7 @@ function domaines_fonctionnels(
   let codes: string[] = domaines_fonctionnels.split(',')
   logger.debug(`Application du paramètre ${FinancialQueryParam.DomaineFonctionnel}: ${codes}`);
 
-  let preFilters = {
+  let preFilters: PreFilters = {
     ...previous.preFilters,
     domaines_fonctionnels: codes
   }

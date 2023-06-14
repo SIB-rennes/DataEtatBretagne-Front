@@ -109,6 +109,17 @@ test.describe("Lorsque l'on spécifie des referentiels de programmation", () => 
   })
 })
 
+test.describe("Lorsque l'on spécifie des regions source", () => {
+  const urlparam = "?source_region=035,53&annee_min=2022&annee_max=2022&programmes=107";
+
+  test("Un message notifie que l'on recherche également sur les source de region", async({ page }) => {
+    await _navigate(page, `/${urlparam}`);
+
+    await expect(page.locator('[data-test-id="notif-additionnal-search-on-source-region"]'))
+      .toContainText("filtre sur la source region")
+  })
+})
+
 
 async function _navigate(page: Page, url: string) {
     const navigationPromise = page.waitForNavigation({ waitUntil: 'networkidle' });
