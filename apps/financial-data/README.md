@@ -33,7 +33,7 @@ Voici les paramètres pris en charge:
 | Année minimum | A partir de | Une année. (ie: `2019`) | [`annee_min=2021`](https://budget.databretagne.fr/?annee_min=2019&annee_max=2020) |
 | Année maximum | jusqu'à     | Une année. (ie: `2020`) | [`annee_max=2023`](https://budget.databretagne.fr/?annee_min=2019&annee_max=2020) |
 
-- Group by
+- Grouper par
 
 | Paramètre   | Description         | Valeurs acceptées                                                                                                                             | Exemple                                                                                                                                             |
 | ----------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -44,3 +44,16 @@ Voici les paramètres pris en charge:
 | Paramètre   | Description                                    | Valeurs acceptées | Exemple                                                                               |
 | ----------- | ---------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------- |
 | Plein écran | Affiche le tableau de résultats en plein écran | `true` ou `false` | [`plein_ecran=true`](https://budget.databretagne.fr/?programmes=107&plein_ecran=true) |
+
+
+- Domaines fonctionnels
+
+| Paramètre             | Description                                           | Valeurs acceptées                                               | Exemple                                                                                                                            |
+| --------------------- | ----------------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Domaines fonctionnels | Les domaines fonctionnels à inclure dans la recherche | Code(s) de(s) domaine(s) fonctionnel(s) séparé par des virgules | [domaines_fonctionnels=0103-03-02](https://budget.databretagne.fr/?domaines_fonctionnels=0103-03-02&annee_min=2019&annee_max=2019) |
+|                       |
+
+- Referentiels de programmation
+| Paramètre                  | Description                                                   | Valeurs acceptées                                                     | Exemple                                                                                                                                                                    |
+| -------------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Referentiels programmation | Les referentiels de programmation à inclure dans la recherche | Code(s) de(s) referentiel(s) de programmation séparé par des virgules | [referentiels_programmation=0119010101A9,010101040101](https://budget.databretagne.fr/?referentiels_programmation=0119010101A9,010101040101&annee_min=2019&annee_max=2019) |

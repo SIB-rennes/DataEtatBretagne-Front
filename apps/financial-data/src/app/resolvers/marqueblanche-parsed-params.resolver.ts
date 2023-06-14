@@ -68,6 +68,9 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
       mergeMap(previous => programmes(previous, handlerCtx)),
       mergeMap(previous => localisation(previous, handlerCtx)),
 
+      mergeMap(previous => domaines_fonctionnels(previous, handlerCtx)),
+      mergeMap(previous => referentiels_programmation(previous, handlerCtx)),
+
       mergeMap(previous => common_group_by(previous, handlerCtx)),
       mergeMap(previous => group_by(previous, handlerCtx)),
 
@@ -79,6 +82,46 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
     )
 
   return model;
+}
+
+function domaines_fonctionnels(
+  previous: MarqueBlancheParsedParams,
+  { route, logger }: _HandlerContext
+): Observable<MarqueBlancheParsedParams> {
+
+  let domaines_fonctionnels = route.queryParamMap.get(FinancialQueryParam.DomaineFonctionnel);
+  if (!domaines_fonctionnels)
+    return of(previous);
+
+  let codes: string[] = domaines_fonctionnels.split(',')
+  logger.debug(`Application du paramètre ${FinancialQueryParam.DomaineFonctionnel}: ${codes}`);
+
+  let preFilters = {
+    ...previous.preFilters,
+    domaines_fonctionnels: codes
+  }
+
+  return of({...previous, preFilters})
+}
+
+function referentiels_programmation(
+  previous: MarqueBlancheParsedParams,
+  { route, logger }: _HandlerContext
+): Observable<MarqueBlancheParsedParams> {
+
+  let referentiels_programmation = route.queryParamMap.get(FinancialQueryParam.ReferentielsProgrammation);
+  if (!referentiels_programmation)
+    return of(previous);
+
+  let codes: string[] = referentiels_programmation.split(',')
+  logger.debug(`Application du paramètre ${FinancialQueryParam.ReferentielsProgrammation}: ${codes}`);
+
+  let preFilters = {
+    ...previous.preFilters,
+    referentiels_programmation: codes
+  }
+
+  return of({...previous, preFilters})
 }
 
 /** Renseigne les {@link GroupingColumn} suivant {@link MarqueBlancheParsedParams.p_group_by}*/
@@ -107,27 +150,26 @@ function group_by(
 
 /** Gère le préfiltre des programmes */
 function programmes(
-  { preFilters, has_marqueblanche_params, p_group_by, group_by, fullscreen }: MarqueBlancheParsedParams,
+  previous: MarqueBlancheParsedParams,
   { route, logger }: _HandlerContext,
 ): Observable<MarqueBlancheParsedParams> {
 
   let programmes = route.queryParamMap.get(FinancialQueryParam.Programmes);
-  if (programmes) {
-    let codes: string[] = programmes.split(',')
-    logger.debug(`Application du paramètre ${FinancialQueryParam.Programmes}: ${codes}`);
-    let bops = codes.map(code => {
-      return { 'code': code }
-    });
+  if (!programmes)
+    return of(previous)
 
-    preFilters = {
-      ...preFilters,
-      bops,
-    }
+  let codes: string[] = programmes.split(',')
+  logger.debug(`Application du paramètre ${FinancialQueryParam.Programmes}: ${codes}`);
+  let bops = codes.map(code => {
+    return { 'code': code }
+  });
+
+  let preFilters = {
+    ...previous.preFilters,
+    bops,
   }
 
-  return of(
-    { preFilters, has_marqueblanche_params, p_group_by, group_by, fullscreen }
-  );
+  return of({ ...previous, preFilters })
 }
 
 /** Gère le préfiltre de localisation*/

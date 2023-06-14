@@ -9,6 +9,9 @@ export enum FinancialQueryParam {
 
     Annee_min = 'annee_min',
     Annee_max = 'annee_max',
+    
+    DomaineFonctionnel = 'domaines_fonctionnels',
+    ReferentielsProgrammation = 'referentiels_programmation',
 }
 const values_FinancialQueryParam = Object.values(FinancialQueryParam);
 

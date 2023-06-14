@@ -12,4 +12,7 @@ export interface PreFilters {
 
   location?: JSONObject[]
   beneficiaire?: JSONObject
+
+  domaines_fonctionnels?: string[]
+  referentiels_programmation?: string[]
 }

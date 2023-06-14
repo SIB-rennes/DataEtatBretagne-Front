@@ -5,15 +5,14 @@ import { Observable, of } from 'rxjs';
 import { AdemeData } from '@models/financial/ademe.models';
 import {
   DataHttpService,
-  GeoModel,
+  SearchParameters,
 } from 'apps/common-lib/src/public-api';
-import { RefSiret } from '@models/refs/RefSiret';
-import { BopModel } from '@models/refs/bop.models';
 import { FinancialDataModel } from '@models/financial/financial-data.models';
 import { SourceFinancialData } from '@models/financial/common.models';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { SettingsService } from 'apps/financial-data/src/environments/settings.service';
 import { DataPagination } from 'apps/common-lib/src/lib/models/pagination/pagination.models';
+import { NGXLogger } from 'ngx-logger';
 /**
  * POC de l'inégratoin des données ADEME
  */
@@ -23,17 +22,20 @@ import { DataPagination } from 'apps/common-lib/src/lib/models/pagination/pagina
 export class AdemeDataHttpService implements DataHttpService<AdemeData,FinancialDataModel> {
   private _api! : string
 
-  constructor(private http: HttpClient,  @Inject(SETTINGS) readonly settings: SettingsService) {
+  constructor(private http: HttpClient, @Inject(SETTINGS) readonly settings: SettingsService, private logger: NGXLogger) {
     this._api = this.settings.apiFinancialData
   }
 
   search(
-    beneficiaire: RefSiret | null,
-    year: number[] | null,
-    locations: GeoModel[] | null,
-    bops: BopModel[] | null
+    { bops, beneficiaire, locations, years, domaines_fonctionnels, referentiels_programmation }: SearchParameters
   ): Observable<DataPagination<AdemeData> | null> {
-    if (bops?.findIndex((bop) => bop.code === 'ADEME') === -1) {
+
+    if (
+      bops?.findIndex((bop) => bop.code === 'ADEME') === -1 
+      || (!domaines_fonctionnels || domaines_fonctionnels.length === 0)
+      || (!referentiels_programmation || referentiels_programmation.length === 0)
+    ) {
+      this.logger.debug(`On ne recherche pas sur les données de l'ademe`);
       return of(null);
     }
 
@@ -47,8 +49,8 @@ export class AdemeDataHttpService implements DataHttpService<AdemeData,Financial
 
     }
 
-    if (year && year.length > 0) {
-      params += `&annee=${year.join(',')}`;
+    if (years && years.length > 0) {
+      params += `&annee=${years.join(',')}`;
     }
 
     return this.http.get<DataPagination<AdemeData>>(`${this._api}/ademe?${params}`);
