@@ -16,7 +16,7 @@ export class PreferenceComponent {
   public mappingValueFilter: MapPreferenceFilterMetadata = {
     bops: {
       label: 'Programmes',
-      renderFn: (row: JSONObject) => row['Code'] + ' - ' + row['Label'],
+      renderFn: (row: JSONObject) => row['code'] + ' - ' + row['label'],
     },
     year: {
       label: 'Année'
@@ -27,10 +27,10 @@ export class PreferenceComponent {
     beneficiaire: {
       label: 'Bénéficiare',
       renderFn: (row: JSONObject) => {
-        if (row['Denomination']) {
-          return `${row['Denomination']} (${row['Code']})`;
+        if (row['denomination']) {
+          return `${row['denomination']} (${row['siret']})`;
         }
-        return `Siret : (${row['Code']})`;
+        return `Siret : (${row['siret']})`;
       },
     },
     location: {
