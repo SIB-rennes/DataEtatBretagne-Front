@@ -101,3 +101,22 @@
 
   </form>
 </ng-template>
+
+<!-- Ajout d'un indicateur pour les paramètres de recherche additionnels qui ne sont pas dans le formulaire  -->
+<ng-container *ngIf="additional_searchparams?.domaines_fonctionnels && additional_searchparams.domaines_fonctionnels.length > 0">
+  <div data-test-id="notif-additionnal-search-on-domaines-fonctionnels">
+    <mat-icon aria-hidden="false" aria-label="information">information</mat-icon>
+    <span>
+      Attention, vous appliquez également un filtre sur le domaine fonctionnel
+    </span>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="additional_searchparams?.referentiels_programmation && additional_searchparams.referentiels_programmation.length > 0">
+  <div data-test-id="notif-additionnal-search-on-referentiels-programmation">
+    <mat-icon aria-hidden="false" aria-label="information">information</mat-icon>
+    <span>
+      Attention, vous appliquez également un filtre sur le réferentiel de programmation
+    </span>
+  </div>
+</ng-container>

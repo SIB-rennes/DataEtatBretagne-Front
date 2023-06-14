@@ -82,18 +82,36 @@ test.describe("Lorsque l'on spécifie le plein écran", () => {
 
   test("Les filtres sont pré-remplis", async ({page}) => {
     await _navigate(page, `/${urlparam}`);
-
-
     await expect(page.locator('[data-test-id="toggle-grid-fullscreen-btn"]')).toContainText("Rétrécir");
+  })
+})
+
+test.describe("Lorsque l'on spécifie des domaines fonctionnels", () => {
+  const urlparam = "?domaines_fonctionnels=0103-03-02&annee_min=2019&annee_max=2019";
+
+  test("Un message notifie que l'on recherche également sur le domaine fonctionnel", async({ page }) => {
+    await _navigate(page, `/${urlparam}`);
+
+    await expect(page.locator('[data-test-id="notif-additionnal-search-on-domaines-fonctionnels"]'))
+      .toContainText("filtre sur le domaine fonctionnel")
+  })
+})
+
+
+test.describe("Lorsque l'on spécifie des referentiels de programmation", () => {
+  const urlparam = "?referentiels_programmation=0119010101A9,010101040101&annee_min=2019&annee_max=2019";
+
+  test("Un message notifie que l'on recherche également sur le referentiel de programmation", async({ page }) => {
+    await _navigate(page, `/${urlparam}`);
+
+    await expect(page.locator('[data-test-id="notif-additionnal-search-on-referentiels-programmation"]'))
+      .toContainText("filtre sur le réferentiel de programmation")
   })
 })
 
 
 async function _navigate(page: Page, url: string) {
-    const navigationPromise = page.waitForNavigation({
-      waitUntil: 'networkidle',
-      timeout: 30000,
-    });
+    const navigationPromise = page.waitForNavigation({ waitUntil: 'networkidle' });
     await mockRefApi(page);
 
     await page.goto(url);

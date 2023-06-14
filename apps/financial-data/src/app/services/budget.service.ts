@@ -2,7 +2,7 @@ import { Inject, Injectable, InjectionToken } from '@angular/core';
 import {
   FinancialDataModel, HEADERS_CSV_FINANCIAL,
 } from '@models/financial/financial-data.models';
-import { DataHttpService, GeoModel, NocoDbResponse } from 'apps/common-lib/src/public-api';
+import { DataHttpService, SearchParameters } from 'apps/common-lib/src/public-api';
 import { RefSiret } from '@models/refs/RefSiret';
 import { BopModel } from '@models/refs/bop.models';
 import { Observable, forkJoin, map, of } from 'rxjs';
@@ -30,15 +30,9 @@ export class BudgetService {
     this._apiRef = this.settings.apiReferentiel;
   }
 
-  public search(
-    beneficiaire: RefSiret | null,
-    bops: BopModel[] | null,
-    themes: string[] | null,
-    year: number[] | null,
-    location: GeoModel[] | null
-  ): Observable<FinancialDataModel[]> {
+  public search(search_params: SearchParameters): Observable<FinancialDataModel[]> {
     const search$: Observable<FinancialDataModel[]>[] = this.services.map(service =>
-      service.search(beneficiaire, year, location, bops, themes).pipe(
+      service.search(search_params).pipe(
         map((resultPagination: DataPagination<any> | null) => {
           if (resultPagination === null || resultPagination.pageInfo === undefined) return [];
           if (resultPagination.pageInfo.totalRows > resultPagination.pageInfo.pageSize) {

@@ -34,6 +34,8 @@ import {
 import {
   AlertService,
   GeoModel,
+  SearchParameters,
+  SearchParameters_empty,
   TypeLocalisation,
 } from 'apps/common-lib/src/public-api';
 import { Bop } from '@models/search/bop.model';
@@ -42,6 +44,7 @@ import { BudgetService } from '@services/budget.service';
 import { NGXLogger } from 'ngx-logger';
 import { PreFilters } from '@models/search/prefilters.model';
 import { MarqueBlancheParsedParamsResolverModel } from '../../resolvers/marqueblanche-parsed-params.resolver';
+import { AdditionalSearchParameters, empty_additional_searchparams } from './additional-searchparams';
 
 
 @Component({
@@ -52,6 +55,8 @@ import { MarqueBlancheParsedParamsResolverModel } from '../../resolvers/marquebl
 export class SearchDataComponent implements OnInit {
   public readonly TypeLocalisation = TypeLocalisation;
   public searchForm!: FormGroup;
+
+  public additional_searchparams: AdditionalSearchParameters = empty_additional_searchparams;
 
   public bop: BopModel[] = [];
   public themes: string[] = [];
@@ -224,14 +229,21 @@ export class SearchDataComponent implements OnInit {
 
     const formValue = this.searchForm.value;
     this.searchInProgress.next(true);
+
+    let search_parameters: SearchParameters = { 
+      ...SearchParameters_empty,
+      beneficiaire: formValue.beneficiaire,
+      bops: formValue.bops,
+      themes: formValue.theme,
+      years: formValue.year,
+      locations:  formValue.location,
+
+      domaines_fonctionnels: this.additional_searchparams?.domaines_fonctionnels || null,
+      referentiels_programmation: this.additional_searchparams?.referentiels_programmation || null,
+    }
+
     this._search_subscription = this.budgetService
-      .search(
-        formValue.beneficiaire,
-        formValue.bops,
-        formValue.theme,
-        formValue.year,
-        formValue.location
-      )
+      .search(search_parameters)
       .pipe(
         finalize(() => {
           this.searchInProgress.next(false);
@@ -440,6 +452,20 @@ export class SearchDataComponent implements OnInit {
       );
       this.searchForm.controls['bops'].setValue(bopSelect);
     }
+
+    /* Paramètres additionnels qui n'apparaissent pas dans le formulaire de recherche */
+    let additional_searchparams = empty_additional_searchparams;
+
+    let domaines_fonctionnels = preFilter?.domaines_fonctionnels
+    if (domaines_fonctionnels)
+      additional_searchparams = { ...additional_searchparams, domaines_fonctionnels }
+
+    let referentiels_programmation = preFilter?.referentiels_programmation
+    if (referentiels_programmation)
+      additional_searchparams = { ...additional_searchparams, referentiels_programmation }
+    
+    this.additional_searchparams = additional_searchparams;
+
     // lance la recherche pour afficher les resultats
     this.doSearch();
   }

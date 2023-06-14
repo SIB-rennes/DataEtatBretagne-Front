@@ -1,14 +1,12 @@
 import { Injectable, Inject } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http';
-import { BopModel } from '@models/refs/bop.models';
 import { Observable, of } from 'rxjs';
 import { SettingsService } from '../../../environments/settings.service';
 import { FinancialDataModel } from '@models/financial/financial-data.models';
-import { RefSiret } from '@models/refs/RefSiret';
 import {
   DataHttpService,
-  GeoModel,
+  SearchParameters,
 } from 'apps/common-lib/src/public-api';
 import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.service';
 import { DataType } from '@models/audit/audit-update-data.models';
@@ -42,46 +40,30 @@ export class FinancialDataHttpService  implements DataHttpService<FinancialDataM
 
   /**
    *
-   * @param beneficiaire
-   * @param bops
-   * @param theme
-   * @param year
-   * @param location
+   * @param SearchParameters
    * @returns
    */
-  public search(
-    beneficiaire: RefSiret | null,
-    year: number[] | null,
-    location: GeoModel[] | null,
-    bops: BopModel[] | null,
-    themes: string[] | null,
-  ): Observable<DataPagination<FinancialDataModel>> {
+  public search(search_params: SearchParameters): Observable<DataPagination<FinancialDataModel>> {
     if (
-      bops == null &&
-      themes == null &&
-      year == null &&
-      location == null &&
-      beneficiaire == null
-    )
+      search_params?.bops == null &&
+      search_params?.themes == null &&
+      search_params?.years == null &&
+      search_params?.locations == null &&
+      search_params?.beneficiaire == null &&
+      search_params?.domaines_fonctionnels == null &&
+      search_params?.referentiels_programmation == null
+    ) {
       return of();
+    }
 
-    const params = this._buildparams(
-      beneficiaire,
-      bops,
-      themes,
-      year,
-      location
-    );
+    const params = this._buildparams(search_params);
 
     return this.http.get<DataPagination<FinancialDataModel>>(`${this._apiFinancialAe}/ae?${params}`);
   }
 
 
-  private _buildparams( beneficiaire: RefSiret | null,
-    bops: BopModel[] | null,
-    themes: string[] | null,
-    year: number[] | null,
-    location: GeoModel[] | null
+  private _buildparams( 
+    { beneficiaire, bops, themes, locations, years, domaines_fonctionnels, referentiels_programmation }: SearchParameters
   ): string {
     let params ='limit=5000';
     if (beneficiaire) {
@@ -96,14 +78,21 @@ export class FinancialDataHttpService  implements DataHttpService<FinancialDataM
       params += `&theme=${themes.join(',')}`;
     }
 
-    if (location && location.length > 0) {
-      const listCode = location.map((l) => l.code).join(',');
+    if (locations && locations.length > 0) {
+      const listCode = locations.map((l) => l.code).join(',');
       params += `&code_geo=${listCode}`
     }
 
-    if (year && year.length > 0) {
-      params += `&annee=${year.join(',')}`;
+    if (years && years.length > 0) {
+      params += `&annee=${years.join(',')}`;
     }
+
+    if (domaines_fonctionnels && domaines_fonctionnels.length > 0)
+      params += `&domaine_fonctionnel=${domaines_fonctionnels.join(',')}`;
+    
+    if (referentiels_programmation && referentiels_programmation.length > 0)
+      params += `&referentiel_programmation=${referentiels_programmation.join(',')}`;
+
     return params;
   }
 
