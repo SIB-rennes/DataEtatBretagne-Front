@@ -32,9 +32,9 @@ export class AdemeDataHttpService implements DataHttpService<AdemeData,Financial
 
     if (
       bops?.findIndex((bop) => bop.code === 'ADEME') === -1 
-      || (!domaines_fonctionnels || domaines_fonctionnels.length === 0)
-      || (!referentiels_programmation || referentiels_programmation.length === 0)
-      || (!source_region || source_region.length === 0)
+      || (domaines_fonctionnels && domaines_fonctionnels.length > 0)
+      || (referentiels_programmation && referentiels_programmation.length > 0)
+      || (source_region && source_region.length > 0)
     ) {
       this.logger.debug(`On ne recherche pas sur les données de l'ademe`);
       return of(null);
