@@ -15,4 +15,5 @@ export interface PreFilters {
 
   domaines_fonctionnels?: string[]
   referentiels_programmation?: string[]
+  sources_region?: string[]
 }
