@@ -3,12 +3,10 @@ import mockRefApi from '../utils/mock-api';
 
 test.describe("Page d'accueil", () => {
   test.beforeEach(async ({ page }) => {
-    const navigationPromise = page.waitForNavigation({
-      waitUntil: 'networkidle',
-    });
+
     await mockRefApi(page);
     await page.goto('./');
-    await navigationPromise;
+    await page.waitForURL('./')
   });
 
   test("L'utilisateur est connecté", async ({ page }) => {
@@ -49,7 +47,7 @@ test.describe("Page d'accueil", () => {
     ).toHaveCount(6);
 
     await page.getByLabel('Année').isVisible();
-    await page.getByLabel('Bénéficiaire').isVisible();
+    await page.getByLabel('Bénéficiaire', {exact: true}).isVisible();
     expect((await page.locator('form').getByRole('button').count()) == 1);
   });
 });
@@ -58,12 +56,8 @@ test.describe('Page de Management', () => {
   test("L'utilisateur n'a pas accès à la page de management", async ({
     page,
   }) => {
-    const navigationPromise = page.waitForNavigation({
-      waitUntil: 'networkidle',
-      url: /^(http|https):\/\/.*(?<!(management))$/,
-    });
     await page.goto('./management');
-    await navigationPromise;
+    await page.waitForURL('./');
     expect(page.url()).not.toContain('/management');
     await expect(page.locator('id=administration')).toHaveCount(0);
   });

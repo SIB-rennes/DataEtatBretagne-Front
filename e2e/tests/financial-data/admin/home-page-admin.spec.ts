@@ -3,12 +3,8 @@ import mockRefApi from '../../utils/mock-api';
 
 test.describe("Page d'accueil", () => {
   test.beforeEach(async ({ page }) => {
-    const navigationPromise = page.waitForNavigation({
-      waitUntil: 'networkidle',
-    });
     await mockRefApi(page);
     await page.goto('./');
-    await navigationPromise;
   });
 
   test("L'utilisateur a accès à la page de liste des utilisateurs", async ({

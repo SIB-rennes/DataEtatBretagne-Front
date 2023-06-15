@@ -1,4 +1,6 @@
 import { default as programmes } from '../../mock-data/financial-data/programme.json';
+import { default as financial } from '../../mock-data/financial-data/financial.json';
+
 import { Page } from '@playwright/test';
 
 async function mockRefApi(page: Page) {
@@ -6,6 +8,15 @@ async function mockRefApi(page: Page) {
     /.*\/budget\/api\/v1\/programme.*/,
     async (route: any) => {
       const json = programmes;
+      await route.fulfill({ json });
+    }
+  );
+
+
+  await page.route(
+    /.*\/financial-data\/api\/v1\/ae.*/,
+    async (route: any) => {
+      const json = financial;
       await route.fulfill({ json });
     }
   );
@@ -20,9 +31,6 @@ async function mockRefApi(page: Page) {
       await route.fulfill({ json });
     }
   );
-
-
-
 }
 
 export default mockRefApi;

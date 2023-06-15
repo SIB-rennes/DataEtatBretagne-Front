@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, PageScreenshotOptions, Page } from '@playwright/test';
 
 test.describe("Page d'authentification", () => {
   test.beforeEach(async ({ page }) => {
@@ -34,11 +34,6 @@ test.describe("Page d'authentification", () => {
 
 // attente de redirection vers keycloak
 async function waitingRedirectKeycloak(page: any) {
-  const navigationPromise = page.waitForNavigation({
-    url: /^https:\/\/auth.*/,
-    waitUntil: 'networkidle',
-  });
   await page.goto('./');
-
-  await navigationPromise;
+  await page.waitForURL(/^https:\/\/auth.*/)
 }
