@@ -51,7 +51,7 @@ test.describe("Lorsque l'on spécifie deux programmes", () => {
 });
 
 test.describe("Lorsque l'on spécifie une localiation", () => {
-  const urlparam = `?niveau_geo=Département&code_geo=35`;
+  const urlparam = `?niveau_geo=departement&code_geo=35`;
 
   test("Les filtres sont pré remplis", async ({ page }) => {
     await _navigate(page, `/${urlparam}`);

@@ -20,6 +20,7 @@ import { passing_errors } from 'apps/common-lib/src/lib/resolvers/marqueblanche/
 import { assert_is_a_GroupByFieldname } from '@models/marqueblanche/groupby-fieldname.enum';
 import { GroupingColumn } from 'apps/grouping-table/src/lib/components/grouping-table/group-utils';
 import { groupby_mapping } from '@models/marqueblanche/groupby-mapping.model';
+import { synonymes_from_types_localisation, to_type_localisation } from '@models/marqueblanche/niveau-localisation.model';
 
 export interface MarqueBlancheParsedParams extends Params {
   preFilters: PreFilters,
@@ -209,11 +210,18 @@ function localisation(
   if (!p_niveau_geo) // Aucun paramètre renseigné
     return of(previous);
 
-  let niveau_geo = p_niveau_geo! as TypeLocalisation;
-  let code_geo = p_code_geo!;
+  let niveau_geo: TypeLocalisation;
+  let code_geo: string
+  try {
+    niveau_geo = to_type_localisation(p_niveau_geo)
+    code_geo = p_code_geo!;
 
-  if (!niveauxLocalisationLegaux.includes(niveau_geo))
-    throw Error(`Le niveau géographique doit être une de ces valeurs ${niveauxLocalisationLegaux}`)
+    if (!niveauxLocalisationLegaux.includes(niveau_geo))
+      throw Error(`Le niveau géographique doit être une de ces valeurs ${niveauxLocalisationLegaux}`)
+  } catch(e) {
+    let niveaux_valides = synonymes_from_types_localisation(niveauxLocalisationLegaux)
+    throw Error(`Le niveau géographique doit être une de ces valeurs ${niveaux_valides}`)
+  }
 
   function handle_geo(geo: GeoModel[]) {
     if (geo.length !== 1)

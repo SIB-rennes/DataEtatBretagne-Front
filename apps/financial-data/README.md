@@ -8,7 +8,7 @@ Utilise les API de la [plateforme data éta en bretagne](https://github.com/SIB-
 
 Il est possible de diriger un utilisateur vers des données financières filtrèes en utilisant des paramètres d'url, exemple:
 
-[https://budget.databretagne.fr/?programmes=101,102&niveau_geo=Epci&code_geo=200000172](https://budget.databretagne.fr/?programmes=101,102&niveau_geo=Epci&code_geo=200000172)
+[https://budget.databretagne.fr/?programmes=101,102&niveau_geo=epci&code_geo=200000172](https://budget.databretagne.fr/?programmes=101,102&niveau_geo=epci&code_geo=200000172)
 
 Voici les paramètres pris en charge:
 
@@ -23,8 +23,8 @@ Voici les paramètres pris en charge:
 
 | Paramètre           | Description         | Valeurs acceptées                                                       | Exemple                                                                                    |
 | ------------------- | ------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Niveau géographique | Niveau géographique | `Département`,`Epci` et `Commune`                                       | [`niveau_geo=Epci`](https://budget.databretagne.fr/?niveau_geo=Epci&code_geo=200000172)    |
-| code_geo            | Code géographique   | [COG](https://www.insee.fr/fr/recherche/recherche-geographique?debut=0) | [`code_geo=200000172`](https://budget.databretagne.fr/?niveau_geo=Epci&code_geo=200000172) |
+| Niveau géographique | Niveau géographique | `departement`,`epci` et `commune`                                       | [`niveau_geo=epci`](https://budget.databretagne.fr/?niveau_geo=epci&code_geo=200000172)    |
+| code_geo            | Code géographique   | [COG](https://www.insee.fr/fr/recherche/recherche-geographique?debut=0) | [`code_geo=200000172`](https://budget.databretagne.fr/?niveau_geo=epci&code_geo=200000172) |
 
 - Années
 
