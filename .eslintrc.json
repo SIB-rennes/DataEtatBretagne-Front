@@ -29,7 +29,12 @@
       ],
       "rules": {
         "no-irregular-whitespace": "off",
-        "no-unused-vars": ["off", { "argsIgnorePattern": "^_" }]
+        "no-unused-vars": [
+          "off",
+          {
+            "argsIgnorePattern": "^_"
+          }
+        ]
       }
     },
     {

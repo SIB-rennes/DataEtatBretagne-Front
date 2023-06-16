@@ -1,20 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
-import {
-  ActivatedRouteSnapshot,
-  CanLoad,
-  Route,
-  Router,
-  RouterStateSnapshot,
-  UrlSegment,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Route, Router, RouterStateSnapshot, UrlSegment } from '@angular/router';
 import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
 import { SessionService } from 'apps/common-lib/src/public-api';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard extends KeycloakAuthGuard implements CanLoad {
+export class AuthGuard extends KeycloakAuthGuard  {
   constructor(
     protected override readonly router: Router,
     protected readonly keycloak: KeycloakService,
