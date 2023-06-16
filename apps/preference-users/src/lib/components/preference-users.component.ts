@@ -102,9 +102,5 @@ export class PreferenceUsersComponent implements OnInit {
       width: '40rem',
       autoFocus: 'input',
     });
-
-    // dialogRef.afterClosed().subscribe((result) => {
-    //   if (result) this.newFilter = undefined;
-    // });
   }
 }

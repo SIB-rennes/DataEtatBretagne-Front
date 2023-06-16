@@ -1,0 +1,585 @@
+{
+  "items": [
+      {
+          "referentiel_programmation": {
+              "label": "Hors EP occupant",
+              "code": "010703030102"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-19T00:00:00",
+          "n_ej": "2000325450",
+          "commune": {
+              "label": "La Chapelle-des-Fougeretz",
+              "code": "35059"
+          },
+          "montant_ae": 1200.0,
+          "siret": {
+              "nom_beneficiare": "PETIT ROCHER",
+              "code": "53406512300026",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 204803,
+          "n_poste_ej": 2
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Hors EP occupant",
+              "code": "010703030102"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-13T00:00:00",
+          "n_ej": "2000332412",
+          "commune": {
+              "label": "Rennes",
+              "code": "35238"
+          },
+          "montant_ae": -455.87,
+          "siret": {
+              "nom_beneficiare": "SAINT BRIEUC ONE",
+              "code": "52497721200017",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 204810,
+          "n_poste_ej": 2
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Hors EP occupant",
+              "code": "010703030102"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-13T00:00:00",
+          "n_ej": "2000332412",
+          "commune": {
+              "label": "Rennes",
+              "code": "35238"
+          },
+          "montant_ae": 3840.0,
+          "siret": {
+              "nom_beneficiare": "SAINT BRIEUC ONE",
+              "code": "52497721200017",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 204811,
+          "n_poste_ej": 4
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Hors EP occupant",
+              "code": "010703030102"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-13T00:00:00",
+          "n_ej": "2000332412",
+          "commune": {
+              "label": "Rennes",
+              "code": "35238"
+          },
+          "montant_ae": 3717.6,
+          "siret": {
+              "nom_beneficiare": "SAINT BRIEUC ONE",
+              "code": "52497721200017",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 204812,
+          "n_poste_ej": 5
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Gestion et pilotage",
+              "code": "010703020202"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-10T00:00:00",
+          "n_ej": "1510464158",
+          "commune": {
+              "label": "Saint-Malo",
+              "code": "35288"
+          },
+          "montant_ae": 263.75,
+          "siret": {
+              "nom_beneficiare": "REGIE MALOUINE DE L'EAU",
+              "code": "53939215900015",
+              "categorie_juridique": "Collectivit\u00e9"
+          },
+          "id": 204824,
+          "n_poste_ej": 1
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Gestion et pilotage",
+              "code": "010703020202"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-10T00:00:00",
+          "n_ej": "1510464158",
+          "commune": {
+              "label": "Saint-Malo",
+              "code": "35288"
+          },
+          "montant_ae": 275.0,
+          "siret": {
+              "nom_beneficiare": "REGIE MALOUINE DE L'EAU",
+              "code": "53939215900015",
+              "categorie_juridique": "Collectivit\u00e9"
+          },
+          "id": 204825,
+          "n_poste_ej": 2
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Hors EP occupant",
+              "code": "010703030102"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-02-01T00:00:00",
+          "n_ej": "1511743315",
+          "commune": {
+              "label": "Cesson-S\u00e9vign\u00e9",
+              "code": "35051"
+          },
+          "montant_ae": 22000.0,
+          "siret": {
+              "nom_beneficiare": "DLJ GESTION",
+              "code": "39342930300034",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 204831,
+          "n_poste_ej": 1
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Gestion des personne",
+              "code": "010703020201"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-24T00:00:00",
+          "n_ej": "1406029915",
+          "commune": {
+              "label": "Cesson-S\u00e9vign\u00e9",
+              "code": "35051"
+          },
+          "montant_ae": 1347.24,
+          "siret": {
+              "nom_beneficiare": "SAMSIC II",
+              "code": "42868535800908",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 204834,
+          "n_poste_ej": 1
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Gestion et pilotage",
+              "code": "010703020202"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-27T00:00:00",
+          "n_ej": "1511743334",
+          "commune": {
+              "label": "Liffr\u00e9",
+              "code": "35152"
+          },
+          "montant_ae": 228.0,
+          "siret": {
+              "nom_beneficiare": "AQUADOM",
+              "code": "48794438100010",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 204872,
+          "n_poste_ej": 1
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Gestion et pilotage",
+              "code": "010703020202"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-10T00:00:00",
+          "n_ej": "1505218268",
+          "commune": {
+              "label": "Rennes",
+              "code": "35238"
+          },
+          "montant_ae": -0.01,
+          "siret": {
+              "nom_beneficiare": "AUTO INDUSTRIE RENNAISE",
+              "code": "49869177300010",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 204891,
+          "n_poste_ej": 1
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Gestion et pilotage",
+              "code": "010703020202"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-12T00:00:00",
+          "n_ej": "1511715334",
+          "commune": {
+              "label": "Rennes",
+              "code": "35238"
+          },
+          "montant_ae": 120.0,
+          "siret": {
+              "nom_beneficiare": "AU JARDIN D'ALICANTE",
+              "code": "40065590800012",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 204896,
+          "n_poste_ej": 1
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Gestion et pilotage",
+              "code": "010703020202"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-12T00:00:00",
+          "n_ej": "1511716204",
+          "commune": {
+              "label": "Bruz",
+              "code": "35047"
+          },
+          "montant_ae": 1693.0,
+          "siret": {
+              "nom_beneficiare": "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION BRETAGNE",
+              "code": "13002794900010",
+              "categorie_juridique": null
+          },
+          "id": 204897,
+          "n_poste_ej": 1
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Hors EP occupant",
+              "code": "010703030102"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-10T00:00:00",
+          "n_ej": "2000330776",
+          "commune": {
+              "label": "Rennes",
+              "code": "35238"
+          },
+          "montant_ae": 2690.0,
+          "siret": {
+              "nom_beneficiare": "AVRANCHES",
+              "code": "53913442900023",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 204922,
+          "n_poste_ej": 11
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Gestion des personne",
+              "code": "010703020201"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Soutien et formation",
+              "code": "0107-04"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-02-01T00:00:00",
+          "n_ej": "1406025425",
+          "commune": {
+              "label": "Saint-Jacques-de-la-Lande",
+              "code": "35281"
+          },
+          "montant_ae": 14040.0,
+          "siret": {
+              "nom_beneficiare": "ABER",
+              "code": "34770609500044",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 204923,
+          "n_poste_ej": 2
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Travaux/r\u00e9novat Immo",
+              "code": "010701010101"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Garde et contr\u00f4le des personnes plac\u00e9es sous main de justice",
+              "code": "0107-01"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-20T00:00:00",
+          "n_ej": "1511181674",
+          "commune": {
+              "label": "Rennes",
+              "code": "35238"
+          },
+          "montant_ae": 0.01,
+          "siret": {
+              "nom_beneficiare": "CEGELEC PORTES DE BRETAGNE",
+              "code": "53791623100021",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 205004,
+          "n_poste_ej": 1
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Travaux/r\u00e9novat Immo",
+              "code": "010701010101"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Garde et contr\u00f4le des personnes plac\u00e9es sous main de justice",
+              "code": "0107-01"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-24T00:00:00",
+          "n_ej": "1511733935",
+          "commune": {
+              "label": "Rennes",
+              "code": "35238"
+          },
+          "montant_ae": 3768.0,
+          "siret": {
+              "nom_beneficiare": "A.F.T.I.",
+              "code": "45340325500020",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 205008,
+          "n_poste_ej": 1
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Travaux/r\u00e9novat Immo",
+              "code": "010701010101"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Garde et contr\u00f4le des personnes plac\u00e9es sous main de justice",
+              "code": "0107-01"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-24T00:00:00",
+          "n_ej": "1511733936",
+          "commune": {
+              "label": "Bruz",
+              "code": "35047"
+          },
+          "montant_ae": 2409.24,
+          "siret": {
+              "nom_beneficiare": "GTIE RENNES",
+              "code": "44397593300039",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 205050,
+          "n_poste_ej": 1
+      },
+      {
+          "referentiel_programmation": {
+              "label": "Travaux/r\u00e9novat Immo",
+              "code": "010701010101"
+          },
+          "montant_cp": 0.0,
+          "programme": {
+              "label": "Administration p\u00e9nitentiaire",
+              "code": "107",
+              "theme": "Justice"
+          },
+          "domaine_fonctionnel": {
+              "label": "Garde et contr\u00f4le des personnes plac\u00e9es sous main de justice",
+              "code": "0107-01"
+          },
+          "date_cp": null,
+          "annee": 2023,
+          "date_modification_ej": "2023-01-26T00:00:00",
+          "n_ej": "1511739683",
+          "commune": {
+              "label": "Saint-Jacques-de-la-Lande",
+              "code": "35281"
+          },
+          "montant_ae": 5047.2,
+          "siret": {
+              "nom_beneficiare": "SOCIETE-MISSENARD QUINT B",
+              "code": "31109848700094",
+              "categorie_juridique": "Entreprise"
+          },
+          "id": 205051,
+          "n_poste_ej": 1
+      }
+  ],
+  "pageInfo": {
+      "totalRows": 18,
+      "page": 1,
+      "pageSize": 5000
+  }
+}

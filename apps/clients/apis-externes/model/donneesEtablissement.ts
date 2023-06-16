@@ -11,11 +11,10 @@
  */
 import { Adresse } from './adresse';
 import { UniteLegale } from './uniteLegale';
-import { ActivitePrincipale } from './activitePrincipale';
 
 
 export interface DonneesEtablissement { 
-    activite_principale: ActivitePrincipale;
+    activite_principale: object;
     adresse: Adresse;
     adresse_postale_legere: string;
     date_creation: number;

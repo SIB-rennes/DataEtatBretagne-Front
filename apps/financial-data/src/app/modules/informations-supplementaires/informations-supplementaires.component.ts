@@ -8,7 +8,6 @@ import {
 } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { InformationsSupplementairesResolverModel } from '@models/informations-supplementiares-resolver.model';
 import { Observable } from 'rxjs';
 import { ChargementOuErreurComponent } from './chargement-ou-erreur/chargement-ou-erreur.component';
 import { DetailApiDataSubventionsComponent } from './detail-api-data-subventions/detail-api-data-subventions.component';
@@ -22,6 +21,7 @@ import { EtablissementLight } from './models/EtablissementLight';
 import { SubventionLight } from './models/SubventionLight';
 import { DemarcheLight } from './models/DemarcheLight';
 import { DetailApiDemarcheSimplifieComponent } from './detail-api-demarche-simplifie/detail-api-demarche-simplifie.component';
+import { FinancialDataModel } from '@models/financial/financial-data.models';
 
 export enum View {
   light = 'light',
@@ -58,31 +58,24 @@ export enum View {
 export class InformationsSupplementairesComponent implements OnInit {
   view: View = View.light;
 
-  private _ej: string | undefined = undefined;
-  private _poste_ej: number | undefined = undefined;
+  private _financial: FinancialDataModel | undefined = undefined;
 
-  get ej() {
-    return this._ej!;
+  get financial() {
+    return this._financial!;
   }
-  @Input() set ej(v) {
-    this._ej = v;
-    this.setup();
-  }
-  get poste_ej() {
-    return this._poste_ej!;
-  }
-  @Input() set poste_ej(v) {
-    this._poste_ej = v;
+  @Input() set financial(financial) {
+    this._financial = financial;
     this.setup();
   }
 
-  api_entreprise_light$: Observable<EtablissementLight> | undefined;
+
+  entreprise_light: EtablissementLight | undefined;
   api_subvention_light$: Observable<SubventionLight> | undefined;
   api_demarche_simplifie_light$: Observable<DemarcheLight | null> | undefined;
 
   ngOnInit() {
-    let data: InformationsSupplementairesResolverModel =
-      this.route.snapshot.data['ligne_id'];
+    let data: FinancialDataModel =
+      this.route.snapshot.data['financial_data'];
     this._init_from_resolver_model(data);
   }
 
@@ -91,28 +84,24 @@ export class InformationsSupplementairesComponent implements OnInit {
     private service: InformationsSupplementairesService
   ) {}
 
-  get ligne_exists() {
-    return Boolean(this.ej) && Boolean(this.poste_ej);
-  }
 
   get vService(): InformationSupplementairesViewService {
     return this.service.viewService;
   }
 
   setup() {
-    if (this._ej === undefined || this._poste_ej === undefined) return;
+    if (this._financial === undefined) return;
 
-    this.service.setupViewModelService(this.ej, this.poste_ej);
+    this.service.setupViewModelService(this._financial);
     this.api_demarche_simplifie_light$ = this.vService.api_demarche_light$();
-    this.api_entreprise_light$ = this.vService.api_entreprise_light$();
+    this.entreprise_light = this.vService.entreprise_light();
     this.api_subvention_light$ = this.vService.api_subvention_light$();
   }
 
-  _init_from_resolver_model(data: InformationsSupplementairesResolverModel) {
+  _init_from_resolver_model(data: FinancialDataModel) {
     if (data === undefined) return;
 
-    this.ej = data.ej;
-    this.poste_ej = data.poste_ej;
+    this.financial = data;
 
     this.view = View.full;
   }

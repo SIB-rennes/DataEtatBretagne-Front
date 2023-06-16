@@ -1,4 +1,4 @@
-import { chromium } from '@playwright/test';
+import { FullConfig, chromium } from '@playwright/test';
 import login from './tests/utils/login';
 
 async function globalSetup(config: FullConfig): Promise<void> {

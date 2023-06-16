@@ -1,6 +1,6 @@
 <mat-form-field appearance="fill">
   <mat-label>Zone géographique</mat-label>
-  <mat-select 
+  <mat-select
     data-test-id="niveau-localisation"
     (selectionChange)="selectedCategory($event)"
     [value]="categorySelected">
@@ -17,14 +17,17 @@
 >
   <mat-label data-test-id="category-localisation">{{categorySelected}}</mat-label>
 
-  <mat-select [formControl]="control" multiple>
+  <mat-select
+    [formControl]="control"
+    data-test-id="localisation-select"
+    multiple>
     <mat-form-field class="field-100-width" appearance="fill">
       <mat-label>Rechercher</mat-label>
       <input #filterInput type="text" class="fr-input" matInput [(ngModel)]="searchGeo"
         (ngModelChange)="changeSearchGeo()">
     </mat-form-field>
     <mat-select-trigger>
-      {{control.value ? control.value[0].code +' - '+ control.value[0].nom : ''}}
+      {{control.value && control.value[0] ? control.value[0].code +' - '+ control.value[0].nom : ''}}
       <span *ngIf="control.value?.length > 1" class="example-additional-selection">
         (+{{control.value.length - 1}} {{control.value?.length === 2 ? 'autre' : 'autres'}})
       </span>

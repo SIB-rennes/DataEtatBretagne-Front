@@ -8,7 +8,7 @@
   "author": "SIB",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "1.29.2"
+    "@playwright/test": "^1.35.0"
   },
   "dependencies": {
     "dotenv": "^16.0.3"

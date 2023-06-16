@@ -11,8 +11,8 @@ import {
   AuditUpdateData,
   DataType,
 } from '@models/audit/audit-update-data.models';
-import { AuditHttpService } from '@services/audit.service';
-import { FinancialDataHttpService } from '@services/financial-data-http.service';
+import { AuditHttpService } from '@services/http/audit.service';
+import { FinancialDataHttpService } from '@services/http/financial-data-http.service';
 import { AlertService } from 'apps/common-lib/src/public-api';
 import {
   BehaviorSubject,

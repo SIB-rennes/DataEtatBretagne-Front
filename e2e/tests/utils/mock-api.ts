@@ -1,20 +1,33 @@
-import { default as themes } from '../../mock-data/financial-data/themes.json';
 import { default as programmes } from '../../mock-data/financial-data/programme.json';
+import { default as financial } from '../../mock-data/financial-data/financial.json';
+
 import { Page } from '@playwright/test';
 
 async function mockRefApi(page: Page) {
   await page.route(
-    /.*\/nocodb\/CHORUS-DATA\/RefTheme\/.*/,
+    /.*\/budget\/api\/v1\/programme.*/,
     async (route: any) => {
-      const json = themes;
+      const json = programmes;
       await route.fulfill({ json });
     }
   );
 
+
   await page.route(
-    /.*\/nocodb\/CHORUS-DATA\/RefCodeProgramme\/.*/,
+    /.*\/financial-data\/api\/v1\/ae.*/,
     async (route: any) => {
-      const json = programmes;
+      const json = financial;
+      await route.fulfill({ json });
+    }
+  );
+
+
+  await page.route(
+    /.*\/badministration\/api\/v1\/audit\/FINANCIAL_DATA_AE\/.*/,
+    async (route: any) => {
+      const json = {
+        "date": "2023-06-02T10:21:06.167896+00:00"
+    };
       await route.fulfill({ json });
     }
   );

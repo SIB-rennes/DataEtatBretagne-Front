@@ -1,5 +1,5 @@
 <ng-container *ngIf="displayError && error?.name else form">
-  <div class="box">
+  <div class="box" data-test-id="search-cmp-error-msg">
     <div class="fr-alert fr-alert--error">
       <p>{{error?.message}}</p>
     </div>
@@ -14,7 +14,7 @@
         <mat-label>Thème</mat-label>
         <mat-select formControlName="theme" multiple (selectionChange)="onSelectTheme($event)">
           <mat-option *ngFor="let theme of themes" [value]="theme">
-            {{theme.Label}}
+            {{theme}}
           </mat-option>
         </mat-select>
         <button *ngIf="searchForm.controls['theme'].value !== null" matSuffix mat-icon-button (click)="cancelTheme()">
@@ -24,8 +24,8 @@
         <mat-error *ngIf="errorsBenefOrBop">{{errorsBenefOrBop}}</mat-error>
       </mat-form-field>
 
-      <mat-form-field 
-        data-test-id="programmes-form-field" 
+      <mat-form-field
+        data-test-id="programmes-form-field"
         class="field-25-width" appearance="fill" matTooltipPosition="above"
         matTooltip="Saisir un nom ou un numéro de programme (Exemple : 102 ou Accès et retour à l’emploi)">
         <mat-label>Programme</mat-label>
@@ -34,7 +34,7 @@
             <mat-label>Filtrer</mat-label>
             <input type="text" class="fr-input" matInput formControlName="filterBop">
           </mat-form-field>
-          <mat-option *ngFor="let bop of filteredBop" [value]="bop"> {{bop.Code}} - {{bop.Label}}</mat-option>
+          <mat-option *ngFor="let bop of filteredBop" [value]="bop"> {{bop.code}} - {{bop.label === null ?  '' : bop.label}}</mat-option>
         </mat-select>
         <button *ngIf="searchForm.controls['bops'].value !== null" matSuffix mat-icon-button
           (click)="searchForm.controls['bops'].setValue(null)">
@@ -45,10 +45,12 @@
 
       <div class="field-localisation field-30-width">
         <lib-localisation [control]="locationControls"
-          [categorySelected]="locationControls.value ? locationControls.value[0].type : null"></lib-localisation>
+          [categorySelected]="(locationControls.value &&  locationControls.value[0]) ? locationControls.value[0].type : null"></lib-localisation>
       </div>
 
-      <mat-form-field class="field-9-width" appearance="fill">
+      <mat-form-field
+        data-test-id="annees-form-field"
+        class="field-9-width" appearance="fill">
         <mat-label>Année</mat-label>
         <mat-select formControlName="year" multiple>
           <mat-option *ngFor="let year of generateArrayOfYears()" [value]="year">
@@ -99,3 +101,40 @@
 
   </form>
 </ng-template>
+
+<!-- Ajout d'un indicateur pour les paramètres de recherche additionnels qui ne sont pas dans le formulaire  -->
+<ng-container *ngIf="additional_searchparams?.domaines_fonctionnels && additional_searchparams.domaines_fonctionnels.length > 0">
+  <div data-test-id="notif-additionnal-search-on-domaines-fonctionnels">
+    <mat-icon aria-hidden="false" aria-label="information">information</mat-icon>
+    <span>
+      Attention, vous appliquez également un filtre sur le domaine fonctionnel
+    </span>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="additional_searchparams?.referentiels_programmation && additional_searchparams.referentiels_programmation.length > 0">
+  <div data-test-id="notif-additionnal-search-on-referentiels-programmation">
+    <mat-icon aria-hidden="false" aria-label="information">information</mat-icon>
+    <span>
+      Attention, vous appliquez également un filtre sur le réferentiel de programmation
+    </span>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="additional_searchparams?.sources_region && additional_searchparams.sources_region.length > 0">
+  <div data-test-id="notif-additionnal-search-on-source-region">
+    <mat-icon aria-hidden="false" aria-label="information">information</mat-icon>
+    <span>
+      Attention, vous appliquez également un filtre sur la source region
+    </span>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="additional_searchparams?.beneficiaires && additional_searchparams.beneficiaires.length > 0">
+  <div data-test-id="notif-additionnal-search-on-beneficiaires">
+    <mat-icon aria-hidden="false" aria-label="information">information</mat-icon>
+    <span>
+      Attention, vous appliquez également un filtre sur les bénéficiaires.
+    </span>
+  </div>
+</ng-container>

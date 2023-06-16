@@ -1,6 +1,5 @@
 export * from './acheminementPostal';
 export * from './actionProposee';
-export * from './activitePrincipale';
 export * from './adresse';
 export * from './certificationQualibat';
 export * from './certificationRge';

@@ -1,28 +1,19 @@
 import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
-import { FinancialDataResolverModel } from '@models/financial-data-resolvers.models';
-import { FinancialDataHttpService } from '@services/financial-data-http.service';
-import { catchError, forkJoin, of } from 'rxjs';
+import { FinancialData, FinancialDataResolverModel } from '@models/financial/financial-data-resolvers.models';
+import { BudgetService } from '@services/budget.service';
 import { map } from 'rxjs/operators';
 
 export const resolveFinancialData: ResolveFn<FinancialDataResolverModel> =
   () => {
 
-    let service = inject(FinancialDataHttpService);
+    let service = inject(BudgetService);
 
-    return forkJoin({
-      themes: service.getTheme(),
-      bop: service.getBop(),
-    }).pipe(
-      map(data => {
-        return { data }
-      }),
-      catchError((_error) => {
-        return of(
-          {
-            error: new Error("Erreur lors de la récupération des données")
-          }
-        );
+    return service.getBop().pipe(
+      map(bops => {
+        const themes = Array.from(new Set(bops.map(bop => bop.label_theme))).sort();
+        const result = {themes: themes, bop: bops} as FinancialData;
+        return {data: result};
       })
-    );
+    )
   };

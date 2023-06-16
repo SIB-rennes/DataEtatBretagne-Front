@@ -8,10 +8,10 @@ async function login(
 ): Promise<void> {
   await page.goto(url);
   await page.getByLabel('Identifiant').fill(username);
-  await page.getByLabel('Mot de passe').fill(password);
+  await page.getByLabel('Mot de passe',{ exact: true }).fill(password);
 
   await Promise.all([
-    page.waitForNavigation(),
+    page.waitForURL(url),
     page.locator('button', { hasText: 'Se connecter' }).click(),
   ]);
 }

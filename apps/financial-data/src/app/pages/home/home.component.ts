@@ -1,6 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
 
-import { DatePipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import {
   PreferenceUsersHttpService,
@@ -9,11 +8,10 @@ import {
 import {
   Preference,
 } from 'apps/preference-users/src/lib/models/preference.models';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Data } from '@angular/router';
 import { AlertService } from 'apps/common-lib/src/public-api';
 import { GridInFullscreenStateService } from 'apps/common-lib/src/lib/services/grid-in-fullscreen-state.service';
 import {
-  AggregatorFns,
   ColumnsMetaData,
   GroupingColumn,
   RowData,
@@ -21,9 +19,13 @@ import {
 } from 'apps/grouping-table/src/lib/components/grouping-table/group-utils';
 import { GroupingConfigDialogComponent } from 'apps/grouping-table/src/lib/components/grouping-config-dialog/grouping-config-dialog.component';
 import { InformationsSupplementairesDialogComponent } from '../../modules/informations-supplementaires/informations-supplementaires-dialog/informations-supplementaires-dialog.component';
-import { AuditHttpService } from '@services/audit.service';
-import { PreFilter } from '@models/search/prefilter.model';
-import { QueryParam } from '@models/marqueblanche/query-params.model';
+import { AuditHttpService } from '@services/http/audit.service';
+import { MarqueBlancheParsedParamsResolverModel } from '../../resolvers/marqueblanche-parsed-params.resolver';
+import { NGXLogger } from 'ngx-logger';
+import { delay } from 'rxjs';
+import { PreFilters } from '@models/search/prefilters.model';
+import { colonnes } from '@models/tableau/colonnes.model';
+import { QueryParam } from 'apps/common-lib/src/lib/models/marqueblanche/query-params.enum';
 
 @Component({
   selector: 'financial-home',
@@ -31,7 +33,6 @@ import { QueryParam } from '@models/marqueblanche/query-params.model';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  private datePipe = inject(DatePipe);
   private dialog = inject(MatDialog);
 
   columnsMetaData: ColumnsMetaData;
@@ -46,7 +47,7 @@ export class HomeComponent implements OnInit {
   /**
    * Filtre à appliquer sur la recherche
    */
-  preFilter?: PreFilter;
+  preFilter?: PreFilters;
 
   lastImportDate: string | null = null;
 
@@ -72,103 +73,10 @@ export class HomeComponent implements OnInit {
     private alertService: AlertService,
     private preferenceService: PreferenceUsersHttpService,
     private auditService: AuditHttpService,
-    private _gridFullscreen: GridInFullscreenStateService
+    private _gridFullscreen: GridInFullscreenStateService,
+    private _logger: NGXLogger,
   ) {
-    const moneyFormat = new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-    });
-
-    this.columnsMetaData = new ColumnsMetaData([
-      { name: 'siret',
-        label: 'Bénéficiaire',
-        renderFn: (row, col) =>
-            row[col.name] ?  row[col.name]['nom_beneficiare'] : ''
-      },
-      {
-        name: 'montant_ae',
-        label: 'Montant engagé',
-        renderFn: (row, col) =>
-          row[col.name] ? moneyFormat.format(row[col.name]) : row[col.name],
-        aggregateReducer: AggregatorFns.sum,
-        aggregateRenderFn: (aggregateValue) =>
-          aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
-        columnStyle: {
-          'text-align': 'right',
-          'min-width': '16ex',
-          'flex-grow': '0',
-        },
-      },
-      {
-        name: 'montant_cp',
-        label: 'Montant payé',
-        renderFn: (row, col) =>
-          row[col.name] > 0 ? moneyFormat.format(row[col.name]) : "",
-        aggregateReducer: AggregatorFns.sum,
-        aggregateRenderFn: (aggregateValue) =>
-          aggregateValue ? moneyFormat.format(aggregateValue) : aggregateValue,
-        columnStyle: {
-          'text-align': 'right',
-          'min-width': '16ex',
-          'flex-grow': '0',
-        },
-      },
-      { name: 'theme',
-        label: 'Thème',
-        renderFn: (row, _col) => row['programme']['theme'] ?? '',
-      },
-      {
-        name: 'nom_programme',
-        label: 'Programme',
-        renderFn: (row, _col) => row['programme']['code'] +' - '+ row['programme']['label'] ?? '',
-      },
-      {
-        name: 'domaine',
-        label: 'Domaine fonctionnel',
-        renderFn: (row, _col) => row['domaine_fonctionnel']['code'] + ' - ' + row['domaine_fonctionnel']['label'],
-      },
-      {
-        name: 'ref_programmation',
-        label: 'Ref Programmation',
-        renderFn: (row, _col) =>
-           row['referentiel_programmation']['code'] + ' - ' + ( row['referentiel_programmation']['label'] ?? ''),
-      },
-      {
-        name: 'label_commune',
-        label: 'Commune',
-        renderFn: (row, _col) => row['commune']['label'],
-      },
-      {
-        name: 'siret',
-        label: 'Siret',
-        renderFn: (row, col) => row[col.name] ?  row[col.name]['code'] : '',
-        columnStyle: {
-          'min-width': '16ex',
-          'flex-grow': '0',
-        },
-      },
-      {
-        name: 'type_etablissement',
-        label: `Type d'établissement`,
-        renderFn: (row, col) =>
-          row['siret']['categorie_juridique'] !== null ? row['siret']['categorie_juridique'] : 'Non renseigné',
-      },
-      {
-        name: 'date_cp',
-        label: 'Date dernier paiement',
-        renderFn: (row, col) =>
-         row[col.name] ? new Date(row[col.name]).toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric'}): '',
-      },
-      {
-        name: 'annee',
-        label: 'Année d\'engagement',
-        columnStyle: {
-          'min-width': '18ex',
-          'flex-grow': '0',
-        },
-      },
-    ]);
-
+    this.columnsMetaData = new ColumnsMetaData(colonnes);
     this.preFilter = undefined;
   }
 
@@ -192,6 +100,28 @@ export class HomeComponent implements OnInit {
           });
       }
     });
+
+    this.route.data
+      .pipe(delay(0))
+      .subscribe((data: Data) => {
+
+        let response = data as { mb_parsed_params: MarqueBlancheParsedParamsResolverModel }
+
+        let mb_has_params = response.mb_parsed_params?.data?.has_marqueblanche_params;
+        let mb_group_by = response.mb_parsed_params?.data?.group_by;
+        let mb_fullscreen = response.mb_parsed_params?.data?.fullscreen;
+
+        if (!mb_has_params)
+          return;
+
+        if (mb_group_by && mb_group_by?.length > 0) {
+          this._logger.debug(`Reception du paramètre group_by de la marque blanche, application des groupes: ${mb_group_by}`);
+          this.groupingColumns = mb_group_by;
+        }
+
+        if (mb_fullscreen) this.toggle_grid_fullscreen();
+      });
+
     this.auditService.getLastDateUpdateData().subscribe((response) => {
       if (response.date) {
         this.lastImportDate = response.date;
