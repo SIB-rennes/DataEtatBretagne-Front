@@ -27,7 +27,7 @@ export class AdemeDataHttpService implements DataHttpService<AdemeData,Financial
   }
 
   search(
-    { bops, beneficiaire, locations, years, domaines_fonctionnels, referentiels_programmation, source_region }: SearchParameters
+    { bops, beneficiaires, locations, years, domaines_fonctionnels, referentiels_programmation, source_region }: SearchParameters
   ): Observable<DataPagination<AdemeData> | null> {
 
     if (
@@ -41,8 +41,8 @@ export class AdemeDataHttpService implements DataHttpService<AdemeData,Financial
     }
 
     let params ='limit=5000';
-    if (beneficiaire) {
-      params += `&siret_beneficiaire=${beneficiaire.siret}`;
+    if (beneficiaires && beneficiaires.length > 0) {
+      params += `&siret_beneficiaire=${beneficiaires.map(x => x.siret).join(',')}`;
     }
     if (locations && locations.length > 0) {
       const listCode = locations.map((l) => l.code).join(',');

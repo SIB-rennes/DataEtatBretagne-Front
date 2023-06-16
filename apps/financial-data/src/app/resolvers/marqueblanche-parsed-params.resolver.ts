@@ -21,6 +21,7 @@ import { assert_is_a_GroupByFieldname } from '@models/marqueblanche/groupby-fiel
 import { GroupingColumn } from 'apps/grouping-table/src/lib/components/grouping-table/group-utils';
 import { groupby_mapping } from '@models/marqueblanche/groupby-mapping.model';
 import { synonymes_from_types_localisation, to_type_localisation } from '@models/marqueblanche/niveau-localisation.model';
+import { Beneficiaire } from '@models/search/beneficiaire.model';
 
 export interface MarqueBlancheParsedParams extends Params {
   preFilters: PreFilters,
@@ -69,6 +70,7 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
     .pipe(
       mergeMap(previous => programmes(previous, handlerCtx)),
       mergeMap(previous => localisation(previous, handlerCtx)),
+      mergeMap(previous => beneficiaires(previous, handlerCtx)),
     )
     .pipe(
       mergeMap(previous => domaines_fonctionnels(previous, handlerCtx)),
@@ -88,17 +90,34 @@ function _resolver(route: ActivatedRouteSnapshot): Observable<{ data: MarqueBlan
   return model;
 }
 
-function source_region(
+
+function beneficiaires(
   previous: MarqueBlancheParsedParams,
-  { route, logger }: _HandlerContext
+  ctx: _HandlerContext
 ): Observable<MarqueBlancheParsedParams> {
 
-  let p_source_region = route.queryParamMap.get(FinancialQueryParam.SourceRegion);
-  if (!p_source_region)
-    return of(previous)
+  let sirets = _extract_multiple_queryparams(previous, ctx, FinancialQueryParam.Beneficiaires);
+  if (!sirets)
+    return of(previous);
   
-  let sources = p_source_region.split(',')
-  logger.debug(`Application du paramètre ${FinancialQueryParam.SourceRegion}: ${sources}`);
+  let beneficiaires = sirets.map(x => { return { siret: x } as Beneficiaire })
+
+  let preFilters: PreFilters = {
+    ...previous.preFilters,
+    marqueblanche_beneficiaires: beneficiaires,
+  }
+
+  return of({ ...previous, preFilters })
+}
+
+function source_region(
+  previous: MarqueBlancheParsedParams,
+  ctx: _HandlerContext
+): Observable<MarqueBlancheParsedParams> {
+
+  let sources = _extract_multiple_queryparams(previous, ctx, FinancialQueryParam.SourceRegion);
+  if (!sources)
+    return of(previous)
 
   let preFilters: PreFilters = {
     ...previous.preFilters,
@@ -110,15 +129,12 @@ function source_region(
 
 function domaines_fonctionnels(
   previous: MarqueBlancheParsedParams,
-  { route, logger }: _HandlerContext
+  ctx: _HandlerContext
 ): Observable<MarqueBlancheParsedParams> {
 
-  let domaines_fonctionnels = route.queryParamMap.get(FinancialQueryParam.DomaineFonctionnel);
-  if (!domaines_fonctionnels)
+  let codes = _extract_multiple_queryparams(previous, ctx, FinancialQueryParam.DomaineFonctionnel);
+  if (!codes)
     return of(previous);
-
-  let codes: string[] = domaines_fonctionnels.split(',')
-  logger.debug(`Application du paramètre ${FinancialQueryParam.DomaineFonctionnel}: ${codes}`);
 
   let preFilters: PreFilters = {
     ...previous.preFilters,
@@ -130,15 +146,12 @@ function domaines_fonctionnels(
 
 function referentiels_programmation(
   previous: MarqueBlancheParsedParams,
-  { route, logger }: _HandlerContext
+  ctx: _HandlerContext
 ): Observable<MarqueBlancheParsedParams> {
 
-  let referentiels_programmation = route.queryParamMap.get(FinancialQueryParam.ReferentielsProgrammation);
-  if (!referentiels_programmation)
+  let codes = _extract_multiple_queryparams(previous, ctx, FinancialQueryParam.ReferentielsProgrammation);
+  if (!codes)
     return of(previous);
-
-  let codes: string[] = referentiels_programmation.split(',')
-  logger.debug(`Application du paramètre ${FinancialQueryParam.ReferentielsProgrammation}: ${codes}`);
 
   let preFilters = {
     ...previous.preFilters,
@@ -151,7 +164,7 @@ function referentiels_programmation(
 /** Renseigne les {@link GroupingColumn} suivant {@link MarqueBlancheParsedParams.p_group_by}*/
 function group_by(
   previous: MarqueBlancheParsedParams,
-  ctx: _HandlerContext,
+  _: _HandlerContext,
 ): Observable<MarqueBlancheParsedParams> {
 
   let columns: GroupingColumn[] = []
@@ -175,15 +188,13 @@ function group_by(
 /** Gère le préfiltre des programmes */
 function programmes(
   previous: MarqueBlancheParsedParams,
-  { route, logger }: _HandlerContext,
+  ctx: _HandlerContext,
 ): Observable<MarqueBlancheParsedParams> {
 
-  let programmes = route.queryParamMap.get(FinancialQueryParam.Programmes);
-  if (!programmes)
+  let codes = _extract_multiple_queryparams(previous, ctx, FinancialQueryParam.Programmes);
+  if (!codes)
     return of(previous)
 
-  let codes: string[] = programmes.split(',')
-  logger.debug(`Application du paramètre ${FinancialQueryParam.Programmes}: ${codes}`);
   let bops = codes.map(code => {
     return { 'code': code }
   });
@@ -261,7 +272,7 @@ function annees_min_max(
 
   if (!p_annee_min && !p_annee_max) {
     // Par défaut, l'année en cours
-    logger.debug(`Application du paramètre d'année: année courante (${annee_courante})`);
+    logger.debug(`Application du paramètre d'année: année courante (${annee_courante}) (appliqué uniquement si on passe dans la marque blanche)`);
 
     let _preFilters = {
       ...previous.preFilters,
@@ -325,4 +336,20 @@ function _parse_annee(annee: string | null): number {
   throw new Error(`L'année ${annee} est invalide`);
 }
 
+/** Parse un paramètre multiple séparé par des virugles*/
+function _extract_multiple_queryparams(
+  _previous: MarqueBlancheParsedParams,
+  { route, logger }: _HandlerContext,
+
+  query_param: FinancialQueryParam,
+  ): string[] | undefined {
+
+    let p_params = route.queryParamMap.get(query_param);
+    if (!p_params)
+      return;
+
+    let params = p_params.split(',');
+    logger.debug(`Application du paramètre ${query_param}: ${params}`);
+    return params;
+}
 //endregion

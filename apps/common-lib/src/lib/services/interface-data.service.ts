@@ -6,7 +6,7 @@ import { GeoModel } from '../models/geo.models';
 
 export interface SearchParameters {
     bops: BopModel[] | null;
-    beneficiaire: RefSiret | null;
+    beneficiaires: RefSiret[] | null;
     years: number[] | null;
     locations: GeoModel[] | null,  
     themes: string[] | null;
@@ -18,7 +18,7 @@ export interface SearchParameters {
 
 export const SearchParameters_empty: SearchParameters = {
   bops: null,
-  beneficiaire: null,
+  beneficiaires: null,
   years: null,
   locations: null,
   themes: null,

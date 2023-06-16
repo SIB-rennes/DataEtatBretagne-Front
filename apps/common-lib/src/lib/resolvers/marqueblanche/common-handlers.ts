@@ -31,7 +31,8 @@ export function p_group_by<T extends MarqueBlancheParsedParams, V extends Handle
 export function fullscreen<T extends MarqueBlancheParsedParams, V extends HandlerContext>(previous: T, { route, logger }: V): Observable<T> {
   let p_fullscreen = route.queryParamMap.get(QueryParam.Fullscreen);
 
-  logger.debug(`Application du paramètre ${QueryParam.Fullscreen}: ${p_fullscreen}`);
+  if (p_fullscreen)
+    logger.debug(`Application du paramètre ${QueryParam.Fullscreen}: ${p_fullscreen}`);
   return of({
     ...previous,
     fullscreen: _parse_bool(p_fullscreen),

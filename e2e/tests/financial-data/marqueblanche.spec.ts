@@ -119,6 +119,17 @@ test.describe("Lorsque l'on spécifie des regions source", () => {
   })
 })
 
+test.describe("Lorsque l'on spécifie des bénéficiaires", () => {
+  const urlparam = "?beneficiaires=26350579400028,26350579400036";
+
+  test("Un message notifie que l'on recherche sur des beneficiaires vua la marque blanche", async ({page}) => {
+    await page.goto(urlparam);
+
+    await expect(page.getByTestId('notif-additionnal-search-on-beneficiaires'))
+      .toContainText("filtre sur les bénéficiaires")
+  })
+})
+
 
 async function _navigate(page: Page, url: string) {
     await mockRefApi(page);
