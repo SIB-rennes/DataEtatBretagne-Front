@@ -49,7 +49,7 @@ export class FinancialDataHttpService  implements DataHttpService<FinancialDataM
       search_params?.themes == null &&
       search_params?.years == null &&
       search_params?.locations == null &&
-      search_params?.beneficiaire == null &&
+      search_params?.beneficiaires == null &&
       search_params?.domaines_fonctionnels == null &&
       search_params?.referentiels_programmation == null &&
       search_params?.source_region == null
@@ -64,11 +64,11 @@ export class FinancialDataHttpService  implements DataHttpService<FinancialDataM
 
 
   private _buildparams( 
-    { beneficiaire, bops, themes, locations, years, domaines_fonctionnels, referentiels_programmation, source_region }: SearchParameters
+    { beneficiaires, bops, themes, locations, years, domaines_fonctionnels, referentiels_programmation, source_region }: SearchParameters
   ): string {
     let params ='limit=5000';
-    if (beneficiaire) {
-      params += `&siret_beneficiaire=${beneficiaire.siret}`;
+    if (beneficiaires && beneficiaires.length > 0) {
+      params += `&siret_beneficiaire=${beneficiaires.map(x => x.siret).join(',')}`;
     }
     if (bops) {
       params += `&code_programme=${bops

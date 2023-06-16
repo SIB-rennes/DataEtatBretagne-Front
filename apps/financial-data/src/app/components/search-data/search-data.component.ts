@@ -145,8 +145,8 @@ export class SearchDataComponent implements OnInit {
         }
 
         let financial = response.financial.data! as FinancialData;
-        let mb_prefilter = response.mb_parsed_params?.data?.preFilters;
         let mb_has_params = response.mb_parsed_params?.data?.has_marqueblanche_params;
+        let mb_prefilter = response.mb_parsed_params?.data?.preFilters;
 
         this.displayError = false;
         this.themes = financial.themes;
@@ -154,8 +154,12 @@ export class SearchDataComponent implements OnInit {
 
         this.filteredBop = this.bop;
 
-        if (mb_has_params && mb_prefilter) {
-          this.logger.debug(`Mode marque blanche. On applique les filtres demandés.`);
+        if (!mb_has_params)
+          return
+
+        this.logger.debug(`Mode marque blanche actif.`)
+        if (mb_prefilter) {
+          this.logger.debug(`Application des filtres`);
           this.preFilter = mb_prefilter;
         }
       }
@@ -230,9 +234,16 @@ export class SearchDataComponent implements OnInit {
     const formValue = this.searchForm.value;
     this.searchInProgress.next(true);
 
-    let search_parameters: SearchParameters = {
+    // TODO: disparaitra lorsque l'on gérera le multi select beneficiaire dans le front
+    let beneficiaires = this.additional_searchparams.beneficiaires;
+    if ((!beneficiaires || beneficiaires.length === 0) && formValue.beneficiaire) {
+      beneficiaires = [formValue.beneficiaire]
+    }
+    // 
+
+    let search_parameters: SearchParameters = { 
       ...SearchParameters_empty,
-      beneficiaire: formValue.beneficiaire,
+      beneficiaires,
       bops: formValue.bops,
       themes: formValue.theme,
       years: formValue.year,
@@ -455,7 +466,7 @@ export class SearchDataComponent implements OnInit {
     }
 
     /* Paramètres additionnels qui n'apparaissent pas dans le formulaire de recherche */
-    let additional_searchparams = empty_additional_searchparams;
+    let additional_searchparams: AdditionalSearchParameters = empty_additional_searchparams;
 
     let domaines_fonctionnels = preFilter?.domaines_fonctionnels
     if (domaines_fonctionnels)
@@ -468,7 +479,11 @@ export class SearchDataComponent implements OnInit {
     let sources_region = preFilter?.sources_region;
     if (sources_region)
       additional_searchparams = { ...additional_searchparams, sources_region }
-
+    
+    let beneficiaires = preFilter?.marqueblanche_beneficiaires;
+    if (beneficiaires)
+      additional_searchparams = { ...additional_searchparams, beneficiaires }
+    
     this.additional_searchparams = additional_searchparams;
 
     // lance la recherche pour afficher les resultats

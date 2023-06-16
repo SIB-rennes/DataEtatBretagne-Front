@@ -64,3 +64,9 @@ Voici les paramètres pris en charge:
 | Paramètre     | Description                                    | Valeurs acceptées    | Exemple                                                                                                             |
 | ------------- | ---------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | Source region | Les region sources à inclure dans la recherche | Code INSEE de region | [source_region=035](https://budget.databretagne.fr/?source_region=035&annee_min=2021&annee_max=2022&programmes=107) |
+
+- Bénéficiaires
+
+| Paramètre     | Description                             | Valeurs acceptées          | Exemple                                                                                                                    |
+| ------------- | --------------------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Bénéficiaires | Les sirets à inclure dans la rechercher | siret du/des bénéficiaires | [beneficiaires=19141687400011,34305956400959](https://budget.databretagne.fr/?beneficiaires=19141687400011,34305956400959) |

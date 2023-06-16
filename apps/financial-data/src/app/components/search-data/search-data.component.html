@@ -129,3 +129,12 @@
     </span>
   </div>
 </ng-container>
+
+<ng-container *ngIf="additional_searchparams?.beneficiaires && additional_searchparams.beneficiaires.length > 0">
+  <div data-test-id="notif-additionnal-search-on-beneficiaires">
+    <mat-icon aria-hidden="false" aria-label="information">information</mat-icon>
+    <span>
+      Attention, vous appliquez également un filtre sur les bénéficiaires.
+    </span>
+  </div>
+</ng-container>
