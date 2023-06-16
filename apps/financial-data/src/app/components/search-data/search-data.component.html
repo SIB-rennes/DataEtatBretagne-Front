@@ -45,7 +45,7 @@
 
       <div class="field-localisation field-30-width">
         <lib-localisation [control]="locationControls"
-          [categorySelected]="locationControls.value ? locationControls.value[0].type : null"></lib-localisation>
+          [categorySelected]="(locationControls.value &&  locationControls.value[0]) ? locationControls.value[0].type : null"></lib-localisation>
       </div>
 
       <mat-form-field

@@ -230,7 +230,7 @@ export class SearchDataComponent implements OnInit {
     const formValue = this.searchForm.value;
     this.searchInProgress.next(true);
 
-    let search_parameters: SearchParameters = { 
+    let search_parameters: SearchParameters = {
       ...SearchParameters_empty,
       beneficiaire: formValue.beneficiaire,
       bops: formValue.bops,
@@ -464,11 +464,11 @@ export class SearchDataComponent implements OnInit {
     let referentiels_programmation = preFilter?.referentiels_programmation
     if (referentiels_programmation)
       additional_searchparams = { ...additional_searchparams, referentiels_programmation }
-    
+
     let sources_region = preFilter?.sources_region;
     if (sources_region)
       additional_searchparams = { ...additional_searchparams, sources_region }
-    
+
     this.additional_searchparams = additional_searchparams;
 
     // lance la recherche pour afficher les resultats
