@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { ResolveFn } from '@angular/router';
 
 import { UsersPagination } from 'apps/management/src/lib/models/users/user.models';
 import { UserHttpService } from 'apps/management/src/lib/services/users-http.service';
@@ -18,4 +19,9 @@ export class UsersResolver  {
       })
     );
   }
+}
+
+export const resolveUsers: ResolveFn<UsersPagination | Error> = () => {
+  const resolver = inject(UsersResolver)
+  return resolver.resolve()
 }
