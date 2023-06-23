@@ -1,38 +1,30 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Location } from '@angular/common';
-import {
-  ActivatedRouteSnapshot,
-  CanLoad,
-  Route,
-  Router,
-  RouterStateSnapshot,
-  UrlSegment,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, CanMatchFn, GuardsCheckEnd, Router, RouterStateSnapshot } from '@angular/router';
 import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
 import { SessionService } from 'apps/common-lib/src/public-api';
+import { NGXLogger } from 'ngx-logger';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard extends KeycloakAuthGuard implements CanLoad {
+export class AuthGuard extends KeycloakAuthGuard {
   constructor(
     protected override readonly router: Router,
     protected readonly keycloak: KeycloakService,
     protected location: Location,
-    protected sessionService: SessionService
+    protected sessionService: SessionService,
+    private logger: NGXLogger,
   ) {
     super(router, keycloak);
   }
 
-  canLoad(route: Route, _segments: UrlSegment[]) {
-    if (!this.roles) return true;
+  get currentRoles() {
+    return this.roles;
+  }
 
-    const canLoad = this._checkRoles(route);
-
-    if (!canLoad) {
-      this.router.navigate(['']);
-    }
-    return canLoad;
+  get currentlyAuthenticated() {
+    return this.authenticated;
   }
 
   public async isAccessAllowed(
@@ -41,7 +33,7 @@ export class AuthGuard extends KeycloakAuthGuard implements CanLoad {
   ) {
     // Force the user to log in if currently unauthenticated.
     if (!this.authenticated) {
-      console.debug('[AuthGuard] this.keycloak.login');
+      this.logger.debug(`[AuthGuard] keycloak login`);
       await this.keycloak.login({
         redirectUri:
           window.location.origin + this.location.prepareExternalUrl(state.url),
@@ -57,26 +49,38 @@ export class AuthGuard extends KeycloakAuthGuard implements CanLoad {
     const requiredRoles = route.data['roles'];
 
     // Allow the user to to proceed if no additional roles are required to access the route.
-    if (!(requiredRoles instanceof Array) || requiredRoles.length === 0) {
-      return this.authenticated;
-    }
+    if (!(requiredRoles instanceof Array) || requiredRoles.length === 0)
+      return true;
 
     // Allow the user to proceed if one role is present
-    if (!this._checkRoles(route)) {
-      this.router.navigate(['']);
+    return this.has_any_roles(requiredRoles);
+  }
+
+  public has_any_roles(roles: string[]): boolean {
+    if (!this.roles)
       return false;
-    }
-    return this.authenticated;
+    return roles.some(role => this.roles.includes(role));
   }
+}
 
-  private _checkRoles(route: ActivatedRouteSnapshot | Route): boolean {
-    if (route.data) {
-      if (!this.roles) return false;
+/** 
+ * Vérifie les roles de la personne authentifiée.
+ * si aucune authentification, on match
+ */
+export const keycloakAuthGuardCanMatchAccordingToRoles: CanMatchFn = (route) => {
 
-      const requiredRoles = route.data['roles'] as string[];
-      return requiredRoles.some((role) => this.roles.includes(role));
-    }
+  const data = route.data
+  const requiredRoles: string[] = (data)? data['roles'] : [];
 
-    return true;
-  }
+  let guard = inject(AuthGuard)
+
+  if (!guard.currentlyAuthenticated)
+    return true
+
+  return guard.has_any_roles(requiredRoles);
+}
+
+export const keycloakAuthGuardCanActivate: CanActivateFn = (route, state) => {
+  const guard = inject(AuthGuard)
+  return guard.canActivate(route, state);
 }
