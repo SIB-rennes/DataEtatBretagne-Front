@@ -1,11 +1,12 @@
-import { Injectable } from '@angular/core';
-import { Resolve } from '@angular/router';
+import { inject, Injectable } from '@angular/core';
+import { ResolveFn } from '@angular/router';
+
 import { UsersPagination } from 'apps/management/src/lib/models/users/user.models';
 import { UserHttpService } from 'apps/management/src/lib/services/users-http.service';
 import { catchError, Observable, of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class UsersResolver implements Resolve<UsersPagination | Error> {
+export class UsersResolver  {
   constructor(private service: UserHttpService) {}
 
   resolve(): Observable<UsersPagination | Error> {
@@ -18,4 +19,9 @@ export class UsersResolver implements Resolve<UsersPagination | Error> {
       })
     );
   }
+}
+
+export const resolveUsers: ResolveFn<UsersPagination | Error> = () => {
+  const resolver = inject(UsersResolver)
+  return resolver.resolve()
 }
