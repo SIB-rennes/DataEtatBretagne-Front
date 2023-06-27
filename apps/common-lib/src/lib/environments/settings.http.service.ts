@@ -5,6 +5,9 @@ import { firstValueFrom } from 'rxjs';
 import { Settings } from 'apps/common-lib/src/public-api';
 import { ISettingsService } from './interface-settings.service';
 import { NGXLogger, NgxLoggerLevel } from 'ngx-logger';
+import { assert } from '../utilities/assert.function';
+import { Keycloak as KeycloakSettings } from 'apps/common-lib/src/public-api';
+import { MultiRegionClientIdMapper } from './mutli-region.mapper.service';
 
 export const SETTINGS = new InjectionToken<ISettingsService>('SETTINGS');
 
@@ -14,6 +17,7 @@ export class SettingsHttpService {
     private http: HttpClient,
     @Inject(SETTINGS) private settingsService: ISettingsService,
     private keycloak: KeycloakService,
+    private hostname_mapper: MultiRegionClientIdMapper,
     private logger: NGXLogger,
   ) {}
 
@@ -39,25 +43,67 @@ export class SettingsHttpService {
       }
     })
     .then(async () => {
-      try {
-        await this.keycloak.init({
-          config: {
-            url: this.settingsService.getKeycloakSettings().url,
-            realm: this.settingsService.getKeycloakSettings().realm,
-            clientId: this.settingsService.getKeycloakSettings().clientId,
-          },
-          initOptions: {
-            checkLoginIframe: false,
-          },
-          bearerPrefix: 'Bearer',
-          enableBearerInterceptor: true,
-          bearerExcludedUrls: ['/assets'], // C'est une API publique,
-          // Il est nécessaire de les whitelister pour ne pas
-          // être redirigé vers la page de login de keycloak
-        });
-      } catch (error) {
-        console.error(error);
+      const keycloak_settings = this.settingsService.getKeycloakSettings();
+      let multi_region = this.settingsService?.getKeycloakSettings()?.multi_region;
+
+      if (multi_region) {
+        this.logger.debug(`Initialisation de keycloak en mode multiregion`);
+        return await this.init_keycloak_multiregion(keycloak_settings);
+      } else {
+        this.logger.debug(`Initialisation de keycloak en mode monoregion`)
+        return await this.init_keycloak_monoregion(keycloak_settings)
       }
     });
+  }
+
+  async init_keycloak_monoregion(settings: KeycloakSettings) {
+        try {
+          const { url, realm, clientId } = settings
+          assert(clientId != null, "Le clientId est nécessaire dans une configuration monoregion")
+
+          return await this.init_keycloak(url, realm, clientId);
+        } catch (error) {
+          console.error(error);
+          return false;
+        }
+  }
+
+  async init_keycloak_multiregion(settings: KeycloakSettings) {
+        try {
+          const { url, realm } = settings
+          const clientId = this.hostname_mapper.kc_client_id_from_hostname(settings.hostname_client_id_mappings)
+
+          this.logger.debug(`Initialisation de keycloak avec url: ${url}, realm: ${realm} et le client id: ${clientId}`);
+
+          return await this.init_keycloak(url, realm, clientId);
+        } catch (error) {
+          console.error(error);
+          return false;
+        }
+  }
+
+  async init_keycloak(url: string, realm: string, clientId: string) {
+    try {
+
+      const initialization = await this.keycloak.init({
+        config: {
+          url,
+          realm,
+          clientId,
+        },
+        initOptions: {
+          checkLoginIframe: false,
+        },
+        bearerPrefix: 'Bearer',
+        enableBearerInterceptor: true,
+        bearerExcludedUrls: ['/assets'], // C'est une API publique,
+        // Il est nécessaire de les whitelister pour ne pas
+        // être redirigé vers la page de login de keycloak
+      });
+
+      return initialization;
+    } catch (error) {
+      throw new Error("Une erreur s'est déroulée durant l'initialisation de keycloak");
+    }
   }
 }
