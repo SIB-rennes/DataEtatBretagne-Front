@@ -1,8 +1,14 @@
 {
   "keycloak": {
+    "multi_region": false,
     "url": "<URL KC>",
     "realm": "realm",
-    "clientId": "client"
+    "clientId": "client",
+    "comment": "Le client ID n'est pas nécessaire dans le cas des multi-regions",
+    "hostname_client_id_mappings": {
+      "comment": "Liste de mapping entre le hostname de la page et le client ID.",
+      "localhost": "bretagne.budget"
+    }
   },
   "apis": {
     "franceRelance": "<url api franceRelance>",

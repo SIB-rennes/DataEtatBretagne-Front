@@ -4,6 +4,7 @@ import { ActivatedRouteSnapshot, CanActivateFn, CanMatchFn, GuardsCheckEnd, Rout
 import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
 import { SessionService } from 'apps/common-lib/src/public-api';
 import { NGXLogger } from 'ngx-logger';
+import { AuthUtils } from '../services/auth-utils.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,13 +15,18 @@ export class AuthGuard extends KeycloakAuthGuard {
     protected readonly keycloak: KeycloakService,
     protected location: Location,
     protected sessionService: SessionService,
+    protected auth_utils: AuthUtils,
     private logger: NGXLogger,
   ) {
     super(router, keycloak);
   }
 
-  get currentRoles() {
-    return this.roles;
+  private _current_roles = null;
+  get current_roles() : string[] {
+    if (!this._current_roles)
+      this._current_roles = this.auth_utils.roles_to_uppercase(this.roles)
+
+    return this._current_roles!;
   }
 
   get currentlyAuthenticated() {
@@ -57,9 +63,9 @@ export class AuthGuard extends KeycloakAuthGuard {
   }
 
   public has_any_roles(roles: string[]): boolean {
-    if (!this.roles)
+    if (!this.current_roles)
       return false;
-    return roles.some(role => this.roles.includes(role));
+    return roles.some(role => this.current_roles.includes(role));
   }
 }
 

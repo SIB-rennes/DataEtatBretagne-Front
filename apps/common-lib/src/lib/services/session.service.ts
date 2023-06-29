@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { User } from 'apps/management/src/lib/models/users/user.models';
 import { Profil } from '../models/profil.enum.model';
+import { AuthUtils } from './auth-utils.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,12 +12,14 @@ export class SessionService {
 
   public userInfo$ = new Subject<User | null>();
 
+  private auth_utils = inject(AuthUtils);
+
   constructor() {}
 
   // eslint-disable-next-line no-undef
   public setAuthentication(info: Keycloak.KeycloakProfile, roles: any): void {
     this._userInfo = info as User;
-    this._userInfo.roles = roles;
+    this._userInfo.roles = this.auth_utils.roles_to_uppercase(roles)
     this.userInfo$.next(this._userInfo);
   }
 
