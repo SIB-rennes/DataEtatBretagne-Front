@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AdministrationRoutingModule } from './administration-routing.module';
-import { UploadFinancialComponent } from './upload-financial.component';
+import { UploadFinancialComponent } from './upload-financial/upload-financial.component';
 import {
   CommonLibModule,
   MaterialModule,

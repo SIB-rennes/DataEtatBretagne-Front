@@ -4,7 +4,7 @@ import { Profil } from 'apps/common-lib/src/lib/models/profil.enum.model';
 import { keycloakAuthGuardCanActivate } from 'apps/common-lib/src/public-api';
 import { ManagementUserComponent } from 'apps/management/src/lib/components/management-user/management-user.component';
 import { resolveUsers } from '../../resolvers/management/users.resolver';
-import { UploadFinancialComponent } from './upload-financial.component';
+import { UploadFinancialComponent } from './upload-financial/upload-financial.component';
 
 const routes: Routes = [
   {
