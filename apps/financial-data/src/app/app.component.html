@@ -19,7 +19,7 @@
 
 <router-outlet class="page-content-outlet"></router-outlet>
 
-<lib-footer *ngIf="isAuthenticated" [ngClass]="{'hidden': grid_fullscreen }" [contact]="contact">
+<lib-footer *ngIf="isAuthenticated" [ngClass]="{'hidden': grid_fullscreen }">
   <li class="fr-footer__bottom-item" *ngIf="help">
     <a class="fr-footer__bottom-link" href="{{help}}" target="_blank">Aide en
       ligne</a>
