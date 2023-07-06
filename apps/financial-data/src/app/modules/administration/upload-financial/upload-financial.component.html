@@ -8,17 +8,17 @@
     <div class="line">
 
       <div class="col">
-        <input type="file" class="file-input" [accept]="requiredFileType" (change)="onFileSelected($event)" #fileUpload>
+        <input type="file" class="file-input" [accept]="requiredFileType" (change)="fileFinancial = getFile($event)" #fileUpload>
         <div class="file-upload">
 
-          <span>{{ file !== null ? file.name : "Sélectionner un fichier csv" }}</span>
+          <span>{{ fileFinancial !== null ? fileFinancial.name : "Sélectionner un fichier csv" }}</span>
 
-          <button mat-mini-fab color="primary" class="upload-btn" *ngIf="file === null" (click)="fileUpload.click()">
+          <button mat-mini-fab color="primary" class="upload-btn" *ngIf="fileFinancial === null" (click)="fileUpload.click()">
             <mat-icon>attach_file</mat-icon>
           </button>
 
-          <button mat-mini-fab color="warn" class="cancel-upload" *ngIf="file !== null" (click)="cancelUpload()">
-            <mat-icon class="cancel-upload" (click)="cancelUpload()">delete_forever</mat-icon>
+          <button mat-mini-fab color="warn" class="cancel-upload" *ngIf="fileFinancial !== null" (click)="fileFinancial = null">
+            <mat-icon class="cancel-upload" (click)="fileFinancial = null">delete_forever</mat-icon>
           </button>
 
         </div>
@@ -50,7 +50,41 @@
         </mat-form-field>
       </div>
 
-      <button mat-fab color="primary" *ngIf="file !== null" (click)="uploadFinancialFile()"
+      <button mat-fab color="primary" *ngIf="fileFinancial !== null" (click)="uploadFinancialFile()"
+        (disabled)="uploadInProgress.value === true">
+        <mat-icon fontIcon="upload_file"></mat-icon>
+      </button>
+
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="mat-card" *ngIf="isAdmin">
+  <mat-card-header>
+    <mat-card-title>Mettre à jour les référentiels</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+
+    <div class="line">
+
+      <div class="col">
+        <input type="file" class="file-input" accept=".xlsx" (change)="fileReferentiel = getFile($event)" #fileUploadReferentiel>
+        <div class="file-upload">
+
+          <span>{{ fileReferentiel !== null ? fileReferentiel.name : "Sélectionner le fichier calculette chorus" }}</span>
+
+          <button mat-mini-fab color="primary" class="upload-btn" *ngIf="fileReferentiel === null" (click)="fileUploadReferentiel.click()">
+            <mat-icon>attach_file</mat-icon>
+          </button>
+
+          <button mat-mini-fab color="warn" class="cancel-upload" *ngIf="fileReferentiel !== null" (click)="fileReferentiel = null">
+            <mat-icon class="cancel-upload" (click)="fileReferentiel = null">delete_forever</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <button mat-fab color="primary" *ngIf="fileReferentiel !== null" (click)="uploadReferentiel()"
         (disabled)="uploadInProgress.value === true">
         <mat-icon fontIcon="upload_file"></mat-icon>
       </button>
@@ -62,7 +96,7 @@
 <mat-card class="mat-card" *ngIf=" dataSource.length> 0">
   <mat-card-header>
     <mat-card-title-group>
-      <mat-card-title>Historique des 5 derniers chargements des données financières</mat-card-title>
+      <mat-card-title>Historique des 10 derniers chargements des données financières</mat-card-title>
     </mat-card-title-group>
   </mat-card-header>
 

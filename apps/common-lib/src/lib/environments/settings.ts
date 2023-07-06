@@ -1,9 +1,15 @@
 export interface IApi {}
 
+export interface HostnameClientIdMappings {
+  [key: string]: string
+}
+
 export class Keycloak {
   url = '';
   realm = '';
-  clientId = '';
+  clientId? = null;
+  multi_region = false;
+  hostname_client_id_mappings: HostnameClientIdMappings = {}
 }
 
 export interface NocodbViews {
@@ -32,4 +38,5 @@ export class Settings {
   apis: IApi | undefined = undefined;
   keycloak: Keycloak = new Keycloak();
   contact: string | undefined = undefined;
+  url_github: string | undefined = undefined;
 }

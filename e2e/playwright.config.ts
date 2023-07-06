@@ -41,7 +41,7 @@ const config: PlaywrightTestConfig = {
     actionTimeout: 5000,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'retain-on-failure',
-    baseURL: 'https://budget.nocode.csm.ovh',
+    baseURL: 'https://bretagne.nocode.csm.ovh',
     //baseURL: 'http://localhost:4200',
     testIdAttribute: 'data-test-id',
   },

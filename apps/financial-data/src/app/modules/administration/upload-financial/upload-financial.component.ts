@@ -13,17 +13,16 @@ import {
 } from '@models/audit/audit-update-data.models';
 import { AuditHttpService } from '@services/http/audit.service';
 import { FinancialDataHttpService } from '@services/http/financial-data-http.service';
-import { AlertService } from 'apps/common-lib/src/public-api';
+import { AlertService, SessionService } from 'apps/common-lib/src/public-api';
 import {
   BehaviorSubject,
   Subscription,
   catchError,
   finalize,
   forkJoin,
-  map,
   of,
 } from 'rxjs';
-import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'financial-upload-financial-component',
@@ -31,6 +30,7 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
   styleUrls: ['./upload-financial.component.scss'],
 })
 export class UploadFinancialComponent implements OnInit {
+
   public readonly requiredFileType: string = '.csv';
   public DataType = DataType;
 
@@ -39,7 +39,12 @@ export class UploadFinancialComponent implements OnInit {
   @ViewChild('fileUpload')
   fileUpload!: ElementRef<HTMLInputElement>;
 
-  public file: File | null = null;
+  @ViewChild('fileUploadReferentiel')
+  fileUploadReferentiel!: ElementRef<HTMLInputElement>;
+
+  public fileFinancial: File | null = null;
+  public fileReferentiel: File | null = null;
+
   public years;
   public dataSource: AuditUpdateData[] = [];
 
@@ -58,6 +63,7 @@ export class UploadFinancialComponent implements OnInit {
 
   constructor(
     private service: FinancialDataHttpService,
+    private session: SessionService,
     private auditService: AuditHttpService,
     private alertService: AlertService
   ) {
@@ -71,16 +77,17 @@ export class UploadFinancialComponent implements OnInit {
     this._fetchAudit();
   }
 
-  onFileSelected(event: any) {
-    this.file = event.target.files[0];
+  public get isAdmin(): boolean {
+    return this.session.isAdmin();
   }
 
-  cancelUpload() {
-    this.file = null;
+  getFile(event: any) : File {
+    return event.target.files[0];
   }
+
 
   uploadFinancialFile() {
-    if (this.file !== null && this.yearSelected && this.typeSelected) {
+    if (this.fileFinancial !== null && this.yearSelected && this.typeSelected) {
       if (this.typeSelected === DataType.FINANCIAL_DATA_CP) {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
           data: this.yearSelected,
@@ -99,14 +106,41 @@ export class UploadFinancialComponent implements OnInit {
     }
   }
 
-  private _doLoadFile() {
-    if (this.file !== null && this.yearSelected && this.typeSelected) {
+  uploadReferentiel() {
+    if (this.fileReferentiel !== null ) {
       this.uploadInProgress.next(true);
       this.service
-        .loadFinancialFile(this.file, '' + this.yearSelected, this.typeSelected)
+        .loadReferentielFile(this.fileReferentiel)
         .pipe(
           finalize(() => {
-            this.cancelUpload();
+            this.fileReferentiel = null;
+            this.uploadInProgress.next(false);
+          })
+        )
+        .subscribe({
+          next: () => {
+            this.alertService.openAlertSuccess(
+              'Le fichier a bien été récupéré. Il sera traité dans les prochaines minutes.'
+            );
+          },
+          error: (err: HttpErrorResponse) => {
+            if (err.error['message']) {
+              this.alertService.openAlertError(err.error['message']);
+            }
+          },
+        });
+
+    }
+  }
+
+  private _doLoadFile() {
+    if (this.fileFinancial !== null && this.yearSelected && this.typeSelected) {
+      this.uploadInProgress.next(true);
+      this.service
+        .loadFinancialFile(this.fileFinancial, '' + this.yearSelected, this.typeSelected)
+        .pipe(
+          finalize(() => {
+            this.fileFinancial = null;
             this.uploadInProgress.next(false);
           })
         )

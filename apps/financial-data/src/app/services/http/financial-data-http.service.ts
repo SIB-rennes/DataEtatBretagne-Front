@@ -17,13 +17,15 @@ import { DataPagination } from 'apps/common-lib/src/lib/models/pagination/pagina
   providedIn: 'root',
 })
 export class FinancialDataHttpService  implements DataHttpService<FinancialDataModel,FinancialDataModel> {
-  private _apiFinancialAe! : string
+  private _apiFinancial! : string;
+  private _apiAdministration!: string;
 
   constructor(
     private http: HttpClient,
     @Inject(SETTINGS) readonly settings: SettingsService
   ) {
-    this._apiFinancialAe = this.settings.apiFinancialData
+    this._apiFinancial = this.settings.apiFinancialData;
+    this._apiAdministration = this.settings.apiAdministration;
   }
   mapToGeneric(object: FinancialDataModel): FinancialDataModel {
     return {...object, source: SourceFinancialData.CHORUS};
@@ -34,7 +36,7 @@ export class FinancialDataHttpService  implements DataHttpService<FinancialDataM
   }
 
   public getById(id: number): Observable<FinancialDataModel> {
-    return this.http.get<FinancialDataModel>(`${this._apiFinancialAe}/ae/${id}`);
+    return this.http.get<FinancialDataModel>(`${this._apiFinancial}/ae/${id}`);
   }
 
 
@@ -59,11 +61,11 @@ export class FinancialDataHttpService  implements DataHttpService<FinancialDataM
 
     const params = this._buildparams(search_params);
 
-    return this.http.get<DataPagination<FinancialDataModel>>(`${this._apiFinancialAe}/ae?${params}`);
+    return this.http.get<DataPagination<FinancialDataModel>>(`${this._apiFinancial}/ae?${params}`);
   }
 
 
-  private _buildparams( 
+  private _buildparams(
     { beneficiaires, bops, themes, locations, years, domaines_fonctionnels, referentiels_programmation, source_region }: SearchParameters
   ): string {
     let params ='limit=5000';
@@ -90,7 +92,7 @@ export class FinancialDataHttpService  implements DataHttpService<FinancialDataM
 
     if (domaines_fonctionnels && domaines_fonctionnels.length > 0)
       params += `&domaine_fonctionnel=${domaines_fonctionnels.join(',')}`;
-    
+
     if (referentiels_programmation && referentiels_programmation.length > 0)
       params += `&referentiel_programmation=${referentiels_programmation.join(',')}`;
 
@@ -111,13 +113,19 @@ export class FinancialDataHttpService  implements DataHttpService<FinancialDataM
     formData.append('annee', annee);
     formData.append('code_region', code_region);
 
-    const apiData = this.settings.apiFinancialData;
-
     if (type === DataType.FINANCIAL_DATA_AE) {
-      return this.http.post(`${apiData}/ae`, formData);
+      return this.http.post(`${this._apiFinancial}/ae`, formData);
     } else if (type === DataType.FINANCIAL_DATA_CP) {
-      return this.http.post(`${apiData}/cp`, formData);
+      return this.http.post(`${this._apiFinancial}/cp`, formData);
     }
     return of();
+  }
+
+
+  public loadReferentielFile(file: any) : Observable<any> {
+      const formData = new FormData();
+      formData.append('fichier', file);
+
+      return this.http.post(`${this._apiAdministration}/referentiels`, formData);
   }
 }
