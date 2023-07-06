@@ -20,13 +20,19 @@
 
       <div class="fr-footer__content">
         <ul class="fr-footer__content-list">
+          <li *ngIf="url_github" class="fr-footer__content-item">
+            <a class="fr-footer__content-link" target="_blank" href="{{ url_github }}">
+              <img class="fr-footer__logo fr-footer__gh_img" src="assets/img/github-mark.png" alt="Documentation sur github" /> 
+            </a>
+          </li>
           <li class="fr-footer__content-item"> <img class="fr-footer__logo" src="assets/img/{{logo}}"
               alt="Budget Etat" /> </li>
           <li class="fr-footer__content-item"> <img class="fr-footer__logo" src="assets/img/logo_france_relance.png"
               alt="France Relance" /> </li>
-          <li class="fr-footer__content-item"> <a class="fr-footer__content-link" target="_blank"
-              href="https://geobretagne.fr"><img class="fr-footer__logo" src="assets/img/logo_geobretagne.png"
-                alt="Geobretagne" /> </a></li>
+          <li class="fr-footer__content-item">
+            <a class="fr-footer__content-link" target="_blank" href="https://geobretagne.fr"><img
+                class="fr-footer__logo" src="assets/img/logo_geobretagne.png" alt="Geobretagne" /> </a>
+          </li>
         </ul>
       </div>
     </div>
