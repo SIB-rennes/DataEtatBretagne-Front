@@ -13,9 +13,9 @@ import { ChargementOuErreurComponent } from './chargement-ou-erreur/chargement-o
 import { DetailApiDataSubventionsComponent } from './detail-api-data-subventions/detail-api-data-subventions.component';
 import { DetailApiEntrepriseComponent } from './detail-api-entreprise/detail-api-entreprise.component';
 import {
-  InformationSupplementairesViewService,
   InformationsSupplementairesService,
-} from './informations-supplementaires.service';
+} from './services/informations-supplementaires.service';
+import { InformationSupplementairesViewService } from './services/informations-supplementaires.viewservice';
 import { OuNonRenseignePipe } from 'apps/common-lib/src/public-api';
 import { EtablissementLight } from './models/EtablissementLight';
 import { SubventionLight } from './models/SubventionLight';
