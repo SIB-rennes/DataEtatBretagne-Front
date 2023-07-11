@@ -52,6 +52,13 @@
           *ngTemplateOutlet="titre; context:{ libelle: 'Informations supplémentaires sur la subvention' }"></ng-container>
         <financial-informations-supplementaires-detail-subventions></financial-informations-supplementaires-detail-subventions>
       </div>
+
+      <div class="conteneur-section">
+        <ng-container
+          *ngTemplateOutlet="titre; context:{ libelle: 'Informations sur le dossier de la démarche' }">
+        </ng-container>
+        <financial-informations-demarche-simplifie></financial-informations-demarche-simplifie>
+      </div>
     </div>
   </ng-container>
 </ng-container>

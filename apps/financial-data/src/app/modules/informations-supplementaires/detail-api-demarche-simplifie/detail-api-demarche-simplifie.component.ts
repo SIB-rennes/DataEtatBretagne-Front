@@ -8,7 +8,7 @@ import {
 } from '@angular/common';
 import { Component } from '@angular/core';
 import { ChargementOuErreurComponent } from '../chargement-ou-erreur/chargement-ou-erreur.component';
-import { InformationsSupplementairesService } from '../informations-supplementaires.service';
+import { InformationsSupplementairesService } from '../services/informations-supplementaires.service';
 import { OuNonRenseignePipe } from 'apps/common-lib/src/public-api';
 import { Dossier } from '@models/demarche_simplifie/demarche-graphql';
 
