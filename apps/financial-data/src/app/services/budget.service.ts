@@ -11,6 +11,7 @@ import { SETTINGS } from 'apps/common-lib/src/lib/environments/settings.http.ser
 import { HttpClient } from '@angular/common/http';
 import { DataPagination } from 'apps/common-lib/src/lib/models/pagination/pagination.models';
 import { SourceFinancialData } from '@models/financial/common.models';
+import { unparse } from 'papaparse';
 
 export const DATA_HTTP_SERVICE = new InjectionToken<DataHttpService<any, FinancialDataModel>>(
   'DataHttpService'
@@ -47,7 +48,7 @@ export class BudgetService {
 
     return forkJoin(search$).pipe(
       map((response) => {
-        return response.flatMap( data => [...data])
+        return response.flatMap(data => [...data])
       })
     );
   }
@@ -69,8 +70,10 @@ export class BudgetService {
 
 
   public getCsv(financialData: FinancialDataModel[]): Blob {
-    const csvRows = [];
-    csvRows.push(HEADERS_CSV_FINANCIAL.join(','));
+
+    const fields = HEADERS_CSV_FINANCIAL;
+    const data = [];
+
     for (const item of financialData) {
 
       const values = [
@@ -80,22 +83,30 @@ export class BudgetService {
         item.montant_ae,
         item.montant_cp,
         item.programme.theme ?? '',
-        item.programme.code  ?? '',
-        item.programme.label.replace(/"/g, '""') ?? '',
-        item.referentiel_programmation.label?.replace(/"/g, '""') ?? '',
+        item.programme.code ?? '',
+        item.programme.label ?? '',
+        item.domaine_fonctionnel?.code ?? '',
+        item.domaine_fonctionnel?.label ?? '',
+        item.referentiel_programmation.label ?? '',
         item.commune.label ?? '',
         item.siret.code,
-        item.siret.nom_beneficiare?.replace(/"/g, '""') ?? '',
+        item.siret.nom_beneficiare ?? '',
         item.siret.categorie_juridique ?? '',
         item.date_cp,
         item.annee
       ];
-      csvRows.push(values.join(','));
+      data.push(values);
     }
-    return  new Blob( [csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+
+    let csv = unparse({
+      fields,
+      data
+    });
+
+    return new Blob(csv.split('\n'), { type: 'text/csv;charset=utf-8;' });
   }
 
-  public getById(source: SourceFinancialData, id: number) :Observable<FinancialDataModel> {
+  public getById(source: SourceFinancialData, id: number): Observable<FinancialDataModel> {
     const service = this.services.find(s => s.getSource() === source);
     if (service === undefined) return of()
 

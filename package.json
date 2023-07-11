@@ -38,6 +38,7 @@
     "keycloak-angular": "^14.0.0",
     "keycloak-js": "~20.0.5",
     "ngx-logger": "^5.0.12",
+    "papaparse": "^5.4.1",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.1"
@@ -65,6 +66,7 @@
     "@storybook/test-runner": "^0.10.0",
     "@storybook/testing-library": "^0.1.0",
     "@types/jasmine": "~4.0.0",
+    "@types/papaparse": "^5.3.7",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "@typescript-eslint/parser": "^5.59.2",
     "eslint": "^8.39.0",
