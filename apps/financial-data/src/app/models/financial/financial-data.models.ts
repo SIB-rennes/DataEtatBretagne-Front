@@ -10,12 +10,14 @@ export const HEADERS_CSV_FINANCIAL = [
   'theme',
   'code programme',
   'programme',
+  'code domaine fonctionnel',
+  'domaine fonctionnel',
   'referentiel_programmation',
   'commune',
   'siret',
   'nom beneficiaire',
   "type d'établissement",
-  'dater dernier paiement',
+  'date de dernier paiement',
   'année engagement',
 ];
 
